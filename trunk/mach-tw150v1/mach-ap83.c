@@ -1,8 +1,5 @@
 /*
- *  Atheros AP83 board support
- *
- *  Copyright (C) 2008-2012 Gabor Juhos <juhosg@openwrt.org>
- *  Copyright (C) 2008 Imre Kaloz <kaloz@openwrt.org>
+ *  HiWiFi Router v1 support, Atheros AR9331
  *
  *  This program is free software; you can redistribute it and/or modify it
  *  under the terms of the GNU General Public License version 2 as published
@@ -205,4 +202,4 @@ static void __init tw150v1_setup(void)
 	ath79_register_wmac(ee, mac);
 }
 
-MIPS_MACHINE(ATH79_MACH_AP83, "tw150v1", "HiWiFi Router v1 (Atheros AR9330)", tw150v1_setup);
+MIPS_MACHINE(ATH79_MACH_AP83, "tw150v1", "HiWiFi Router v1 (Atheros AR9331)", tw150v1_setup);
