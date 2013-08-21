@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-[ -z "$openwrt_root" ] || openwrt_root=~/openwrt-ar9331
+[ -z "$openwrt_root" ] && openwrt_root=~/openwrt-ar9331 || :
 
 root_squashfs=openwrt-ar71xx-generic-root.squashfs
 official_fw=recovery.bin
@@ -15,7 +15,7 @@ fi
 set -x
 
 cp -vf $openwrt_root/build_dir/target-mips*/linux-ar71xx_generic/vmlinux   vmlinux-hiwifi-tw150v1
-$openwrt_root/host/bin/patch-cmdline vmlinux-hiwifi-tw150v1   "board=tw150v1 console=ttyATH0,115200"
+$openwrt_root/staging_dir/host/bin/patch-cmdline vmlinux-hiwifi-tw150v1   "board=tw150v1 console=ttyATH0,115200"
 $openwrt_root/staging_dir/host/bin/lzma   e vmlinux-hiwifi-tw150v1 -lc1 -lp2 -pb2 vmlinux-hiwifi-tw150v1.bin.lzma
 
 cp $openwrt_root/bin/ar71xx/$root_squashfs ./

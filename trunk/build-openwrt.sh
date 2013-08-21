@@ -35,7 +35,7 @@ done
 	fi
 
 	# 6. Import the source code configuration
-	[ -e .config ] || cp -vf "$hiwifi_root"/config-ar9xxx-mach-ap83 .config
+	cp -vf "$hiwifi_root"/config-ar9xxx-mach-ap83 .config
 
 	if ! [ -f openwrt-ar9331/build_dir/target-mips*/linux-ar71xx_generic/vmlinux -a \
 		-f openwrt-ar9331/bin/ar71xx/$root_squashfs ]; then
