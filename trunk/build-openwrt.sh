@@ -37,8 +37,6 @@ done
 	# 6. Import the source code configuration
 	cp -vf "$hiwifi_root"/config-ar9xxx-mach-ap83 .config
 
-	ls -l build_dir/target-mips*/linux-ar71xx_generic/vmlinux bin/ar71xx/$root_squashfs
-	
 	# 7. Build images for AP83 platform that we selected:
 	#if ! [ -f build_dir/target-mips*/linux-ar71xx_generic/vmlinux -a \
 	#	-f bin/ar71xx/$root_squashfs ]; then
