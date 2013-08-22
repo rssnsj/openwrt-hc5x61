@@ -1,0 +1,31 @@
+#summary OpenWrt firmware building for HiWiFi router (tw150v1)
+
+= OpenWrt firmware building for HiWiFi router (tw150v1) =
+
+Add your content here.
+
+
+Requirements:
+1. Please choose Ubuntu 12.04 to do this.
+2. Make sure the host has Internet connection.
+
+Steps:
+1. Checkout our scripts and source code:
+   svn checkout https://openwrt-hiwifi.googlecode.com/svn/trunk openwrt-hiwifi
+2. Build:
+   cd openwrt-hiwifi
+   make
+
+openwrt-tw150v1-recovery.bin is the HiWiFi formatted firmware.
+
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
+
+
+
+-----------------------------------
