@@ -1,4 +1,4 @@
-# On-board switch configuration
+#summary On-board switch configuration
 
 = On-board switch configuration =
 
