@@ -11,6 +11,6 @@ config switch
 And run the following to reload the networking configuration:
 {{{
 /etc/init.d/network restart
-}}
+}}}
 
 Then refresh the web management page, you'll see a "Switch" under "Network" menu. Enter and configure what you need if you want to use VLAN, etc... 
