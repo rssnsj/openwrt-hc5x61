@@ -1,3 +1,5 @@
+# On-board switch configuration
+
 = On-board switch configuration =
 
 A configuration block needs to be added manually to /etc/config/network. Please login via SSH and edit this file, adding:
