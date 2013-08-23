@@ -46,7 +46,7 @@ static struct mtd_partition tw150v1_partitions[] = {
 		.offset		= 0x160000,
 		.size		= 0xe80000,
 	}, {
-		.name		= "nvram",
+		.name		= "backup",
 		.offset		= 0xfe0000,
 		.size		= 0x010000,
 	}, {
@@ -169,14 +169,10 @@ static void __init tw150v1_setup(void)
 
 	/* WAN port: GMAC0 is connected to the PHY0 of the internal switch */
 	ath79_init_mac(ath79_eth0_data.mac_addr, mac, 1);
-	//#ath79_switch_data.phy4_mii_en = 1;
-	//#ath79_switch_data.phy_poll_mask = BIT(0);
-	ath79_eth0_data.phy_if_mode = PHY_INTERFACE_MODE_MII;
-	ath79_eth0_data.phy_mask = BIT(0);
+	//ath79_eth0_data.phy_mask = BIT(0);
 
 	/* LAN ports: GMAC1 is connected to the internal switch */
 	ath79_init_mac(ath79_eth1_data.mac_addr, mac, 0);
-	ath79_eth1_data.phy_if_mode = PHY_INTERFACE_MODE_GMII;
 
 	/* This line is proved necessary. */
 	ath79_register_mdio(0, 0x0);
