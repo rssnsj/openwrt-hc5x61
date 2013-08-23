@@ -1,0 +1,103 @@
+#OpenWrt Firmware Building for HiWiFi Router (tw150v1)
+
+= OpenWrt Firmware Building for HiWiFi Router (tw150v1) =
+
+== Downloads ==
+  * OpenWrt Firmware (2013-08-23): https://openwrt-hiwifi.googlecode.com/svn/downloads/openwrt-tw150v1-recovery-130823.bin
+  * Firmware TFTP utility package: https://openwrt-hiwifi.googlecode.com/svn/downloads/tftpd64.400-original.zip
+
+== About HiWiFi ==
+  A Chinese company developed a new OpenWrt based router named HiWiFi. This is a recently very popular "intelligent" router. It has very well-designed hardware, with good features as below and performance, and perfect for OpenWrt working with.
+
+  * Features:
+    * Atheros AR9331 SOC
+    * 64MB RAM
+    * 16M Flash
+    * 8GB on-board USB Disk
+  * Office Site: http://www.hiwifi.com/
+
+  There is an IOS App in AppStore, which can be used to config and install plugin for the HiWiFi router: https://itunes.apple.com/cn/app/ji-lu-you/id598232355?mt=8
+
+== About this Project ==
+
+  This project is for building a general OpenWrt firmware from source code for HiWiFi router.
+
+  I've written a mach file to support this, and a few scripts to generate the firmware, but there's still an unresolved issue: https://code.google.com/p/openwrt-hiwifi/issues/detail?id=1
+
+----
+
+== Requirements ==
+  * Ubuntu 12.04 is recommended, while untested for other Ubuntu versions.
+  * Make sure the host has Internet connection.
+
+== Building Steps ==
+  # Checkout our scripts and source code:
+{{{
+svn checkout https://openwrt-hiwifi.googlecode.com/svn/trunk openwrt-hiwifi
+}}}
+  # Build:
+{{{
+cd openwrt-hiwifi
+./build-openwrt.sh
+}}}
+  # Target HiWiFi recovery.bin image: *openwrt-tw150v1-recovery.bin*
+
+== Firmware Flash How-to ==
+  # Add a new IP on your PC's wired interface port: 192.168.1.88 / 255.255.255.0.
+  # Extract the attached utility package (e.g., tftpd64.400.rar), and run tftpd32 for Win32 or tftpd64 for Win64, listening on the interface you set the IP to.
+  # Replace the file 'recovery.bin' with 'openwrt-tw150v1-recovery.bin'.
+  # Unplug the router's power cable.
+  # Plug a cable from your PC to one of the router's LAN port.
+  # Hold the RST botton with a needle or other sharp thing, and plug the power cable.
+  # Keep holding the button until you see the 'tftpd' server shows a client is connected.
+  # Seeing the LEDs twinkling in rotation indicates the firmware is being flashed. DO NOT turn off the power until it finishes.
+  # Ping 192.168.1.1 until it echoes (will take up 3-5 mins to complete).
+
+== Check the Results ==
+  * If cannot ping 192.168.1.1 for more than 5 mins, most probably the firmware is bad, please flash to HiWiFi's official firmware if you are unable to get serial console output.
+  * I strongly recommend you to deploy a TTL console for watching the flashing progress.
+
+== Target System Configuration ==
+  * By default, the internal switch does not forward data between wired ports. Please refer to this to add an initial "switch" configuration: https://code.google.com/p/openwrt-hiwifi/wiki/OnboardSwitchConfig
+  * For LED lights configuration, please refer to: 
+
+  https://openwrt-hiwifi.googlecode.com/svn/trunk/docs/HiWiFi-openwrt-LED-reference.png
+
+----
+
+= 极路由OpenWrt固件生成 (HiWiFi - tw150v1) =
+
+== 系统要求 ==
+  * 建议使用 Ubuntu 12.04, 其它版本Ubuntu亦可, 但未测试过.
+  * 确保您的有不受限的互联网连接.
+
+== 生成步骤 ==
+  # 下载本源码:
+{{{
+svn checkout https://openwrt-hiwifi.googlecode.com/svn/trunk openwrt-hiwifi
+}}}
+  # 编译生成:
+{{{
+cd openwrt-hiwifi
+./build-openwrt.sh
+}}}
+  # 最终 HiWiFi recovery.bin 格式的映像: *openwrt-tw150v1-recovery.bin*
+
+== 刷机方法 ==
+  # 为你电脑的“本地连接”加一个IP: 192.168.1.88 / 255.255.255.0 
+  # 解压刷机工具包（例如 tftpd64.400.rar）, 根据操作系统位数, 32位运行tftpd32, 64位运行tftpd64.
+  # 用上面生成的 openwrt-tw150v1-recovery.bin 替换刷机包目录下的 recovery.bin .
+  # 拔掉HiWiFi电源线.
+  # 网线一头连HiWiFi的LAN口, 一头连电脑.
+  # 用尖锐物按住HiWiFi背后的reset孔不松动, 同时给路由器接电.
+  # 直到看到tftpd出现进度条, 松开.
+  # 前面板的指示灯会轮流闪烁, 表明内部Flash正在擦写, 此时不要断电.
+  # ping 192.168.1.1, 直到ping通, 刷机过程总共3-5分钟.
+
+== 检查结果 ==
+  * 若长时间（超过5分钟）ping不通192.168.1.1, 可能固件有错误, 若无法通过串口看到启动信息, 建议刷回HiWiFi官方固件.
+  * 建议焊接TTL串口以查看刷机过程.
+
+== 目标系统配置 ==
+  * 默认情况下，芯片LAN口的交换芯片不启用转发，造成网口之间不通。请参考此处添加switch配置: https://code.google.com/p/openwrt-hiwifi/wiki/OnboardSwitchConfig
+  * LED灯配置请参考上面英文说明的图片链接.
