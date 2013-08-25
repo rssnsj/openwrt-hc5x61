@@ -3,7 +3,7 @@
 = OpenWrt Firmware Building for HiWiFi Router (tw150v1) =
 
 == Downloads ==
-  * OpenWrt Firmware (2013-08-23): https://openwrt-hiwifi.googlecode.com/svn/downloads/openwrt-tw150v1-recovery-130823.bin
+  * OpenWrt Firmware (2013-08-25): https://openwrt-hiwifi.googlecode.com/svn/downloads/openwrt-tw150v1-recovery-130825.bin  -- added tagged VLAN module and IPv6
   * Firmware TFTP utility package: https://openwrt-hiwifi.googlecode.com/svn/downloads/tftpd64.400-original.zip
 
 == About HiWiFi ==
