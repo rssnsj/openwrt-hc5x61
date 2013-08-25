@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # OpenWrt version: Barrier Breaker (r36145)
-# Sun Aug 18 21:07:57 2013
+# Sun Aug 25 14:11:32 2013
 #
 CONFIG_HAVE_DOT_CONFIG=y
 # CONFIG_TARGET_ppc40x is not set
@@ -45,6 +45,10 @@ CONFIG_TARGET_ar71xx=y
 # CONFIG_TARGET_omap4 is not set
 # CONFIG_TARGET_uml is not set
 # CONFIG_TARGET_x86 is not set
+# CONFIG_TARGET_xburst_qi_lb60 is not set
+# CONFIG_TARGET_xburst_n516 is not set
+# CONFIG_TARGET_xburst_n526 is not set
+# CONFIG_TARGET_xburst_id800wt is not set
 # CONFIG_TARGET_x86_generic is not set
 # CONFIG_TARGET_x86_olpc is not set
 # CONFIG_TARGET_x86_xen_domu is not set
@@ -57,33 +61,34 @@ CONFIG_TARGET_ar71xx=y
 # CONFIG_TARGET_x86_rdc is not set
 CONFIG_TARGET_ar71xx_generic=y
 # CONFIG_TARGET_ar71xx_nand is not set
-# CONFIG_TARGET_lantiq_xway is not set
-# CONFIG_TARGET_lantiq_ase is not set
-# CONFIG_TARGET_lantiq_falcon is not set
+# CONFIG_TARGET_ar7_generic is not set
+# CONFIG_TARGET_ar7_ac49x is not set
+# CONFIG_TARGET_au1000_au1500 is not set
+# CONFIG_TARGET_au1000_au1550 is not set
 # CONFIG_TARGET_ixp4xx_generic is not set
 # CONFIG_TARGET_ixp4xx_harddisk is not set
+# CONFIG_TARGET_malta_le is not set
+# CONFIG_TARGET_malta_be is not set
 # CONFIG_TARGET_ramips_rt288x is not set
 # CONFIG_TARGET_ramips_rt305x is not set
 # CONFIG_TARGET_ramips_rt3883 is not set
-# CONFIG_TARGET_au1000_au1500 is not set
-# CONFIG_TARGET_au1000_au1550 is not set
-# CONFIG_TARGET_malta_le is not set
-# CONFIG_TARGET_malta_be is not set
-# CONFIG_TARGET_orion_generic is not set
-# CONFIG_TARGET_orion_harddisk is not set
-# CONFIG_TARGET_orion_dns323 is not set
-# CONFIG_TARGET_xburst_qi_lb60 is not set
-# CONFIG_TARGET_xburst_n516 is not set
-# CONFIG_TARGET_xburst_n526 is not set
-# CONFIG_TARGET_xburst_id800wt is not set
-# CONFIG_TARGET_ar7_generic is not set
-# CONFIG_TARGET_ar7_ac49x is not set
-# CONFIG_TARGET_adm5120_router_le is not set
-# CONFIG_TARGET_adm5120_router_be is not set
-# CONFIG_TARGET_adm5120_rb1xx is not set
 # CONFIG_TARGET_at91_9g20 is not set
 # CONFIG_TARGET_at91_9260 is not set
 # CONFIG_TARGET_at91_9263 is not set
+# CONFIG_TARGET_lantiq_xway is not set
+# CONFIG_TARGET_lantiq_ase is not set
+# CONFIG_TARGET_lantiq_falcon is not set
+# CONFIG_TARGET_adm5120_router_le is not set
+# CONFIG_TARGET_adm5120_router_be is not set
+# CONFIG_TARGET_adm5120_rb1xx is not set
+# CONFIG_TARGET_orion_generic is not set
+# CONFIG_TARGET_orion_harddisk is not set
+# CONFIG_TARGET_orion_dns323 is not set
+# CONFIG_TARGET_cns3xxx_Default is not set
+# CONFIG_TARGET_xburst_qi_lb60_Default is not set
+# CONFIG_TARGET_xburst_n516_Default is not set
+# CONFIG_TARGET_xburst_n526_Default is not set
+# CONFIG_TARGET_xburst_id800wt_Default is not set
 # CONFIG_TARGET_x86_generic_Generic is not set
 # CONFIG_TARGET_x86_generic_Soekris45xx is not set
 # CONFIG_TARGET_x86_generic_Soekris48xx is not set
@@ -194,40 +199,29 @@ CONFIG_TARGET_ar71xx_generic_AP83=y
 # CONFIG_TARGET_ar71xx_generic_NBG_460N_550N_550NH is not set
 # CONFIG_TARGET_ar71xx_nand_DefaultNoWifi is not set
 # CONFIG_TARGET_ar71xx_nand_Ath5k is not set
-# CONFIG_TARGET_mpc83xx_Default is not set
-# CONFIG_TARGET_omap4_Default is not set
-# CONFIG_TARGET_ep93xx_Default is not set
-# CONFIG_TARGET_ep93xx_Simone is not set
-# CONFIG_TARGET_lantiq_xway_ARV4525PW is not set
-# CONFIG_TARGET_lantiq_xway_ARV7525PW is not set
-# CONFIG_TARGET_lantiq_xway_ARV4518PWR01 is not set
-# CONFIG_TARGET_lantiq_xway_ARV4518PWR01A is not set
-# CONFIG_TARGET_lantiq_xway_ARV4510PW is not set
-# CONFIG_TARGET_lantiq_xway_ARV7518PW is not set
-# CONFIG_TARGET_lantiq_xway_ARV4520PW is not set
-# CONFIG_TARGET_lantiq_xway_ARV452CQW is not set
-# CONFIG_TARGET_lantiq_xway_ARV752DPW is not set
-# CONFIG_TARGET_lantiq_xway_ARV752DPW22 is not set
-# CONFIG_TARGET_lantiq_xway_ACMP252 is not set
-# CONFIG_TARGET_lantiq_xway_FRITZ7320 is not set
-# CONFIG_TARGET_lantiq_xway_FRITZ3370 is not set
-# CONFIG_TARGET_lantiq_xway_WBMRA is not set
-# CONFIG_TARGET_lantiq_xway_WBMRB is not set
-# CONFIG_TARGET_lantiq_xway_EASY50712 is not set
-# CONFIG_TARGET_lantiq_xway_EASY80920NOR is not set
-# CONFIG_TARGET_lantiq_xway_EASY80920NAND is not set
-# CONFIG_TARGET_lantiq_xway_DGN3500 is not set
-# CONFIG_TARGET_lantiq_xway_DGN3500B is not set
-# CONFIG_TARGET_lantiq_ase_DGN1000B is not set
-# CONFIG_TARGET_lantiq_falcon_EASY98000NOR is not set
-# CONFIG_TARGET_lantiq_falcon_EASY98000SFLASH is not set
-# CONFIG_TARGET_ixp4xx_generic_Default is not set
-# CONFIG_TARGET_ixp4xx_generic_Atheros-ath5k is not set
-# CONFIG_TARGET_ixp4xx_generic_NSLU2 is not set
-# CONFIG_TARGET_ixp4xx_generic_NAS100d is not set
-# CONFIG_TARGET_ixp4xx_generic_DSMG600RevA is not set
-# CONFIG_TARGET_ixp4xx_generic_USR8200 is not set
-# CONFIG_TARGET_ixp4xx_harddisk_FSG3 is not set
+# CONFIG_TARGET_avr32_Default is not set
+# CONFIG_TARGET_iop32x_Default is not set
+# CONFIG_TARGET_mpc85xx_Default is not set
+# CONFIG_TARGET_mpc85xx_TLWDR4900 is not set
+# CONFIG_TARGET_brcm47xx_Broadcom-b43 is not set
+# CONFIG_TARGET_brcm47xx_Broadcom-wl is not set
+# CONFIG_TARGET_brcm47xx_Broadcom-ath5k is not set
+# CONFIG_TARGET_brcm47xx_Broadcom-none is not set
+# CONFIG_TARGET_brcm47xx_Broadcom-b44-b43 is not set
+# CONFIG_TARGET_brcm47xx_Broadcom-b44-wl is not set
+# CONFIG_TARGET_brcm47xx_Broadcom-b44-ath5k is not set
+# CONFIG_TARGET_brcm47xx_Broadcom-b44-none is not set
+# CONFIG_TARGET_brcm47xx_Broadcom-tg3-b43 is not set
+# CONFIG_TARGET_brcm47xx_Broadcom-tg3-wl is not set
+# CONFIG_TARGET_brcm47xx_Broadcom-tg3-none is not set
+# CONFIG_TARGET_brcm47xx_Broadcom-bgmac-b43 is not set
+# CONFIG_TARGET_brcm47xx_Broadcom-bgmac-wl is not set
+# CONFIG_TARGET_brcm47xx_Broadcom-bgmac-none is not set
+# CONFIG_TARGET_brcm47xx_Ps1208mfg is not set
+# CONFIG_TARGET_brcm47xx_WGT634U is not set
+# CONFIG_TARGET_brcm47xx_WL500GPv1 is not set
+# CONFIG_TARGET_brcm47xx_WRT350Nv1 is not set
+# CONFIG_TARGET_brcm47xx_WRTSL54GS is not set
 # CONFIG_TARGET_brcm63xx_Broadcom is not set
 # CONFIG_TARGET_brcm63xx_Broadcom-wl is not set
 # CONFIG_TARGET_brcm63xx_Atheros is not set
@@ -236,6 +230,39 @@ CONFIG_TARGET_ar71xx_generic_AP83=y
 # CONFIG_TARGET_brcm63xx_Broadcom-brcmsmac is not set
 # CONFIG_TARGET_brcm63xx_GW6X00 is not set
 # CONFIG_TARGET_brcm63xx_HW556 is not set
+# CONFIG_TARGET_ar7_generic_Annex-A is not set
+# CONFIG_TARGET_ar7_generic_Annex-B is not set
+# CONFIG_TARGET_ar7_generic_Texas is not set
+# CONFIG_TARGET_ar7_generic_None is not set
+# CONFIG_TARGET_ar7_ac49x_None is not set
+# CONFIG_TARGET_au1000_au1500_Atheros is not set
+# CONFIG_TARGET_au1000_au1500_InternetBox is not set
+# CONFIG_TARGET_au1000_au1500_MeshCube is not set
+# CONFIG_TARGET_au1000_au1550_DBAu1550 is not set
+# CONFIG_TARGET_omap24xx_n810-base is not set
+# CONFIG_TARGET_omap24xx_n810-gui is not set
+# CONFIG_TARGET_cobalt_Default is not set
+# CONFIG_TARGET_ixp4xx_generic_Default is not set
+# CONFIG_TARGET_ixp4xx_generic_Atheros-ath5k is not set
+# CONFIG_TARGET_ixp4xx_generic_NSLU2 is not set
+# CONFIG_TARGET_ixp4xx_generic_NAS100d is not set
+# CONFIG_TARGET_ixp4xx_generic_DSMG600RevA is not set
+# CONFIG_TARGET_ixp4xx_generic_USR8200 is not set
+# CONFIG_TARGET_ixp4xx_harddisk_FSG3 is not set
+# CONFIG_TARGET_mvebu_Generic is not set
+# CONFIG_TARGET_ppc40x_Default is not set
+# CONFIG_TARGET_amazon_Default is not set
+# CONFIG_TARGET_ep93xx_Default is not set
+# CONFIG_TARGET_ep93xx_Simone is not set
+# CONFIG_TARGET_mpc83xx_Default is not set
+# CONFIG_TARGET_ppc44x_Default is not set
+# CONFIG_TARGET_atheros_Default is not set
+# CONFIG_TARGET_brcm2708_RaspberryPi is not set
+# CONFIG_TARGET_adm8668_WRTU54G-TM is not set
+# CONFIG_TARGET_gemini_Default is not set
+# CONFIG_TARGET_malta_le_Default is not set
+# CONFIG_TARGET_malta_be_Default is not set
+# CONFIG_TARGET_kirkwood_Default is not set
 # CONFIG_TARGET_ramips_rt288x_Default is not set
 # CONFIG_TARGET_ramips_rt288x_RTN15 is not set
 # CONFIG_TARGET_ramips_rt288x_F5D8235V1 is not set
@@ -260,67 +287,41 @@ CONFIG_TARGET_ar71xx_generic_AP83=y
 # CONFIG_TARGET_ramips_rt3883_DIR645 is not set
 # CONFIG_TARGET_ramips_rt3883_TEW691GR is not set
 # CONFIG_TARGET_ramips_rt3883_TEW692GR is not set
-# CONFIG_TARGET_ppc44x_Default is not set
-# CONFIG_TARGET_omap24xx_n810-base is not set
-# CONFIG_TARGET_omap24xx_n810-gui is not set
-# CONFIG_TARGET_au1000_au1500_Atheros is not set
-# CONFIG_TARGET_au1000_au1500_InternetBox is not set
-# CONFIG_TARGET_au1000_au1500_MeshCube is not set
-# CONFIG_TARGET_au1000_au1550_DBAu1550 is not set
-# CONFIG_TARGET_uml_Default is not set
-# CONFIG_TARGET_mpc85xx_Default is not set
-# CONFIG_TARGET_mpc85xx_TLWDR4900 is not set
+# CONFIG_TARGET_omap4_Default is not set
+# CONFIG_TARGET_at91_9g20_Default is not set
+# CONFIG_TARGET_at91_9260_flexibity-minimal is not set
+# CONFIG_TARGET_at91_9260_flexibity-xwrt is not set
+# CONFIG_TARGET_at91_9260_flexibity-luci is not set
+# CONFIG_TARGET_at91_9263_Default is not set
 # CONFIG_TARGET_mcs814x_Generic is not set
 # CONFIG_TARGET_mcs814x_dLAN_USB_Extender is not set
-# CONFIG_TARGET_sparc_Default is not set
-# CONFIG_TARGET_iop32x_Default is not set
+# CONFIG_TARGET_realview_Default is not set
 # CONFIG_TARGET_pxa_Default is not set
 # CONFIG_TARGET_pxa_Gumstix is not set
-# CONFIG_TARGET_malta_le_Default is not set
-# CONFIG_TARGET_malta_be_Default is not set
-# CONFIG_TARGET_kirkwood_Default is not set
+# CONFIG_TARGET_lantiq_xway_ARV4525PW is not set
+# CONFIG_TARGET_lantiq_xway_ARV7525PW is not set
+# CONFIG_TARGET_lantiq_xway_ARV4518PWR01 is not set
+# CONFIG_TARGET_lantiq_xway_ARV4518PWR01A is not set
+# CONFIG_TARGET_lantiq_xway_ARV4510PW is not set
+# CONFIG_TARGET_lantiq_xway_ARV7518PW is not set
+# CONFIG_TARGET_lantiq_xway_ARV4520PW is not set
+# CONFIG_TARGET_lantiq_xway_ARV452CQW is not set
+# CONFIG_TARGET_lantiq_xway_ARV752DPW is not set
+# CONFIG_TARGET_lantiq_xway_ARV752DPW22 is not set
+# CONFIG_TARGET_lantiq_xway_ACMP252 is not set
+# CONFIG_TARGET_lantiq_xway_FRITZ7320 is not set
+# CONFIG_TARGET_lantiq_xway_FRITZ3370 is not set
+# CONFIG_TARGET_lantiq_xway_WBMRA is not set
+# CONFIG_TARGET_lantiq_xway_WBMRB is not set
+# CONFIG_TARGET_lantiq_xway_EASY50712 is not set
+# CONFIG_TARGET_lantiq_xway_EASY80920NOR is not set
+# CONFIG_TARGET_lantiq_xway_EASY80920NAND is not set
+# CONFIG_TARGET_lantiq_xway_DGN3500 is not set
+# CONFIG_TARGET_lantiq_xway_DGN3500B is not set
+# CONFIG_TARGET_lantiq_ase_DGN1000B is not set
+# CONFIG_TARGET_lantiq_falcon_EASY98000NOR is not set
+# CONFIG_TARGET_lantiq_falcon_EASY98000SFLASH is not set
 # CONFIG_TARGET_mpc52xx_Default is not set
-# CONFIG_TARGET_rb532_Default is not set
-# CONFIG_TARGET_orion_generic_Default is not set
-# CONFIG_TARGET_orion_harddisk_Default is not set
-# CONFIG_TARGET_orion_dns323_Default is not set
-# CONFIG_TARGET_realview_Default is not set
-# CONFIG_TARGET_adm8668_WRTU54G-TM is not set
-# CONFIG_TARGET_sibyte_Default is not set
-# CONFIG_TARGET_avr32_Default is not set
-# CONFIG_TARGET_xburst_qi_lb60_Default is not set
-# CONFIG_TARGET_xburst_n516_Default is not set
-# CONFIG_TARGET_xburst_n526_Default is not set
-# CONFIG_TARGET_xburst_id800wt_Default is not set
-# CONFIG_TARGET_ppc40x_Default is not set
-# CONFIG_TARGET_amazon_Default is not set
-# CONFIG_TARGET_ar7_generic_Annex-A is not set
-# CONFIG_TARGET_ar7_generic_Annex-B is not set
-# CONFIG_TARGET_ar7_generic_Texas is not set
-# CONFIG_TARGET_ar7_generic_None is not set
-# CONFIG_TARGET_ar7_ac49x_None is not set
-# CONFIG_TARGET_brcm47xx_Broadcom-b43 is not set
-# CONFIG_TARGET_brcm47xx_Broadcom-wl is not set
-# CONFIG_TARGET_brcm47xx_Broadcom-ath5k is not set
-# CONFIG_TARGET_brcm47xx_Broadcom-none is not set
-# CONFIG_TARGET_brcm47xx_Broadcom-b44-b43 is not set
-# CONFIG_TARGET_brcm47xx_Broadcom-b44-wl is not set
-# CONFIG_TARGET_brcm47xx_Broadcom-b44-ath5k is not set
-# CONFIG_TARGET_brcm47xx_Broadcom-b44-none is not set
-# CONFIG_TARGET_brcm47xx_Broadcom-tg3-b43 is not set
-# CONFIG_TARGET_brcm47xx_Broadcom-tg3-wl is not set
-# CONFIG_TARGET_brcm47xx_Broadcom-tg3-none is not set
-# CONFIG_TARGET_brcm47xx_Broadcom-bgmac-b43 is not set
-# CONFIG_TARGET_brcm47xx_Broadcom-bgmac-wl is not set
-# CONFIG_TARGET_brcm47xx_Broadcom-bgmac-none is not set
-# CONFIG_TARGET_brcm47xx_Ps1208mfg is not set
-# CONFIG_TARGET_brcm47xx_WGT634U is not set
-# CONFIG_TARGET_brcm47xx_WL500GPv1 is not set
-# CONFIG_TARGET_brcm47xx_WRT350Nv1 is not set
-# CONFIG_TARGET_brcm47xx_WRTSL54GS is not set
-# CONFIG_TARGET_cns3xxx_Default is not set
-# CONFIG_TARGET_cns21xx_Default is not set
-# CONFIG_TARGET_atheros_Default is not set
 # CONFIG_TARGET_adm5120_router_le_Generic is not set
 # CONFIG_TARGET_adm5120_router_le_EB-214A is not set
 # CONFIG_TARGET_adm5120_router_le_CAS630 is not set
@@ -351,15 +352,14 @@ CONFIG_TARGET_ar71xx_generic_AP83=y
 # CONFIG_TARGET_adm5120_router_be_P334WT is not set
 # CONFIG_TARGET_adm5120_router_be_P335WT is not set
 # CONFIG_TARGET_adm5120_rb1xx_RouterBoard is not set
-# CONFIG_TARGET_brcm2708_RaspberryPi is not set
-# CONFIG_TARGET_at91_9g20_Default is not set
-# CONFIG_TARGET_at91_9260_flexibity-minimal is not set
-# CONFIG_TARGET_at91_9260_flexibity-xwrt is not set
-# CONFIG_TARGET_at91_9260_flexibity-luci is not set
-# CONFIG_TARGET_at91_9263_Default is not set
-# CONFIG_TARGET_gemini_Default is not set
-# CONFIG_TARGET_cobalt_Default is not set
-# CONFIG_TARGET_mvebu_Generic is not set
+# CONFIG_TARGET_rb532_Default is not set
+# CONFIG_TARGET_sibyte_Default is not set
+# CONFIG_TARGET_cns21xx_Default is not set
+# CONFIG_TARGET_sparc_Default is not set
+# CONFIG_TARGET_orion_generic_Default is not set
+# CONFIG_TARGET_orion_harddisk_Default is not set
+# CONFIG_TARGET_orion_dns323_Default is not set
+# CONFIG_TARGET_uml_Default is not set
 CONFIG_HAS_SUBTARGETS=y
 CONFIG_TARGET_BOARD="ar71xx"
 CONFIG_TARGET_ARCH_PACKAGES="ar71xx"
@@ -2105,7 +2105,7 @@ CONFIG_PACKAGE_kmod-ipt-nathelper=y
 #
 # Network Support
 #
-# CONFIG_PACKAGE_kmod-8021q is not set
+CONFIG_PACKAGE_kmod-8021q=y
 # CONFIG_PACKAGE_kmod-appletalk is not set
 # CONFIG_PACKAGE_kmod-atm is not set
 # CONFIG_PACKAGE_kmod-ax25 is not set
@@ -2115,11 +2115,11 @@ CONFIG_PACKAGE_kmod-ipt-nathelper=y
 CONFIG_PACKAGE_kmod-gre=y
 # CONFIG_PACKAGE_kmod-gre6 is not set
 # CONFIG_PACKAGE_kmod-ip6-tunnel is not set
-# CONFIG_PACKAGE_kmod-ipip is not set
+CONFIG_PACKAGE_kmod-ipip=y
 # CONFIG_PACKAGE_kmod-ipsec is not set
-# CONFIG_PACKAGE_kmod-iptunnel4 is not set
+CONFIG_PACKAGE_kmod-iptunnel4=y
 # CONFIG_PACKAGE_kmod-iptunnel6 is not set
-# CONFIG_PACKAGE_kmod-ipv6 is not set
+CONFIG_PACKAGE_kmod-ipv6=y
 # CONFIG_PACKAGE_kmod-isdn4linux is not set
 CONFIG_PACKAGE_kmod-l2tp=y
 # CONFIG_PACKAGE_kmod-l2tp-eth is not set
@@ -2146,7 +2146,7 @@ CONFIG_PACKAGE_kmod-pptp=y
 # CONFIG_PACKAGE_kmod-slip is not set
 # CONFIG_PACKAGE_kmod-stp is not set
 # CONFIG_PACKAGE_kmod-trelay is not set
-# CONFIG_PACKAGE_kmod-tun is not set
+CONFIG_PACKAGE_kmod-tun=y
 
 #
 # Other modules
@@ -2307,6 +2307,13 @@ CONFIG_PACKAGE_MAC80211_MESH=y
 CONFIG_PACKAGE_uboot-ar71xx-nbg460n_550n_550nh=y
 
 #
+# Multimedia
+#
+# CONFIG_PACKAGE_ffmpeg is not set
+# CONFIG_PACKAGE_ffprobe is not set
+# CONFIG_PACKAGE_ffserver is not set
+
+#
 # LuCI2
 #
 
@@ -2321,13 +2328,6 @@ CONFIG_PACKAGE_libubus-lua=y
 #
 CONFIG_PACKAGE_ubus=y
 CONFIG_PACKAGE_ubusd=y
-
-#
-# Multimedia
-#
-# CONFIG_PACKAGE_ffmpeg is not set
-# CONFIG_PACKAGE_ffprobe is not set
-# CONFIG_PACKAGE_ffserver is not set
 
 #
 # Utilities
