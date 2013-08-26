@@ -34,8 +34,16 @@ done
 		ln -sv "$hiwifi_root/mach-tw150v1/mach-ap83.c" $mach_to_replace
 	fi
 
-	# 6. Import the source code configuration
-	cp -vf "$hiwifi_root"/config-ar9xxx-mach-ap83 .config
+	# 6. Check which config file is newer, and replace the old with the newer
+	if [ ../config-ar9xxx-mach-ap83 -nt .config ]; then
+		cp -vf .config .config.bak
+		cp -vf ../config-ar9xxx-mach-ap83 .config
+		echo "WARNING: .config is updated, backed up as '.config.bak'"
+	elif [ ../config-ar9xxx-mach-ap83 -ot .config ]; then
+		cp -vf ../config-ar9xxx-mach-ap83 ../config-ar9xxx-mach-ap83.bak
+		cp -vf .config ../config-ar9xxx-mach-ap83
+		echo "WARNING: config-ar9xxx-mach-ap83 is updated, backed up as 'config-ar9xxx-mach-ap83.bak'"
+	fi
 
 	# 7. Build images for AP83 platform that we selected:
 	#if ! [ -f build_dir/target-mips*/linux-ar71xx_generic/vmlinux -a \
