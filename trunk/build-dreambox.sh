@@ -21,11 +21,11 @@ done
 	cd dreambox-ar9331
 
 	# 3. Add LuCI (web GUI) for compiling:
-	./scripts/feeds update
-	./scripts/feeds install -a -p luci
+	#./scripts/feeds update
+	#./scripts/feeds install -a -p luci
 
 	# 4. Add 'libevent2' (not necessary):
-	./scripts/feeds install libevent2
+	#./scripts/feeds install libevent2
 
 	# 5. Add 'tw150v1' platform support: <<<< IMPORTANT
 	mach_to_replace=target/linux/ar71xx/files/arch/mips/ath79/mach-ap83.c

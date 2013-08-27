@@ -1,10 +1,10 @@
 #!/bin/bash -e
 
 [ -z "$openwrt_root" ] && openwrt_root=~/openwrt-ar9331 || :
+[ -z "$target_fw" ] && target_fw=openwrt-tw150v1-recovery.bin || :
 
 root_squashfs=openwrt-ar71xx-generic-root.squashfs
 official_fw=recovery.bin
-target_fw=openwrt-tw150v1-recovery.bin
 
 # 'prefix-1-2.bin' is required, get it from recovery.bin
 if [ ! -f prefix-1-2.bin ]; then
