@@ -34,23 +34,15 @@ done
 		ln -sv "$hiwifi_root/mach-tw150v1/mach-ap83.c" $mach_to_replace
 	fi
 
-	# 6. Check which config file is newer, and replace the old with the newer
-	if [ ../config-ar9xxx-mach-ap83 -nt .config ]; then
-		cp -vf .config .config.bak
-		cp -vf ../config-ar9xxx-mach-ap83 .config
+	# 6. Always replace .config with the repository's
+	if [ -e .config ]; then
+		mv .config .config.bak
 		echo "WARNING: .config is updated, backed up as '.config.bak'"
 	fi
-
-	#elif [ ../config-ar9xxx-mach-ap83 -ot .config ]; then
-	#	cp -vf ../config-ar9xxx-mach-ap83 ../config-ar9xxx-mach-ap83.bak
-	#	cp -vf .config ../config-ar9xxx-mach-ap83
-	#	echo "WARNING: config-ar9xxx-mach-ap83 is updated, backed up as 'config-ar9xxx-mach-ap83.bak'"
+	cp -vf ../config-ar9xxx-mach-ap83 .config
 
 	# 7. Build images for AP83 platform that we selected:
-	#if ! [ -f build_dir/target-mips*/linux-ar71xx_generic/vmlinux -a \
-	#	-f bin/ar71xx/$root_squashfs ]; then
-		make V=99
-	#fi
+	make V=99
 )
 
 # 8. Generate firmware image for HiWiFi board:
