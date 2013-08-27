@@ -42,8 +42,8 @@ done
 	cp -vf ../config-openwrt-ar9xxx-ap83 .config
 
 	# Wait for user to interrupt to check the configuration
-	echo "--- Waiting for 3s to interrupt if you want to check the configuration"
-	sleep 3
+	echo "--- Waiting for 5s to interrupt if you want to check the configuration"
+	sleep 5
 	echo "--- No interrupt. Starting..."
 
 	# 7. Build images for AP83 platform that we selected:
