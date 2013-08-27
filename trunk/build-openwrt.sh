@@ -39,11 +39,12 @@ done
 		cp -vf .config .config.bak
 		cp -vf ../config-ar9xxx-mach-ap83 .config
 		echo "WARNING: .config is updated, backed up as '.config.bak'"
-	elif [ ../config-ar9xxx-mach-ap83 -ot .config ]; then
-		cp -vf ../config-ar9xxx-mach-ap83 ../config-ar9xxx-mach-ap83.bak
-		cp -vf .config ../config-ar9xxx-mach-ap83
-		echo "WARNING: config-ar9xxx-mach-ap83 is updated, backed up as 'config-ar9xxx-mach-ap83.bak'"
 	fi
+
+	#elif [ ../config-ar9xxx-mach-ap83 -ot .config ]; then
+	#	cp -vf ../config-ar9xxx-mach-ap83 ../config-ar9xxx-mach-ap83.bak
+	#	cp -vf .config ../config-ar9xxx-mach-ap83
+	#	echo "WARNING: config-ar9xxx-mach-ap83 is updated, backed up as 'config-ar9xxx-mach-ap83.bak'"
 
 	# 7. Build images for AP83 platform that we selected:
 	#if ! [ -f build_dir/target-mips*/linux-ar71xx_generic/vmlinux -a \
