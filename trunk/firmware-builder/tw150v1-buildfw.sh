@@ -1,10 +1,29 @@
 #!/bin/bash -e
 
-[ -z "$openwrt_root" ] && openwrt_root=~/openwrt-ar9331 || :
-[ -z "$target_fw" ] && target_fw=openwrt-tw150v1-recovery.bin || :
+if [ $# -lt 2 ]; then
+	echo "Usage: tw150v1-buildfw <openwrt_root> <target_fw_name>"
+	exit 1
+fi
 
 root_squashfs=openwrt-ar71xx-generic-root.squashfs
 official_fw=recovery.bin
+
+# Retrieve the absolute OpenWrt root path
+openwrt_root="$1"
+case "$openwrt_root" in
+	/*) : ;;
+	 *) openwrt_root=`cd "$openwrt_root" && pwd` ;;
+esac
+if ! [ -d "$openwrt_root" ]; then
+	echo "*** '$openwrt_root' is not a valid directory."
+	exit 1
+fi
+
+# The firmware image name
+target_fw="$2"
+
+# Always switch to the script's directory
+cd `dirname $0`
 
 # 'prefix-1-2.bin' is required, get it from recovery.bin
 if [ ! -f prefix-1-2.bin ]; then

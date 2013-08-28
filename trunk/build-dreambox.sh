@@ -51,10 +51,6 @@ done
 )
 
 # 8. Generate firmware image for HiWiFi board:
-(
-	export openwrt_root="$hiwifi_root/dreambox-ar9331"
-	cd firmware-builder
-	./tw150v1-buildfw.sh
-	mv -vf openwrt-tw150v1-recovery.bin ../dreambox-tw150v1-recovery.bin
-) || exit $?
+./firmware-builder/tw150v1-buildfw.sh "$hiwifi_root/dreambox-ar9331" "$target_fw" &&
+	mv -vf "./firmware-builder/$target_fw" ./
 
