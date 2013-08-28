@@ -1,6 +1,6 @@
-#summary On-board switch configuration
+#summary On-chip Switch Configuration
 
-= On-board switch configuration =
+= On-chip Switch Configuration =
 
 A configuration block needs to be added manually to /etc/config/network. Please login via SSH and edit this file, adding:
 {{{
