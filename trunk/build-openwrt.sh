@@ -25,7 +25,7 @@ build_openwrt()
 		exit 1
 	fi
 
-	# 2. Checkout source code:
+	# 2. Checkout source code (this is the latest stable version recommended by OpenWrt Wiki):
 	[ -e openwrt-ar9331 ] || svn co svn://svn.openwrt.org/openwrt/trunk openwrt-ar9331 -r36145
 
 	# Set the HIWIFI_WAN_AS_LAN_PORT macro in mach-ap83.c
@@ -72,8 +72,11 @@ build_openwrt()
 	)
 
 	# 8. Generate firmware image for HiWiFi board:
-	./firmware-builder/tw150v1-buildfw.sh "$hiwifi_root/openwrt-ar9331" "$target_fw" &&
-		mv -vf "./firmware-builder/$target_fw" ./
+	(
+		set -x
+		./firmware-builder/tw150v1-buildfw.sh "$hiwifi_root/openwrt-ar9331" "$target_fw" &&
+			mv -vf "./firmware-builder/$target_fw" ./
+	)
 }
 
 # Options
