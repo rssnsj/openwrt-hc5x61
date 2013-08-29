@@ -6,6 +6,12 @@
  *  by the Free Software Foundation.
  */
 
+/**
+ * This macro is manipulated by script tw150v1-buildfw.sh.
+ * Don't modify it manually before looking into the script.
+ */
+//#define HIWIFI_WAN_AS_LAN_PORT
+
 #include <linux/delay.h>
 #include <linux/platform_device.h>
 #include <linux/mtd/mtd.h>
@@ -174,14 +180,20 @@ static void __init tw150v1_setup(void)
 	/* LAN ports: GMAC1 is connected to the internal switch */
 	ath79_init_mac(ath79_eth1_data.mac_addr, mac, 0);
 
+#ifdef HIWIFI_WAN_AS_LAN_PORT
+	ath79_setup_ar933x_phy4_switch(true, true);
+#endif
+
 	/* This line is proved necessary. */
 	ath79_register_mdio(0, 0x0);
 
 	/* LAN ports */
 	ath79_register_eth(1);
 
+#ifndef HIWIFI_WAN_AS_LAN_PORT
 	/* WAN port */
 	ath79_register_eth(0);
+#endif
 
 	ath79_register_m25p80(&tw150v1_flash_data);
 
