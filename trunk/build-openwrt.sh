@@ -14,7 +14,7 @@ build_openwrt()
 {
 	# 1. Install required components:
 	local missed_pkgs=""
-	for deb in build-essential flex gettext libncurses5-dev unzip gawk liblzma-dev; do
+	for deb in build-essential flex gettext libncurses5-dev unzip gawk liblzma-dev u-boot-tools; do
 		dpkg -s $deb &> /dev/null || missed_pkgs="${missed_pkgs}${deb} "
 	done
 

@@ -10,12 +10,21 @@ official_fw=recovery.bin
 openwrt_root=
 target_fw=
 
+check_exec_or_exit()
+{
+	# Check the host tools
+	local i
+	for i in "$@"; do
+		[ -x "$i" ] || { echo "*** Cannot find the executable: $i"; return 1; }
+	done
+	return 0
+}
 
 # Inject custormized configs into root filesystem's directory,
 #  and repackage it with the filename as given.
 # $1: directory of the filesystem tree
 # $2: target squashfs filename
-inject_config_tw150v1_and_repack()
+inject_config_and_pack_tw150v1()
 {
 	if ! [ -d "$1" ]; then
 		echo "*** Directory '$1' does not exist."
@@ -23,15 +32,12 @@ inject_config_tw150v1_and_repack()
 	fi
 	local fs_root_dir="$1"
 	local target_squashfs="$2"
-	
+
 	local MKSQUASHFS="$openwrt_root"/staging_dir/host/bin/mksquashfs4
 	local PADJFFS="$openwrt_root"/staging_dir/host/bin/padjffs2
 
 	# Check the host tools
-	local i
-	for i in "$MKSQUASHFS" "$PADJFFS"; do
-		[ -x "$i" ] || { echo "*** Cannot find the executable: $i"; return 1; }
-	done
+	check_exec_or_exit "$MKSQUASHFS" "$PADJFFS" || return 1
 
 	(
 		cd "$1"
@@ -124,7 +130,7 @@ build_firmware_tw150v1()
 
 	# We might prefer to inject some initial configurations rather than just copy it.
 	#cp $openwrt_root/bin/ar71xx/$root_squashfs ./
-	inject_config_tw150v1_and_repack  $openwrt_root/build_dir/target-mips*/root-ar71xx  ./$root_squashfs
+	inject_config_and_pack_tw150v1  $openwrt_root/build_dir/target-mips*/root-ar71xx  ./$root_squashfs
 
 	mkimage -A mips -O linux -T kernel -a 0x80060000 -C lzma  -e 0x80060000 \
 		-n 'tw150v1-Linux-3.8.3' -d vmlinux-hiwifi-tw150v1.bin.lzma uImage
