@@ -43,7 +43,7 @@ inject_config_and_pack_tw150v1()
 		cd "$1"
 
 		# LED configuration
-		( [ -e etc/config/system ] && grep '^config led' etc/config/system > /dev/null ) ||
+		( [ -e etc/config/system ] && grep '^config led' etc/config/system >/dev/null ) ||
 			cat >> etc/config/system <<EOF
 
 config led
@@ -70,9 +70,31 @@ config led
 
 EOF
 
+		# Initialize LAN configuration
+		( [ -e etc/config/network ] && grep '^config interface' etc/config/network >/dev/null ) ||
+			cat >> etc/config/network <<EOF
+
+config interface 'loopback'
+	option ifname 'lo'
+	option proto 'static'
+	option ipaddr '127.0.0.1'
+	option netmask '255.0.0.0'
+
+config interface 'lan'
+	option ifname 'eth0'
+	option type 'bridge'
+	option proto 'static'
+	option netmask '255.255.255.0'
+	option ipaddr '192.168.1.1'
+
+config interface 'wan'
+	option ifname 'eth1'
+	option proto 'dhcp'
+EOF
+
 		# Switch configuration, otherwise traffic between LAN
 		#  ports cannot be forwarded.
-		( [ -e etc/config/network ] && grep '^config switch' etc/config/network > /dev/null ) ||
+		grep '^config switch' etc/config/network >/dev/null ||
 			cat >> etc/config/network <<EOF
 
 config switch
