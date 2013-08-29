@@ -13,9 +13,17 @@ target_fw=dreambox-tw150v1-recovery.bin
 build_openwrt()
 {
 	# 1. Install required components:
+	local missed_pkgs=""
 	for deb in build-essential flex gettext libncurses5-dev unzip gawk liblzma-dev; do
-		dpkg -s $deb &> /dev/null || apt-get install -y $deb
+		dpkg -s $deb &> /dev/null || missed_pkgs="${missed_pkgs}${deb} "
 	done
+
+	if ! [ -z "$missed_pkgs" ]; then
+		echo "Some required packages are missing. Please run the following commands to install them:"
+		echo "  sudo apt-get update"
+		echo "  sudo apt-get install -y $missed_pkgs"
+		exit 1
+	fi
 
 	# 2. Checkout source code (by the time I checked out it's r693):
 	[ -e dreambox-ar9331 ] || svn co svn://svn.openwrt.org.cn/dreambox/trunk dreambox-ar9331 ## -r693
