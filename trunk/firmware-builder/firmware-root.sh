@@ -43,11 +43,8 @@ create_rooted_firmware()
 	fi
 
 	# Extract the file system, to squashfs-root/
-	if [ ! -d squashfs-root ]; then
-		./squashfs-tools/unsquashfs squashfs.orig
-	else
-		echo "*** 'squashfs-root' already exists, using it for hacking."
-	fi
+	rm -rf squashfs-root
+	./squashfs-tools/unsquashfs squashfs.orig
 
 	# Enable serial console and SSH login
 	(
