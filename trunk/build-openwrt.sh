@@ -26,7 +26,7 @@ build_openwrt()
 	fi
 
 	# 2. Checkout source code (this is the latest stable version recommended by OpenWrt Wiki):
-	[ -e openwrt-ar9331 ] || svn co svn://svn.openwrt.org/openwrt/trunk openwrt-ar9331 -r36145
+	[ -e openwrt-ar9331 ] || svn co svn://svn.openwrt.org/openwrt/trunk openwrt-ar9331 -r38140
 
 	# Set the HIWIFI_WAN_AS_LAN_PORT macro in mach-ap83.c
 	if [ $WAN_AS_LAN_PORT = y ]; then
@@ -43,7 +43,7 @@ build_openwrt()
 
 		# 3. Add LuCI (web GUI) for compiling:
 		./scripts/feeds update
-		./scripts/feeds install -a -p luci
+		./scripts/feeds install luci
 
 		# 4. Add 'libevent2' (not necessary):
 		./scripts/feeds install libevent2
@@ -55,7 +55,20 @@ build_openwrt()
 			ln -sv "$hiwifi_root/mach-tw150v1/mach-ap83.c" $mach_to_replace
 		fi
 
-		# 6. Always replace .config with the repository's
+		# 5. Modify the firmware tools for allowing image size up to 8M
+		(
+			set -x
+			sed -i 's#^\(.*tl-wr703n-v1.*\)4Mlzma\(.*\)$#\18Mlzma\2#g' target/linux/ar71xx/image/Makefile
+			sed -i 's#^\(.*tl-wr720n-v3.*\)4Mlzma\(.*\)$#\18Mlzma\2#g' target/linux/ar71xx/image/Makefile
+		)
+		local mid
+		for mid in HWID_TL_WR703N_V1 HWID_TL_WR720N_V3; do
+			local mline=`awk '/hw_id.*=.*'$mid'/{print NR+2}' tools/firmware-utils/src/mktplinkfw.c`
+			[ -z "$mline" ] && continue || :
+			( set -x; sed -i $mline's#4Mlzma#8Mlzma#' tools/firmware-utils/src/mktplinkfw.c )
+		done
+
+		# 7. Always replace .config with the repository's
 		if [ -e .config ]; then
 			mv .config .config.bak
 			echo "WARNING: .config is updated, backed up as '.config.bak'"
@@ -67,11 +80,11 @@ build_openwrt()
 		sleep 5
 		echo "--- No interrupt. Starting..."
 
-		# 7. Build images for AP83 platform that we selected:
+		# 8. Build images for AP83 platform that we selected:
 		make V=99
 	)
 
-	# 8. Generate firmware image for HiWiFi board:
+	# 9. Generate firmware image for HiWiFi board:
 	(
 		set -x
 		./firmware-builder/tw150v1-buildfw.sh "$hiwifi_root/openwrt-ar9331" "$target_fw" &&
