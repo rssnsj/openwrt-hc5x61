@@ -1287,7 +1287,7 @@ CONFIG_PACKAGE_kmod-nls-base=y
 #
 # CONFIG_PACKAGE_kmod-arptables is not set
 # CONFIG_PACKAGE_kmod-ebtables is not set
-# CONFIG_PACKAGE_kmod-ip6tables is not set
+CONFIG_PACKAGE_kmod-ip6tables=y
 # CONFIG_PACKAGE_kmod-ipt-account is not set
 # CONFIG_PACKAGE_kmod-ipt-chaos is not set
 # CONFIG_PACKAGE_kmod-ipt-compat-xtables is not set
@@ -1748,7 +1748,7 @@ CONFIG_PACKAGE_libuci-lua=y
 # CONFIG_PACKAGE_libxml2 is not set
 # CONFIG_PACKAGE_linux-atm is not set
 CONFIG_PACKAGE_terminfo=y
-# CONFIG_PACKAGE_uclibcxx is not set
+CONFIG_PACKAGE_uclibcxx=m
 # CONFIG_PACKAGE_zlib is not set
 
 #
@@ -1934,7 +1934,8 @@ CONFIG_PACKAGE_luci-lib-web=y
 # CONFIG_PACKAGE_arptables is not set
 # CONFIG_PACKAGE_conntrack-tools is not set
 # CONFIG_PACKAGE_ebtables is not set
-# CONFIG_PACKAGE_ip6tables is not set
+CONFIG_PACKAGE_ip6tables=y
+# CONFIG_PACKAGE_ip6tables-mod-nat is not set
 CONFIG_PACKAGE_iptables=y
 # CONFIG_PACKAGE_iptables-mod-account is not set
 # CONFIG_PACKAGE_iptables-mod-chaos is not set
@@ -2110,9 +2111,8 @@ CONFIG_PACKAGE_uhttpd=y
 CONFIG_PACKAGE_uhttpd-mod-ubus=y
 CONFIG_PACKAGE_6in4=y
 # CONFIG_PACKAGE_6rd is not set
-# CONFIG_PACKAGE_6relayd is not set
+CONFIG_PACKAGE_6relayd=y
 CONFIG_PACKAGE_6to4=y
-# CONFIG_PACKAGE_ahcpd is not set
 # CONFIG_PACKAGE_authsae is not set
 # CONFIG_PACKAGE_chat is not set
 # CONFIG_PACKAGE_ds-lite is not set
@@ -2165,7 +2165,7 @@ CONFIG_PACKAGE_SAMBA_MAX_DEBUG_LEVEL=-1
 # CONFIG_PACKAGE_soloscli is not set
 # CONFIG_PACKAGE_ss is not set
 # CONFIG_PACKAGE_tc is not set
-# CONFIG_PACKAGE_tcpdump is not set
+CONFIG_PACKAGE_tcpdump=y
 # CONFIG_PACKAGE_tcpdump-mini is not set
 # CONFIG_PACKAGE_vnstat is not set
 # CONFIG_PACKAGE_vsc7385-ucode-ap83 is not set
