@@ -26,7 +26,7 @@ s_build_openwrt: s_install_feeds
 		exit 1; \
 	fi;
 # Set the HIWIFI_WAN_AS_LAN_PORT macro in mach-ap83.c
-	if [ $(WAL) = y ]; then \
+	@if [ $(WAL) = y ]; then \
 		sed -i 's/^\/\/\(#define[ \t]\+HIWIFI_WAN_AS_LAN_PORT.*\)$$/\1/' mach-tw150v1/mach-ap83.c; \
 	else \
 		sed -i 's/^\(#define[ \t]\+HIWIFI_WAN_AS_LAN_PORT.*\)$$/\/\/\1/' mach-tw150v1/mach-ap83.c; \
@@ -53,7 +53,7 @@ s_build_openwrt: s_install_feeds
 		fi; \
 		cp -vf ../config-openwrt-ar9xxx-ap83 .config
 #
-	echo make -C $(openwrt_dir) V=s
+	make -C $(openwrt_dir) V=s
 
 s_install_feeds: s_update_feeds
 	@cd $(openwrt_dir); \
@@ -71,6 +71,7 @@ s_checkout_svn:
 	@touch s_checkout_svn
 
 menuconfig:
+	@cd $(openwrt_dir); mv -vf .config .config.bak
 	@cp -vf config-openwrt-ar9xxx-ap83 $(openwrt_dir)/.config
 	@touch config-openwrt-ar9xxx-ap83
 	@make -C $(openwrt_dir) menuconfig
