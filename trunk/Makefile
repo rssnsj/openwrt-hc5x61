@@ -57,8 +57,11 @@ s_build_openwrt: s_install_feeds
 
 s_install_feeds: s_update_feeds
 	@cd $(openwrt_dir); \
+		./scripts/feeds install libevent2; \
 		./scripts/feeds install luci; \
-		./scripts/feeds install libevent2;
+		./scripts/feeds install luci-app-radvd; \
+		./scripts/feeds install luci-app-samba; \
+		: ;
 	@touch s_install_feeds
 
 s_update_feeds: s_checkout_svn
