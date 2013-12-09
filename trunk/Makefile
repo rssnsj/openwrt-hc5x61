@@ -5,6 +5,8 @@ WAL ?= n
 hiwifi_root = $(shell pwd)
 root_squashfs = openwrt-ar71xx-generic-root.squashfs
 target_fw = openwrt-tw150v1-recovery.bin
+openwrt_svn = svn://svn.openwrt.org/openwrt/trunk
+openwrt_rev = 38140
 openwrt_dir = openwrt-ar9331
 mach_to_replace = $(openwrt_dir)/target/linux/ar71xx/files/arch/mips/ath79/mach-ap83.c
 packages_required = build-essential git flex gettext libncurses5-dev \
@@ -70,7 +72,8 @@ s_update_feeds: s_checkout_svn
 
 # 2. Checkout source code (this is the latest stable version recommended by OpenWrt Wiki):
 s_checkout_svn:
-	svn co svn://svn.openwrt.org/openwrt/trunk $(openwrt_dir) -r38140
+	@[ -d $(openwrt_dir) ] && svn up $(openwrt_dir) -r$(openwrt_rev) || \
+		svn co $(openwrt_svn) $(openwrt_dir) -r$(openwrt_rev)
 	@touch s_checkout_svn
 
 menuconfig:
