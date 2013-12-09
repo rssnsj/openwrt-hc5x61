@@ -1,18 +1,14 @@
 #
 #
-# WAN port as one of LAN ports
-WAL ?= n
 hiwifi_root = $(shell pwd)
-#root_squashfs = openwrt-ar71xx-generic-root.squashfs
-#target_fw = openwrt-tw150v1-recovery.bin
 openwrt_dir = openwrt-ramips
-#mach_to_replace = $(openwrt_dir)/target/linux/ar71xx/files/arch/mips/ath79/mach-ap83.c
 packages_required = build-essential git flex gettext libncurses5-dev \
   unzip gawk liblzma-dev u-boot-tools 
 
-final: s_build_openwrt
-#	./firmware-builder/tw150v1-buildfw.sh "$(hiwifi_root)/$(openwrt_dir)" "$(target_fw)" \
-#		&& mv -vf "./firmware-builder/$(target_fw)" ./
+
+final: 
+#s_build_openwrt
+	make -C hiwifi2
 
 s_build_openwrt: s_install_feeds
 # 1. Install required host components:
@@ -41,7 +37,6 @@ s_install_feeds: s_update_feeds
 		./scripts/feeds install luci; \
 		./scripts/feeds install luci-app-radvd; \
 		./scripts/feeds install luci-app-samba; \
-		./scripts/feeds install rp-pppoe-server; \
 		: ;
 	@touch s_install_feeds
 
