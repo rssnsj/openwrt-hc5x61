@@ -6,8 +6,7 @@ packages_required = build-essential git flex gettext libncurses5-dev \
   unzip gawk liblzma-dev u-boot-tools 
 
 
-final: 
-#s_build_openwrt
+final: s_build_openwrt
 	make -C hiwifi2
 
 s_build_openwrt: s_install_feeds
