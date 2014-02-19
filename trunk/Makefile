@@ -74,6 +74,7 @@ s_update_feeds: s_checkout_svn
 s_checkout_svn:
 	@[ -d $(openwrt_dir) ] && svn up $(openwrt_dir) -r$(openwrt_rev) || \
 		svn co $(openwrt_svn) $(openwrt_dir) -r$(openwrt_rev)
+	@[ -d /var/dl -a ! -d $(openwrt_dir)/dl ] && ln -s /var/dl $(openwrt_dir)/dl || :
 	@touch s_checkout_svn
 
 menuconfig:
