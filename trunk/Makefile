@@ -77,7 +77,7 @@ s_checkout_svn:
 	@[ -d /var/dl -a ! -d $(openwrt_dir)/dl ] && ln -s /var/dl $(openwrt_dir)/dl || :
 	@touch s_checkout_svn
 
-menuconfig:
+menuconfig: s_install_feeds
 	@cd $(openwrt_dir); mv -vf .config .config.bak
 	@cp -vf config-openwrt-ar9xxx-ap83 $(openwrt_dir)/.config
 	@touch config-openwrt-ar9xxx-ap83
