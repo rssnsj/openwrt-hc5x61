@@ -29,6 +29,7 @@ s_build_openwrt: s_install_feeds
 	fi;
 # Set the HIWIFI_WAN_AS_LAN_PORT macro in mach-ap83.c
 	@if [ $(WAL) = y ]; then \
+		echo "Notice: configuring WAN interface as one of LAN ports."; \
 		sed -i 's/^\/\/\(#define[ \t]\+HIWIFI_WAN_AS_LAN_PORT.*\)$$/\1/' mach-tw150v1/mach-ap83.c; \
 	else \
 		sed -i 's/^\(#define[ \t]\+HIWIFI_WAN_AS_LAN_PORT.*\)$$/\/\/\1/' mach-tw150v1/mach-ap83.c; \
@@ -47,7 +48,7 @@ s_build_openwrt: s_install_feeds
 			[ -z "$$mline" ] && continue || : ; \
 			sed -i $$mline's#4Mlzma#8Mlzma#' tools/firmware-utils/src/mktplinkfw.c; \
 		done;
-# 7. Always replace .config with the repository's
+# 7. Always overwrite .config with the SVN working copy
 	@cd $(openwrt_dir); \
 		if [ -e .config ]; then \
 			mv -vf .config .config.bak; \
