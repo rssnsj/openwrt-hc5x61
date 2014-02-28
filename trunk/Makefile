@@ -14,7 +14,8 @@ packages_required = build-essential git flex gettext libncurses5-dev \
 
 final: s_build_openwrt
 	./firmware-builder/tw150v1-buildfw.sh "$(hiwifi_root)/$(openwrt_dir)" "$(target_fw)" \
-		&& mv -vf "./firmware-builder/$(target_fw)" ./
+		&& mv -vf "./firmware-builder/$(target_fw)" $(openwrt_dir)/bin/ar71xx/
+	ln -sf $(openwrt_dir)/bin/ar71xx/$(target_fw)
 
 s_build_openwrt: s_install_feeds
 # 1. Install required host components:
