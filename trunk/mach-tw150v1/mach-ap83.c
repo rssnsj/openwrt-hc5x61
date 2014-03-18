@@ -10,7 +10,7 @@
  * This macro is manipulated by script tw150v1-buildfw.sh.
  * Don't modify it manually before looking into the script.
  */
-//#define HIWIFI_WAN_AS_LAN_PORT
+#define HIWIFI_WAN_AS_LAN_PORT
 
 #include <linux/delay.h>
 #include <linux/platform_device.h>

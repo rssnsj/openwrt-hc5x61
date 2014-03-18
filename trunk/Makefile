@@ -1,7 +1,7 @@
 #
 #
 # WAN port as one of LAN ports
-WAL ?= n
+WAL ?= y
 hiwifi_root = $(shell pwd)
 root_squashfs = openwrt-ar71xx-generic-root.squashfs
 target_fw = openwrt-tw150v1-recovery.bin
