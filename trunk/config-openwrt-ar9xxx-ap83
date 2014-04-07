@@ -1127,6 +1127,11 @@ CONFIG_PACKAGE_uboot-ar71xx-nbg460n_550n_550nh=y
 # CONFIG_PACKAGE_valgrind is not set
 
 #
+# IPv6
+#
+CONFIG_PACKAGE_tayga=m
+
+#
 # Kernel modules
 #
 
@@ -1641,6 +1646,7 @@ CONFIG_PACKAGE_libxtables=y
 #
 # SSL
 #
+# CONFIG_PACKAGE_libaxtls is not set
 # CONFIG_PACKAGE_libcyassl is not set
 # CONFIG_PACKAGE_libgnutls is not set
 # CONFIG_PACKAGE_libgnutls-extra is not set
@@ -2022,7 +2028,7 @@ CONFIG_PACKAGE_iptables-mod-ipopt=y
 CONFIG_PACKAGE_ip=y
 # CONFIG_PACKAGE_lldpd is not set
 # CONFIG_PACKAGE_olsrd is not set
-# CONFIG_PACKAGE_relayd is not set
+CONFIG_PACKAGE_relayd=y
 
 #
 # THC-IPv6 attack and analyzing toolkit
@@ -2096,10 +2102,13 @@ CONFIG_PACKAGE_ip=y
 # CONFIG_PACKAGE_openvpn-nossl is not set
 # CONFIG_PACKAGE_openvpn-openssl is not set
 # CONFIG_PACKAGE_openvpn-polarssl is not set
+CONFIG_PACKAGE_pptpd=m
 
 #
 # Web Servers/Proxies
 #
+# CONFIG_PACKAGE_axhttpd is not set
+# CONFIG_PACKAGE_axtlswrap is not set
 # CONFIG_PACKAGE_polipo is not set
 # CONFIG_PACKAGE_sockd is not set
 # CONFIG_PACKAGE_socksify is not set
@@ -2113,6 +2122,7 @@ CONFIG_PACKAGE_6in4=y
 # CONFIG_PACKAGE_6rd is not set
 CONFIG_PACKAGE_6relayd=y
 CONFIG_PACKAGE_6to4=y
+# CONFIG_PACKAGE_ahcpd is not set
 # CONFIG_PACKAGE_authsae is not set
 # CONFIG_PACKAGE_chat is not set
 # CONFIG_PACKAGE_ds-lite is not set

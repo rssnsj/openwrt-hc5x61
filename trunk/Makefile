@@ -65,6 +65,7 @@ s_install_feeds: s_update_feeds
 		./scripts/feeds install luci; \
 		./scripts/feeds install luci-app-radvd; \
 		./scripts/feeds install luci-app-samba; \
+		./scripts/feeds install pptpd; \
 		: ;
 	@touch s_install_feeds
 
