@@ -45,7 +45,7 @@ s_update_feeds: s_checkout_svn
 
 # 2. Checkout source code (this is the latest stable version recommended by OpenWrt Wiki):
 s_checkout_svn:
-	svn co svn://svn.openwrt.org/openwrt/trunk $(openwrt_dir) -r38996
+	svn co svn://svn.openwrt.org/openwrt/branches/attitude_adjustment $(openwrt_dir) -r40431
 	@touch s_checkout_svn
 
 menuconfig:
