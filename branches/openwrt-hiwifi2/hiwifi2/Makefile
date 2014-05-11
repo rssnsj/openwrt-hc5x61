@@ -2,10 +2,10 @@
 #
 KDIR = $(shell ls -d ../openwrt-ramips/build_dir/target-mipsel_*)/linux-ramips_mt7620a
 HOSTBIN = ../openwrt-ramips/staging_dir/host/bin
-SYSUPGRADE_BIN = openwrt-ralink-mt7620-HC5761-squashfs-sysupgrade.bin
-FLASHSMT_BIN = openwrt-ralink-mt7620-HC5761-squashfs-flashsmt.bin
+SYSUPGRADE_BIN = openwrt-HC5761-sysupgrade.bin
+FINAL_BIN = openwrt-HC5761-recovery.bin
 
-$(FLASHSMT_BIN): vmlinux root.squashfs
+$(FINAL_BIN): vmlinux root.squashfs
 	$(HOSTBIN)/patch-cmdline vmlinux "board=HC5761 console=ttyS1,115200"
 	$(HOSTBIN)/lzma e vmlinux -lc1 -lp2 -pb2 vmlinux-HC5761.bin.lzma
 	$(HOSTBIN)/mkimage -A mips -O linux -T kernel -C lzma -a 0x80000000 -e 0x80000000 \
@@ -23,7 +23,7 @@ $(FLASHSMT_BIN): vmlinux root.squashfs
 	fi
 
 	@( \
-	  dd if=openwrt-ralink-mt7620-HC5761-uboot.bin bs=327680 conv=sync || exit 1; \
+	  dd if=openwrt-HC5761-uboot.bin bs=327680 conv=sync || exit 1; \
 	  dd if=$(SYSUPGRADE_BIN) || exit 1; \
 	) > $@ || ( rm -vf $@; exit 1 );
 
@@ -36,5 +36,5 @@ root.squashfs: $(KDIR)/root.squashfs
 	cp -vf $< $@
 
 clean:
-	rm -vf vmlinux root.squashfs vmlinux-HC5761.bin.lzma vmlinux-HC5761.uImage $(SYSUPGRADE_BIN) $(FLASHSMT_BIN) recovery.bin
+	rm -vf vmlinux root.squashfs vmlinux-HC5761.bin.lzma vmlinux-HC5761.uImage $(SYSUPGRADE_BIN) $(FINAL_BIN) recovery.bin
 
