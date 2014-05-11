@@ -9,18 +9,7 @@ packages_required = build-essential git flex gettext libncurses5-dev \
 final: s_build_openwrt
 	make -C hiwifi2
 
-s_build_openwrt: s_install_feeds
-# 1. Install required host components:
-	@for p in $(packages_required); do \
-		dpkg -s $$p &>/dev/null || to_install="$$to_install$$p "; \
-	done; \
-	if [ -n "$$to_install" ]; then \
-		echo "Please install missing packages by running the following commands:"; \
-		echo "  sudo apt-get update"; \
-		echo "  sudo apt-get install -y $$to_install"; \
-		exit 1; \
-	fi;
-	@rsync -rlpv --exclude=.svn files/ $(openwrt_dir)/
+s_build_openwrt: s_sync_files
 # 7. Always replace .config with the repository's
 	@cd $(openwrt_dir); \
 		if [ -e .config ]; then \
@@ -36,6 +25,9 @@ clean:
 	rm -f s_build_openwrt
 	make clean -C $(openwrt_dir) V=s
 
+s_sync_files: s_install_feeds
+	rsync -av --exclude=.svn files/ $(openwrt_dir)/
+
 s_install_feeds: s_update_feeds
 	@cd $(openwrt_dir); \
 		./scripts/feeds install libevent2; \
@@ -50,13 +42,26 @@ s_update_feeds: s_checkout_svn
 	@touch s_update_feeds
 
 # 2. Checkout source code (this is the latest stable version recommended by OpenWrt Wiki):
-s_checkout_svn:
+s_checkout_svn: s_check_hostdeps
 	svn co svn://svn.openwrt.org/openwrt/trunk $(openwrt_dir) -r40749
-	@[ -d /var/dl ] && ln -sf /var/dl $(openwrt_dir)/dl
+	@[ -d /var/dl ] && ln -sf /var/dl $(openwrt_dir)/dl || :
 	@touch s_checkout_svn
 
-menuconfig:
-	@cd $(openwrt_dir); mv -vf .config .config.bak
+s_check_hostdeps:
+# 1. Install required host components:
+	@for p in $(packages_required); do \
+		dpkg -s $$p &>/dev/null || to_install="$$to_install$$p "; \
+	done; \
+	if [ -n "$$to_install" ]; then \
+		echo "Please install missing packages by running the following commands:"; \
+		echo "  sudo apt-get update"; \
+		echo "  sudo apt-get install -y $$to_install"; \
+		exit 1; \
+	fi;
+	@touch s_check_hostdeps
+
+menuconfig: s_sync_files
+	@cd $(openwrt_dir); [ -f .config ] && mv -vf .config .config.bak || :
 	@cp -vf config-openwrt-mt7620a $(openwrt_dir)/.config
 	@touch config-openwrt-mt7620a
 	@make -C $(openwrt_dir) menuconfig
