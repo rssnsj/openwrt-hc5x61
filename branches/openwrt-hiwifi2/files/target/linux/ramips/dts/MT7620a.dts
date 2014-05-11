@@ -36,14 +36,9 @@
 					read-only;
 				};
 
-				partition@150000 {
-					label = "rootfs";
-					reg = <0x150000 0xe90000>;
-				};
-
 				partition@50000 {
 					label = "firmware";
-					reg = <0x50000 0xf90000>;
+					reg = <0x50000 0x790000>;
 				};
 			};
 		};

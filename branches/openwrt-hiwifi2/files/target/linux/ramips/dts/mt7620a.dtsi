@@ -10,7 +10,7 @@
 	};
 
 	chosen {
-		bootargs = "console=ttyS0,115200";
+		bootargs = "board=HC5761 console=ttyS0,115200";
 	};
 
 	cpuintc: cpuintc@0 {
@@ -150,6 +150,25 @@
 			status = "disabled";
 		};
 
+		gpio3: gpio@688 {
+			compatible = "ralink,mt7620a-gpio", "ralink,rt2880-gpio";
+			reg = <0x688 0x24>;
+
+			interrupt-parent = <&intc>;
+			interrupts = <6>;
+
+			gpio-controller;
+			#gpio-cells = <2>;
+
+			ralink,gpio-base = <72>;
+			ralink,num-gpios = <1>;
+			ralink,register-map = [ 00 04 08 0c
+						10 14 18 1c
+						20 24 ];
+
+			status = "disabled";
+		};
+
 		i2c@900 {
 			compatible = "link,mt7620a-i2c", "ralink,rt2880-i2c";
 			reg = <0x900 0x100>;
@@ -175,6 +194,10 @@
 
 			interrupt-parent = <&intc>;
 			interrupts = <10>;
+
+			dmas = <&gdma 4>,
+				<&gdma 5>;
+			dma-names = "tx", "rx";
 
 			status = "disabled";
 		};
@@ -235,7 +258,7 @@
 			status = "disabled";
 		};
 
-		gdma@2800 {
+		gdma: gdma@2800 {
 			compatible = "ralink,mt7620a-gdma", "ralink,rt2880-gdma";
 			reg = <0x2800 0x800>;
 
@@ -244,6 +267,10 @@
 
 			interrupt-parent = <&intc>;
 			interrupts = <7>;
+
+			#dma-cells = <1>;
+			#dma-channels = <16>;
+			#dma-requests = <16>;
 
 			status = "disabled";
 		};
@@ -259,6 +286,12 @@
 			pcm_i2s {
 				ralink,group = "uartf";
 				ralink,function = "pcm i2s";
+			};
+		};
+		uartf_gpio_pins: uartf_gpio {
+			uartf_gpio {
+				ralink,group = "uartf";
+				ralink,function = "gpio uartf";
 			};
 		};
 		spi_pins: spi {
