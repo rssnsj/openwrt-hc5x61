@@ -18,11 +18,12 @@ s_build_openwrt: s_sync_files
 		fi; \
 		cp -vf ../config-openwrt-mt7620a .config
 #
-	make -C $(openwrt_dir) V=s $(MAKEFLAGS) 2>&1 | tee build.log
+	make -C $(openwrt_dir) V=s -j8
 	@touch s_build_openwrt
 
 clean:
 	rm -f s_build_openwrt
+	make clean -C hiwifi2
 	make clean -C $(openwrt_dir) V=s
 
 s_sync_files: s_install_feeds
