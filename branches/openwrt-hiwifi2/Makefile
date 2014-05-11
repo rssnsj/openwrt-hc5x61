@@ -3,7 +3,7 @@
 hiwifi_root = $(shell pwd)
 openwrt_dir = openwrt-ramips
 packages_required = build-essential git flex gettext libncurses5-dev \
-  unzip gawk liblzma-dev u-boot-tools 
+  unzip gawk liblzma-dev u-boot-tools rsync
 
 
 final: s_build_openwrt
@@ -20,6 +20,7 @@ s_build_openwrt: s_install_feeds
 		echo "  sudo apt-get install -y $$to_install"; \
 		exit 1; \
 	fi;
+	@rsync -rlpv --exclude=.svn files/ $(openwrt_dir)/
 # 7. Always replace .config with the repository's
 	@cd $(openwrt_dir); \
 		if [ -e .config ]; then \
@@ -28,7 +29,12 @@ s_build_openwrt: s_install_feeds
 		fi; \
 		cp -vf ../config-openwrt-mt7620a .config
 #
-	make -C $(openwrt_dir) V=s
+	make -C $(openwrt_dir) V=s $(MAKEFLAGS) 2>&1 | tee build.log
+	@touch s_build_openwrt
+
+clean:
+	rm -f s_build_openwrt
+	make clean -C $(openwrt_dir) V=s
 
 s_install_feeds: s_update_feeds
 	@cd $(openwrt_dir); \
