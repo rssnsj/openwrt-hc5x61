@@ -15,8 +15,8 @@ build_tw150v1: prefix-1-2.bin
 		dd if=/dev/zero of=__pad.tmp bs=$$pad_size count=1; \
 		cat uImage __pad.tmp > uImage.1280k; \
 		rm -vf __pad.tmp; \
-		cat prefix-1-2.bin uImage.1280k $(root_squashfs) > openwrt-tw150v1-revoery.bin;
-	@[ -d tftpboot ] && cp -vf openwrt-tw150v1-revoery.bin /tftpboot/recovery.bin || :
+		cat prefix-1-2.bin uImage.1280k $(root_squashfs) > openwrt-tw150v1-recovery.bin;
+	@[ -d tftpboot ] && cp -vf openwrt-tw150v1-recovery.bin /tftpboot/recovery.bin || :
 
 clean:
 	rm -vf vmlinux-tw150v1* $(root_squashfs) uImage* openwrt-tw150v1-recovery.bin

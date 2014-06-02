@@ -4,7 +4,7 @@ hiwifi_root = $(shell pwd)
 openwrt_dir = openwrt-ar71xx
 packages_required = build-essential git flex gettext libncurses5-dev \
   unzip gawk liblzma-dev u-boot-tools rsync
-openwrt_feeds = libevent2 luci luci-app-radvd luci-app-samba
+openwrt_feeds = libevent2 luci luci-app-radvd luci-app-samba tayga pptpd curl
 
 final: s_build_openwrt
 	make -C tw150v1
@@ -17,7 +17,7 @@ s_build_openwrt: s_sync_files
 			echo "WARNING: .config is updated, backed up as '.config.bak'"; \
 		fi; \
 		cp -vf ../config-openwrt-ar71xx-ap83 .config
-#
+####
 	make -C $(openwrt_dir) V=s -j8
 	@touch s_build_openwrt
 
@@ -26,10 +26,16 @@ clean:
 	make clean -C tw150v1
 	make clean -C $(openwrt_dir) V=s
 
+remake:
+	@make clean -C tw150v1
+	@rm -f s_build_openwrt s_sync_files
+	@make final
+
 s_sync_files: s_install_feeds
 	rsync -av --exclude=.svn files/ $(openwrt_dir)/
 	@kernel_dir=`echo $(openwrt_dir)/build_dir/target-mips_*/linux-ar71xx_generic/linux-3.*`; \
 		[ -d "$$kernel_dir" ] && rsync -av --exclude=.svn files/target/linux/ar71xx/files/ "$$kernel_dir/" || : ;
+	@touch s_sync_files
 
 s_install_feeds: s_update_feeds
 	@cd $(openwrt_dir); ./scripts/feeds install $(openwrt_feeds);
