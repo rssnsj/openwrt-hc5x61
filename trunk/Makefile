@@ -23,7 +23,7 @@ s_build_openwrt: s_sync_files
 
 clean:
 	rm -f s_build_openwrt
-	make clean -C hiwifi2
+	make clean -C tw150v1
 	make clean -C $(openwrt_dir) V=s
 
 s_sync_files: s_install_feeds
