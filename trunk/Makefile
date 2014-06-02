@@ -22,13 +22,13 @@ s_build_openwrt: s_sync_files
 	@touch s_build_openwrt
 
 clean:
-	rm -f s_build_openwrt
 	make clean -C tw150v1
+	rm -f s_build_openwrt s_sync_files s_install_feeds
 	make clean -C $(openwrt_dir) V=s
 
 remake:
 	@make clean -C tw150v1
-	@rm -f s_build_openwrt s_sync_files
+	@rm -f s_build_openwrt s_sync_files s_install_feeds
 	@make final
 
 s_sync_files: s_install_feeds
