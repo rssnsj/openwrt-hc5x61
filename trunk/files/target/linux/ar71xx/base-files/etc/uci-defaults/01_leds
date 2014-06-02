@@ -290,7 +290,7 @@ set system.led_sys.trigger='timer'
 set system.led_sys.delayon='2000'
 set system.led_sys.delayoff='1000'
 EOF
-	ucidef_set_led_netdev "wan" "wan" "tw150v1:green:internet" "eth0.10"
+	ucidef_set_led_netdev "wan" "wan" "tw150v1:green:internet" "eth0.2"
 	ucidef_set_led_wlan "wlan" "wireless" "tw150v1:green:wlan-2p4" "phy0tpt"
 	;;
 esac
