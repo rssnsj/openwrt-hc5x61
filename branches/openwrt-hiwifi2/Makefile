@@ -4,7 +4,7 @@ hiwifi_root = $(shell pwd)
 openwrt_dir = openwrt-ramips
 packages_required = build-essential git flex gettext libncurses5-dev \
   unzip gawk liblzma-dev u-boot-tools rsync
-
+openwrt_feeds = libevent2 luci luci-app-radvd luci-app-samba
 
 final: s_build_openwrt
 	make -C hiwifi2
@@ -30,12 +30,7 @@ s_sync_files: s_install_feeds
 	rsync -av --exclude=.svn files/ $(openwrt_dir)/
 
 s_install_feeds: s_update_feeds
-	@cd $(openwrt_dir); \
-		./scripts/feeds install libevent2; \
-		./scripts/feeds install luci; \
-		./scripts/feeds install luci-app-radvd; \
-		./scripts/feeds install luci-app-samba; \
-		: ;
+	@cd $(openwrt_dir); ./scripts/feeds install $(openwrt_feeds);
 	@touch s_install_feeds
 
 s_update_feeds: s_checkout_svn
@@ -64,7 +59,7 @@ s_check_hostdeps:
 menuconfig: s_sync_files
 	@cd $(openwrt_dir); [ -f .config ] && mv -vf .config .config.bak || :
 	@cp -vf config-openwrt-mt7620a $(openwrt_dir)/.config
-	@touch config-openwrt-mt7620a
+	@touch config-openwrt-mt7620a  # change modification time
 	@make -C $(openwrt_dir) menuconfig
 	@[ $(openwrt_dir)/.config -nt config-openwrt-mt7620a ] && cp -vf $(openwrt_dir)/.config config-openwrt-mt7620a || :
 
