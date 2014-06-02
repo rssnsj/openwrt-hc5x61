@@ -115,53 +115,30 @@ static struct gpio_led tw150v1_leds_gpio[] __initdata = {
 //	}
 //};
 
-/* memmem(): A strstr() work-alike for non-text buffers */
-static inline void *memmem(const void *s1, const void *s2, size_t len1, size_t len2)
-{
-	char *bf = (char *)s1, *pt = (char *)s2;
-	size_t i, j;
-
-	if (len2 > len1)
-		return NULL;
-
-	for (i = 0; i <= (len1 - len2); ++i) {
-		for (j = 0; j < len2; ++j)
-			if (pt[j] != bf[i + j]) break;
-		if (j == len2) return (bf + i);
-	}
-	return NULL;
-}
-
 /**
- * There's a string in 'bdinfo' partition like
- *  "fac_mac = D4:EE:07:54:C2:8C" which indicates the router's
- *  base MAC address. We need to fetch it and set address to
- *  interfaces with it.
+ * There's a string in partition 'bdinfo' like:
+ * "fac_mac = D4:EE:07:54:C2:8C"
+ * This is the router's base MAC address.
+ * Fetch it and set to interfaces.
  */
 static u8 __init *get_mac_from_bdinfo(u8 *mac, void *bdinfo, size_t info_sz)
 {
 	const char mac_key[] = "fac_mac = ";
-	size_t mac_key_len = strlen(mac_key);
-	void *mac_sp = NULL;
-	unsigned int mac_ints[6];
+	char *mac_sp = NULL;
 	int i;
 
-	if (!(mac_sp = memmem(bdinfo, mac_key, info_sz, mac_key_len))) {
+	if (!(mac_sp = strnstr(bdinfo, mac_key, info_sz))) {
 		printk(KERN_ERR "%s: Cannot find MAC address prefix string '%s'.\n",
 				__FUNCTION__, mac_key);
 		return NULL;
 	}
-	mac_sp += mac_key_len;
+	mac_sp += strlen(mac_key);
 
-	if (sscanf(mac_sp, "%2x:%2x:%2x:%2x:%2x:%2x", &mac_ints[0],
-		&mac_ints[1], &mac_ints[2], &mac_ints[3], &mac_ints[4],
-		&mac_ints[5]) != 6) {
+	if (sscanf(mac_sp, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx",
+		 &mac[0], &mac[1], &mac[2], &mac[3], &mac[4], &mac[5]) != 6) {
 		printk(KERN_ERR "%s: Cannot get correct MAC address.\n", __FUNCTION__);
 		return NULL;
 	}
-
-	for (i = 0; i < 6; i++)
-		mac[i] = (u8)mac_ints[i];
 
 	return mac;
 }
