@@ -18,16 +18,5 @@ build_tw150v1: prefix-1-2.bin
 		cat prefix-1-2.bin uImage.1280k $(root_squashfs) > openwrt-tw150v1-revoery.bin;
 	@[ -d tftpboot ] && cp -vf openwrt-tw150v1-revoery.bin /tftpboot/recovery.bin || :
 
-prefix-1-2.bin: recovery.bin
-# Get first 128K bytes: u-boot, bdinfo
-	head recovery.bin -c131072 > prefix-1-2.bin
-# Check if it is a valid prefix image or truncated
-	@prefix_size=`stat --format=%s prefix-1-2.bin`; \
-		if [ $$prefix_size -ne 131072 ]; then \
-			echo "*** prefix-1-2.bin has invalid size. Please remove it, 'svn up' and try."; \
-			rm -f prefix-1-2.bin; \
-			exit 1; \
-		fi;
-
 clean:
 	rm -vf vmlinux-tw150v1* $(root_squashfs) uImage* openwrt-tw150v1-recovery.bin

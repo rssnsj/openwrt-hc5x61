@@ -125,7 +125,6 @@ static u8 __init *get_mac_from_bdinfo(u8 *mac, void *bdinfo, size_t info_sz)
 {
 	const char mac_key[] = "fac_mac = ";
 	char *mac_sp = NULL;
-	int i;
 
 	if (!(mac_sp = strnstr(bdinfo, mac_key, info_sz))) {
 		printk(KERN_ERR "%s: Cannot find MAC address prefix string '%s'.\n",

@@ -28,6 +28,8 @@ clean:
 
 s_sync_files: s_install_feeds
 	rsync -av --exclude=.svn files/ $(openwrt_dir)/
+	@kernel_dir=`echo $(openwrt_dir)/build_dir/target-mips_*/linux-ar71xx_generic/linux-3.*`; \
+		[ -d "$$kernel_dir" ] && rsync -av --exclude=.svn files/target/linux/ar71xx/files/ "$$kernel_dir/" || : ;
 
 s_install_feeds: s_update_feeds
 	@cd $(openwrt_dir); ./scripts/feeds install $(openwrt_feeds);
