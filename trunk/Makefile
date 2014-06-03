@@ -18,7 +18,7 @@ s_build_openwrt: s_sync_files
 		fi; \
 		cp -vf ../config-openwrt-ar71xx-ap83 .config
 ####
-	make -C $(openwrt_dir) V=s -j8
+	make -C $(openwrt_dir) V=s -j4
 	@touch s_build_openwrt
 
 clean:
