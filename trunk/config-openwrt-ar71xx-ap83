@@ -120,9 +120,9 @@ CONFIG_TARGET_ar71xx_generic=y
 # CONFIG_TARGET_ar71xx_generic_TLMR3040 is not set
 # CONFIG_TARGET_ar71xx_generic_TLMR3220 is not set
 # CONFIG_TARGET_ar71xx_generic_TLMR3420 is not set
-# CONFIG_TARGET_ar71xx_generic_TLWR703 is not set
+CONFIG_TARGET_ar71xx_generic_TLWR703=y
 # CONFIG_TARGET_ar71xx_generic_TLWR710 is not set
-CONFIG_TARGET_ar71xx_generic_TLWR720=y
+# CONFIG_TARGET_ar71xx_generic_TLWR720 is not set
 # CONFIG_TARGET_ar71xx_generic_TLWA701 is not set
 # CONFIG_TARGET_ar71xx_generic_TLWA7510 is not set
 # CONFIG_TARGET_ar71xx_generic_TLWA801 is not set
