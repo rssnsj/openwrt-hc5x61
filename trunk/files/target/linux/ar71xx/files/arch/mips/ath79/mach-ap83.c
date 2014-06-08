@@ -10,7 +10,7 @@
  * This macro is manipulated by script tw150v1-buildfw.sh.
  * Don't modify it manually before looking into the script.
  */
-#define HIWIFI_WAN_AS_LAN_PORT
+#define TW150V1_WAN_AS_LAN_PORT
 
 #include <linux/delay.h>
 #include <linux/platform_device.h>
@@ -33,6 +33,16 @@
 #include "dev-m25p80.h"
 #include "dev-ap9x-pci.h"
 #include "machtypes.h"
+
+#define TW150V1_GPIO_LED_WLAN_2P4	0   /* 2.4G WLAN LED */
+#define TW150V1_GPIO_LED_SYSTEM		1   /* System LED */
+#define TW150V1_GPIO_LED_INTERNET	27  /* Internet LED */
+
+#define TW150V1_GPIO_USBPOWER		20  /* USB power control */
+#define	TW150V1_GPIO_BTN_RST		11  /* Reset and WPS button */
+
+#define TW150V1_KEYS_POLL_INTERVAL	20  /* msecs */
+#define TW150V1_KEYS_DEBOUNCE_INTERVAL  (3 * TW150V1_KEYS_POLL_INTERVAL)
 
 static struct mtd_partition tw150v1_partitions[] = {
 	{
@@ -74,46 +84,32 @@ static struct flash_platform_data tw150v1_flash_data = {
 static struct gpio_led tw150v1_leds_gpio[] __initdata = {
 	{
 		.name		= "tw150v1:green:system",
-		.gpio		= 1,   /* led1 */
+		.gpio		= TW150V1_GPIO_LED_SYSTEM,    /* led 1 */
 		.active_low = 1,
 		.default_state = LEDS_GPIO_DEFSTATE_ON,
 	}, {
 		.name		= "tw150v1:green:internet",
-		.gpio		= 27,  /* led7 */
+		.gpio		= TW150V1_GPIO_LED_INTERNET,  /* led 7 */
 		.active_low = 1,
 		.default_state = LEDS_GPIO_DEFSTATE_OFF,
 	}, {
 		.name		= "tw150v1:green:wlan-2p4",
-		.gpio		= 0,   /* led0 */
+		.gpio		= TW150V1_GPIO_LED_WLAN_2P4,  /* led 0 */
 		.active_low = 1,
 		.default_state = LEDS_GPIO_DEFSTATE_OFF,
 	},
 };
 
-/**
- * Button definition just as a sample here.
- */
-
-//#define AP83_KEYS_POLL_INTERVAL		20	/* msecs */
-//#define AP83_KEYS_DEBOUNCE_INTERVAL	(3 * AP83_KEYS_POLL_INTERVAL)
-//
-//static struct gpio_keys_button tw150v1_gpio_keys[] __initdata = {
-//	{
-//		.desc		= "soft_reset",
-//		.type		= EV_KEY,
-//		.code		= KEY_RESTART,
-//		.debounce_interval = AP83_KEYS_DEBOUNCE_INTERVAL,
-//		.gpio		=  21 /* AP83_GPIO_BTN_RESET */,
-//		.active_low	= 1,
-//	}, {
-//		.desc		= "jumpstart",
-//		.type		= EV_KEY,
-//		.code		= KEY_WPS_BUTTON,
-//		.debounce_interval = AP83_KEYS_DEBOUNCE_INTERVAL,
-//		.gpio		= 12, /* AP83_GPIO_BTN_JUMPSTART */
-//		.active_low	= 1,
-//	}
-//};
+static struct gpio_keys_button tw150v1_gpio_keys[] __initdata = {
+	{
+		.desc		= "reset",
+		.type		= EV_KEY,
+		.code		= KEY_RESTART,
+		.debounce_interval = TW150V1_KEYS_DEBOUNCE_INTERVAL,
+		.gpio		= TW150V1_GPIO_BTN_RST,
+		.active_low	= 1,
+	}
+};
 
 /**
  * There's a string in partition 'bdinfo' like:
@@ -156,7 +152,7 @@ static void __init tw150v1_setup(void)
 	/* LAN ports: GMAC1 is connected to the internal switch */
 	ath79_init_mac(ath79_eth1_data.mac_addr, mac, 0);
 
-#ifdef HIWIFI_WAN_AS_LAN_PORT
+#ifdef TW150V1_WAN_AS_LAN_PORT
 	ath79_setup_ar933x_phy4_switch(true, true);
 #endif
 
@@ -166,7 +162,7 @@ static void __init tw150v1_setup(void)
 	/* LAN ports */
 	ath79_register_eth(1);
 
-#ifndef HIWIFI_WAN_AS_LAN_PORT
+#ifndef TW150V1_WAN_AS_LAN_PORT
 	/* WAN port */
 	ath79_register_eth(0);
 #endif
@@ -174,14 +170,14 @@ static void __init tw150v1_setup(void)
 	ath79_register_m25p80(&tw150v1_flash_data);
 
 	ath79_register_leds_gpio(-1, ARRAY_SIZE(tw150v1_leds_gpio),
-					tw150v1_leds_gpio);
+			tw150v1_leds_gpio);
 
-	/* GPIO-20 powers on the on-board USB storage. */
-	gpio_request_one(20, GPIOF_OUT_INIT_HIGH | GPIOF_EXPORT_DIR_FIXED, "gpio20");
+	/* GPIO-20 is the power control pin of on-board USB storage. */
+	gpio_request_one(TW150V1_GPIO_USBPOWER,
+			GPIOF_OUT_INIT_HIGH | GPIOF_EXPORT_DIR_FIXED, "gpio20");
 
-	//ath79_register_gpio_keys_polled(-1, AP83_KEYS_POLL_INTERVAL,
-	//				 ARRAY_SIZE(tw150v1_gpio_keys),
-	//				 tw150v1_gpio_keys);
+	ath79_register_gpio_keys_polled(-1, TW150V1_KEYS_POLL_INTERVAL,
+			ARRAY_SIZE(tw150v1_gpio_keys), tw150v1_gpio_keys);
 
 	ath79_register_usb();
 
