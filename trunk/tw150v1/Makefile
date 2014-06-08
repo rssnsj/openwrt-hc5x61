@@ -12,11 +12,12 @@ build_tw150v1: prefix-1-2.bin
 		-n "tw150v1-Linux-3.8.3" -d vmlinux-tw150v1.bin.lzma uImage
 	@raw_size=`stat --format=%s uImage`; \
 		pad_size=`expr 1310720 - $$raw_size`; \
-		dd if=/dev/zero of=__pad.tmp bs=$$pad_size count=1; \
-		cat uImage __pad.tmp > uImage.1280k; \
-		rm -vf __pad.tmp; \
+		dd if=/dev/zero of=zeros.tmp bs=$$pad_size count=1; \
+		cat uImage zeros.tmp > uImage.1280k; \
+		rm -f zeros.tmp; \
 		cat prefix-1-2.bin uImage.1280k $(root_squashfs) > openwrt-tw150v1-recovery.bin;
+	@ln -sf openwrt-tw150v1-recovery.bin recovery.bin
 	@[ -d $(openwrt_root)/bin/ar71xx ] && cp -vf openwrt-tw150v1-recovery.bin $(openwrt_root)/bin/ar71xx/ || :
 
 clean:
-	rm -vf vmlinux-tw150v1* $(root_squashfs) uImage* openwrt-tw150v1-recovery.bin
+	@rm -vf vmlinux-tw150v1* $(root_squashfs) uImage* openwrt-tw150v1-recovery.bin recovery.bin
