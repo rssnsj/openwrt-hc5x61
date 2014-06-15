@@ -5,6 +5,7 @@ openwrt_dir = openwrt-ar71xx
 packages_required = build-essential git flex gettext libncurses5-dev \
   unzip gawk liblzma-dev u-boot-tools rsync
 openwrt_feeds = libevent2 luci luci-app-radvd luci-app-samba tayga pptpd curl
+J ?= 4
 
 final: s_build_openwrt
 	make -C tw150v1
@@ -18,7 +19,7 @@ s_build_openwrt: s_sync_files
 		fi; \
 		cp -vf ../config-openwrt-ar71xx-ap83 .config
 ####
-	make -C $(openwrt_dir) V=s -j4
+	make -C $(openwrt_dir) V=s -j$(J)
 	@touch s_build_openwrt
 
 clean:

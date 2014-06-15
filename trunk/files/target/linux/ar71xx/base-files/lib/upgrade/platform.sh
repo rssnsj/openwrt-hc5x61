@@ -281,6 +281,20 @@ platform_check_image() {
 		fi
 		return 0
 		;;
+	tw150v1)
+		local magic_boot=`get_image "$1" | dd bs=16 count=1 2>/dev/null | hexdump -v -n 16 -e '1/1 "%02x"'`
+		if [ "$magic_boot" = "100000ff00000000100000fd00000000" ]; then
+			touch /tmp/img_has_boot
+			echo "Image has uboot."
+			return 0
+		else
+			rm -f /tmp/img_has_boot
+		fi
+		[ "$magic_long" = "68737173" -o "$magic" = "2705" ] && return 0
+
+		echo "Invalid image type: $magic_boot."
+		return 1
+		;;
 	esac
 
 	echo "Sysupgrade is not yet supported on $board."
@@ -322,6 +336,9 @@ platform_do_upgrade() {
 	om2p-hs | \
 	om2p-lc)
 		platform_do_upgrade_openmesh "$ARGV"
+		;;
+	tw150v1)
+		platform_do_upgrade_tw150v1 "$ARGV"
 		;;
 	*)
 		default_do_upgrade "$ARGV"
