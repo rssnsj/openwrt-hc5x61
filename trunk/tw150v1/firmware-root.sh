@@ -19,7 +19,10 @@ rooted_fw=recovery.bin.ssh
 
 create_rooted_firmware()
 {
-	[ -z "$1" ] || official_fw="$1"
+	if [ -n "$1" ]; then
+		official_fw="$1"
+		rooted_fw="$1.ssh"
+	fi
 
 	[ -e "$official_fw" ] || { echo "*** File '$official_fw' not found."; exit 1; }
 	
@@ -66,7 +69,8 @@ create_rooted_firmware()
 	# Combine the prefix data and SquashFS to build the final upgrade image
 	cat prefix-1-2-3.bin squashfs.128k > "$rooted_fw"
 
-	cp -vf "$rooted_fw" /tftpboot/recovery.bin
+	[ -d /tftpboot ] && cp -vf "$rooted_fw" /tftpboot/recovery.bin
+	ln -sf "$rooted_fw" recovery.bin
 
 	#rm -vf prefix-1-2-3.bin squashfs.orig squashfs.raw squashfs.128k
 }
