@@ -45,14 +45,14 @@ platform_do_upgrade_tw150v1() {
 	sleep 1
 	setled_timer "tw150v1:green:wlan-2p4" 500 2500
 
-	if [ -f /tmp/img_has_boot ]; then
-		img_boot_version="$(get_boot_version "$1")"
-		local_boot_version="$(tw_boot_version)"
-
-		if [ "$img_boot_version" != "$local_boot_version" ]; then
-			upgrade_boot=1
-		fi
-	fi
+	#if [ -f /tmp/img_has_boot ]; then
+	#	img_boot_version="$(get_boot_version "$1")"
+	#	local_boot_version="$(tw_boot_version)"
+	#
+	#	if [ "$img_boot_version" != "$local_boot_version" ]; then
+	#		upgrade_boot=1
+	#	fi
+	#fi
 
 	echo "Begin write flash in sysupgrade"
 
