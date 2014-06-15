@@ -40,7 +40,7 @@
 #define TW150V1_KEYS_POLL_INTERVAL	20  /* msecs */
 #define TW150V1_KEYS_DEBOUNCE_INTERVAL  (3 * TW150V1_KEYS_POLL_INTERVAL)
 
-static struct mtd_partition tw150v1_partitions[] = {
+static struct mtd_partition hc6341_partitions[] = {
 	{
 		.name		= "u-boot",
 		.offset		= 0,
@@ -56,47 +56,47 @@ static struct mtd_partition tw150v1_partitions[] = {
 	}, {
 		.name		= "rootfs",
 		.offset		= 0x160000,
-		.size		= 0xe80000,
+		.size		= 0x680000,
 	}, {
 		.name		= "backup",
-		.offset		= 0xfe0000,
+		.offset		= 0x7e0000,
 		.size		= 0x010000,
 	}, {
 		.name		= "art",
-		.offset		= 0xff0000,
+		.offset		= 0x7f0000,
 		.size		= 0x010000,
 	}, {
 		.name		= "firmware",
 		.offset		= 0x020000,
-		.size		= 0xfc0000,
+		.size		= 0x7c0000,
 	}
 };
 
-static struct flash_platform_data tw150v1_flash_data = {
-	.parts		= tw150v1_partitions,
-	.nr_parts	= ARRAY_SIZE(tw150v1_partitions),
+static struct flash_platform_data hc6341_flash_data = {
+	.parts		= hc6341_partitions,
+	.nr_parts	= ARRAY_SIZE(hc6341_partitions),
 };
 
-static struct gpio_led tw150v1_leds_gpio[] __initdata = {
+static struct gpio_led hc6341_leds_gpio[] __initdata = {
 	{
-		.name		= "tw150v1:green:system",
+		.name		= "HC6341:green:system",
 		.gpio		= TW150V1_GPIO_LED_SYSTEM,    /* led 1 */
 		.active_low = 1,
 		.default_state = LEDS_GPIO_DEFSTATE_ON,
 	}, {
-		.name		= "tw150v1:green:internet",
+		.name		= "HC6341:green:internet",
 		.gpio		= TW150V1_GPIO_LED_INTERNET,  /* led 7 */
 		.active_low = 1,
 		.default_state = LEDS_GPIO_DEFSTATE_OFF,
 	}, {
-		.name		= "tw150v1:green:wlan-2p4",
+		.name		= "HC6341:green:wlan-2p4",
 		.gpio		= TW150V1_GPIO_LED_WLAN_2P4,  /* led 0 */
 		.active_low = 1,
 		.default_state = LEDS_GPIO_DEFSTATE_OFF,
 	},
 };
 
-static struct gpio_keys_button tw150v1_gpio_keys[] __initdata = {
+static struct gpio_keys_button hc6341_gpio_keys[] __initdata = {
 	{
 		.desc		= "reset",
 		.type		= EV_KEY,
@@ -134,7 +134,7 @@ static u8 __init *get_mac_from_bdinfo(u8 *mac, void *bdinfo, size_t info_sz)
 	return mac;
 }
 
-static void __init tw150v1_setup(void)
+static void __init hc6341_setup(void)
 {
 	u8 mac[6] = { 0x00, 0x12, 0x34, 0x56, 0x78, 0x9a, };
 	u8 *ee = (u8 *) KSEG1ADDR(0x1fff1000);
@@ -163,21 +163,21 @@ static void __init tw150v1_setup(void)
 	ath79_register_eth(0);
 #endif
 
-	ath79_register_m25p80(&tw150v1_flash_data);
+	ath79_register_m25p80(&hc6341_flash_data);
 
-	ath79_register_leds_gpio(-1, ARRAY_SIZE(tw150v1_leds_gpio),
-			tw150v1_leds_gpio);
+	ath79_register_leds_gpio(-1, ARRAY_SIZE(hc6341_leds_gpio),
+			hc6341_leds_gpio);
 
 	/* GPIO-20 is the power control pin of on-board USB storage. */
 	gpio_request_one(TW150V1_GPIO_USBPOWER,
 			GPIOF_OUT_INIT_HIGH | GPIOF_EXPORT_DIR_FIXED, "gpio20");
 
 	ath79_register_gpio_keys_polled(-1, TW150V1_KEYS_POLL_INTERVAL,
-			ARRAY_SIZE(tw150v1_gpio_keys), tw150v1_gpio_keys);
+			ARRAY_SIZE(hc6341_gpio_keys), hc6341_gpio_keys);
 
 	ath79_register_usb();
 
 	ath79_register_wmac(ee, mac);
 }
 
-MIPS_MACHINE(ATH79_MACH_AP83, "tw150v1", "HiWiFi Router v1 (Atheros AR9331)", tw150v1_setup);
+MIPS_MACHINE(ATH79_MACH_AP96, "HC6341", "HiWiFi Repeater v1 (Atheros AR9331)", hc6341_setup);
