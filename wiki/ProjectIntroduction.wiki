@@ -1,11 +1,18 @@
 #summary OpenWrt Firmware Patch for HiWiFi Router (tw150v1)
-= 极路由OpenWrt固件补丁 (HiWiFi - tw150v1) =
+= 极路由HC6361 OpenWrt固件补丁 (HiWiFi tw150v1) =
 
 == 文件下载 ==
-  * OpenWrt 固件 (2013-08-29): https://docs.google.com/file/d/0B4OfGJNugH2EclAyVmRDR3laTXc/edit?usp=sharing  (增加了内置交换芯片、LED等初始配置)
-  * OpenWrt 固件 (2013-08-27): https://docs.google.com/file/d/0B4OfGJNugH2EclAyVmRDR3laTXc/edit?usp=sharing  (增加了Samba文件共享服务, PPTP/GRE NAT多链路支持)
-  * OpenWrt 固件 (2013-08-25): https://openwrt-hiwifi.googlecode.com/svn/downloads/openwrt-tw150v1-recovery-130825.bin  -- 增加了VLAN和IPv6支持
-  * 刷机用的TFTP服务端工具: https://openwrt-hiwifi.googlecode.com/svn/downloads/tftpd64.400-original.zip
+ * 编译日期：2014/06/22
+ * 固件下载：https://docs.google.com/file/d/0B4OfGJNugH2EeHVPZ2g5VVdlSmM
+ * 刷机用的TFTP服务端工具：https://openwrt-hiwifi.googlecode.com/svn/downloads/tftpd64.400-original.zip
+ * 固件内置功能概述：
+  * 使用OpenWrt官方代码r38140；
+  * Linux 3.10.12 内核；
+  * 默认启用3个LED灯的闪烁配置；
+  * 支持基于VLAN的WAN口/LAN口配置；
+  * 稳定版的无线驱动；
+  * 支持使用sysupgrade命令升级固件；
+  * 内置软件包：6relayd, relayd, radvd, IPv6 tunnel, Multi-WAN, Samba, PPTP, ...
 
 == 关于极路由 ==
   北京极科极客科技有限公司，发布了一款基于OpenWrt的路由器--极路由（HiWiFi）。这被认为是全球第一款智能路由器，有着良好的外观和硬件设计，非常适合运行OpenWrt。
@@ -26,7 +33,7 @@
 == 生成步骤 ==
   # 下载本源码:
 {{{
-svn checkout https://openwrt-hiwifi.googlecode.com/svn/trunk openwrt-hiwifi
+svn co https://openwrt-hiwifi.googlecode.com/svn/branches/hiwifi-v1-r38140
 }}}
   # 编译生成:
 {{{
@@ -56,14 +63,20 @@ make
 
 ----
 
-= OpenWrt Firmware Patch for HiWiFi Router (tw150v1) =
+= OpenWrt Firmware Patch for HiWiFi HC6361 (tw150v1) =
 
 == Downloads ==
-  * OpenWrt Firmware (2013-08-29): https://docs.google.com/file/d/0B4OfGJNugH2EcEFaU093aW43cDg/ (using latest OpenWrt code - 2013-09-23), kernel 3.10.12)
-  * OpenWrt Firmware (2013-08-29): https://docs.google.com/file/d/0B4OfGJNugH2EclAyVmRDR3laTXc/ (added initial configs for switch, LED...)
-  * OpenWrt Firmware (2013-08-27): added samba, auto-mount services
-  * OpenWrt Firmware (2013-08-25): added tagged VLAN module and IPv6
-  * Firmware TFTP utility package: https://openwrt-hiwifi.googlecode.com/svn/downloads/tftpd64.400-original.zip
+ * Date: 2014/06/22
+ * Firmware: https://docs.google.com/file/d/0B4OfGJNugH2EeHVPZ2g5VVdlSmM
+ * TFTP server tool: https://openwrt-hiwifi.googlecode.com/svn/downloads/tftpd64.400-original.zip
+ * Summary of built-in features:
+  * Based on OpenWrt official source code - r38140;
+  * Linux 3.10.12;
+  * Full LED configuration with proper default configuration;
+  * Supports VLAN-based WAN/LAN ports configuration;
+  * With stable wireless;
+  * Supports upgrading firmware with "sysupgrade";
+  * Integrates 6relayd, relayd, radvd, IPv6 tunneling, Multi-WAN, Samba, PPTP, ...
 
 == About HiWiFi ==
   A Chinese company released their new OpenWrt based router named HiWiFi. This is a recently very popular "smart" router. It has very well-designed hardware, with good features as below and performance, and perfect for OpenWrt working with.
@@ -87,7 +100,7 @@ make
 == Building Steps ==
   # Checkout our scripts and source code:
 {{{
-svn checkout https://openwrt-hiwifi.googlecode.com/svn/trunk openwrt-hiwifi
+svn co https://openwrt-hiwifi.googlecode.com/svn/branches/hiwifi-v1-r38140
 }}}
   # Build:
 {{{
