@@ -1,23 +1,13 @@
 #
 #
-root_squashfs = openwrt-ar71xx-generic-root.squashfs
-openwrt_root = $(shell pwd)/../openwrt-ar71xx
 
-build_tw150v1: prefix-1-2.bin
-	cp $(openwrt_root)/build_dir/target-mips*/linux-ar71xx_generic/vmlinux vmlinux-tw150v1
-	$(openwrt_root)/staging_dir/host/bin/patch-cmdline  vmlinux-tw150v1 "board=tw150v1 console=ttyATH0,115200"
-	$(openwrt_root)/staging_dir/host/bin/lzma  e vmlinux-tw150v1 -lc1 -lp2 -pb2 vmlinux-tw150v1.bin.lzma
-	cp $(openwrt_root)/bin/ar71xx/$(root_squashfs) ./
-	mkimage -A mips -O linux -T kernel -a 0x80060000 -C lzma -e 0x80060000 \
-		-n "tw150v1-Linux-3.8.3" -d vmlinux-tw150v1.bin.lzma uImage
-	@raw_size=`stat --format=%s uImage`; \
-		pad_size=`expr 1310720 - $$raw_size`; \
-		dd if=/dev/zero of=zeros.tmp bs=$$pad_size count=1; \
-		cat uImage zeros.tmp > uImage.1280k; \
-		rm -f zeros.tmp; \
-		cat prefix-1-2.bin uImage.1280k $(root_squashfs) > openwrt-tw150v1-recovery.bin;
-	@ln -sf openwrt-tw150v1-recovery.bin recovery.bin
-	@[ -d $(openwrt_root)/bin/ar71xx ] && cp -vf openwrt-tw150v1-recovery.bin $(openwrt_root)/bin/ar71xx/ || :
+openwrt-ar71xx-generic-hiwifi-hc6361-squashfs-factory.bin: openwrt-ar71xx-generic-hiwifi-hc6361-squashfs-sysupgrade.bin
+	cat prefix-1-2.bin openwrt-ar71xx-generic-hiwifi-hc6361-squashfs-sysupgrade.bin > openwrt-ar71xx-generic-hiwifi-hc6361-squashfs-factory.bin
+
+openwrt-ar71xx-generic-hiwifi-hc6361-squashfs-sysupgrade.bin:
+	wget http://downloads.openwrt.org/snapshots/trunk/ar71xx/openwrt-ar71xx-generic-hiwifi-hc6361-squashfs-sysupgrade.bin \
+		-O openwrt-ar71xx-generic-hiwifi-hc6361-squashfs-sysupgrade.bin
 
 clean:
-	@rm -vf vmlinux-tw150v1* $(root_squashfs) uImage* openwrt-tw150v1-recovery.bin recovery.bin
+	@rm -vf openwrt-ar71xx-generic-hiwifi-hc6361-*.bin
+
