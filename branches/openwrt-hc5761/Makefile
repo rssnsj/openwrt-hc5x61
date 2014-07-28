@@ -30,7 +30,7 @@ s_sync_files: s_install_feeds
 	rsync -av --exclude=.svn files/ $(openwrt_dir)/
 
 s_install_feeds: s_update_feeds
-	@cd $(openwrt_dir); ./scripts/feeds install $(openwrt_feeds);
+	@cd $(openwrt_dir); ./scripts/feeds install -a;
 	@touch s_install_feeds
 
 s_update_feeds: s_checkout_svn
@@ -39,7 +39,7 @@ s_update_feeds: s_checkout_svn
 
 # 2. Checkout source code (this is the latest stable version recommended by OpenWrt Wiki):
 s_checkout_svn: s_check_hostdeps
-	svn co svn://svn.openwrt.org/openwrt/trunk $(openwrt_dir) -r40749
+	svn co svn://svn.openwrt.org/openwrt/trunk $(openwrt_dir) -r41860
 	@[ -d /var/dl ] && ln -sf /var/dl $(openwrt_dir)/dl || :
 	@touch s_checkout_svn
 
