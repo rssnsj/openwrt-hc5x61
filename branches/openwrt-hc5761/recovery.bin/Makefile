@@ -4,7 +4,10 @@ KDIR = $(shell ls -d ../openwrt-ramips/build_dir/target-mipsel_*)/linux-ramips_m
 HOSTBIN = ../openwrt-ramips/staging_dir/host/bin
 
 all: openwrt-HC5661-recovery.bin openwrt-HC5761-recovery.bin
-	ln -sf openwrt-HC5661-recovery.bin recovery.bin
+	ln -sf $< recovery.bin
+	@echo ""
+	@echo ">>>> Final images in 'recovery.bin' format:"
+	@echo ">>>> $^"
 
 openwrt-HC5661-recovery.bin: vmlinux-mt7620a root.squashfs
 #	$(HOSTBIN)/patch-cmdline vmlinux-mt7620a "board=HC5661 console=ttyS1,115200"
@@ -20,7 +23,7 @@ openwrt-HC5661-recovery.bin: vmlinux-mt7620a root.squashfs
 	  exit 1; \
 	fi
 
-	( \
+	@( \
 	  dd if=openwrt-HC5661-uboot.bin bs=327680 conv=sync || exit 1; \
 	  dd if=openwrt-HC5661-sysupgrade.bin || exit 1; \
 	) > $@ || ( rm -vf $@; exit 1 );
