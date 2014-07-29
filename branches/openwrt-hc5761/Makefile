@@ -7,7 +7,7 @@ packages_required = build-essential git flex gettext libncurses5-dev \
 openwrt_feeds = libevent2 luci luci-app-radvd luci-app-samba
 
 final: s_build_openwrt
-	make -C hiwifi2
+	make -C recovery.bin
 
 s_build_openwrt: s_sync_files
 # 7. Always replace .config with the repository's
@@ -23,7 +23,7 @@ s_build_openwrt: s_sync_files
 
 clean:
 	rm -f s_build_openwrt
-	make clean -C hiwifi2
+	make clean -C recovery.bin
 	make clean -C $(openwrt_dir) V=s
 
 s_sync_files: s_install_feeds
