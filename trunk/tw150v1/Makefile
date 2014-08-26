@@ -5,7 +5,7 @@ openwrt-ar71xx-generic-hiwifi-hc6361-squashfs-factory.bin: prefix-1-2.bin openwr
 	ln -sf $@ recovery.bin
 
 openwrt-ar71xx-generic-hiwifi-hc6361-squashfs-sysupgrade.bin:
-	wget http://downloads.openwrt.org/snapshots/trunk/ar71xx/openwrt-ar71xx-generic-hiwifi-hc6361-squashfs-sysupgrade.bin -O $@
+	wget http://downloads.openwrt.org/barrier_breaker/14.07-rc3/ar71xx/generic/openwrt-ar71xx-generic-hiwifi-hc6361-squashfs-sysupgrade.bin -O $@
 
 clean:
 	@rm -vf openwrt-ar71xx-generic-hiwifi-hc6361-*.bin
