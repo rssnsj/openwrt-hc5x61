@@ -39,7 +39,7 @@ s_update_feeds: s_checkout_svn
 
 # 2. Checkout source code (this is the latest stable version recommended by OpenWrt Wiki):
 s_checkout_svn: s_check_hostdeps
-	svn co svn://svn.openwrt.org/openwrt/trunk $(openwrt_dir) -r41860
+	svn co svn://svn.openwrt.org/openwrt/trunk $(openwrt_dir) -r42753
 	@[ -d /var/dl ] && ln -sf /var/dl $(openwrt_dir)/dl || :
 	@touch s_checkout_svn
 
