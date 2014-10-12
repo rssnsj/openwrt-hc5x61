@@ -180,16 +180,16 @@ Index: target/linux/ramips/dts/HiWiFi-HC5661.dts
 +
 +	gpio-leds {
 +		compatible = "gpio-leds";
-+		power {
-+			label = "HC5661:blue:power";
++		system {
++			label = "HC5761:green:system";
 +			gpios = <&gpio0 9 1>;
 +		};
-+		wlan {
-+			label = "HC5661:blue:wifi";
++		wlan2p4 {
++			label = "HC5761:green:wlan-2p4";
 +			gpios = <&gpio3 0 1>;
 +		};
 +		internet {
-+			label = "HC5661:blue:internet";
++			label = "HC5761:green:internet";
 +			gpios = <&gpio0 11 1>;
 +		};
 +	};
@@ -265,9 +265,9 @@ Index: target/linux/ramips/base-files/etc/board.d/01_leds
  		set_wifi_led "wr8305rt:wifi"
  		;;
 +	hiwifi-hc5661)
-+		ucidef_set_led_default "power" "power" "HC5661:blue:power" "1"
-+		ucidef_set_led_netdev "internet" "HC5661:blue:internet"
-+		set_wifi_led "HC5661:blue:wifi"
++		ucidef_set_led_default "system" "system" "HC5761:green:system" "1"
++		ucidef_set_led_netdev "internet" "HC5761:green:internet"
++		set_wifi_led "HC5761:green:wlan-2p4"
 +		;;
  	wt1520)
  		set_wifi_led "rt2800pci-phy0::radio"
