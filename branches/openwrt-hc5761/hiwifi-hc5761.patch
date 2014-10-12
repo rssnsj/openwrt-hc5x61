@@ -1,0 +1,322 @@
+Index: target/linux/ramips/image/Makefile
+===================================================================
+--- target/linux/ramips/image/Makefile	(revision 42871)
++++ target/linux/ramips/image/Makefile	(working copy)
+@@ -738,6 +738,7 @@
+ na930_mtd_size=20971520
+ Image/Build/Profile/NA930=$(call BuildFirmware/CustomFlash/$(1),$(1),na930,NA930,$(na930_mtd_size))
+ Image/Build/Profile/MZK-750DHP=$(call BuildFirmware/Default8M/$(1),$(1),mzk-750dhp,MZK-750DHP)
++Image/Build/Profile/HiWiFi-HC5661=$(call BuildFirmware/Default16M/$(1),$(1),hiwifi-hc5661,HiWiFi-HC5661)
+ Image/Build/Profile/Y1=$(call BuildFirmware/Default16M/$(1),$(1),Lenovo-y1,Y1)
+ Image/Build/Profile/Y1S=$(call BuildFirmware/Default16M/$(1),$(1),Lenovo-y1s,Y1S)
+ 
+@@ -754,6 +755,7 @@
+ 	$(call Image/Build/Profile/WHR1166D,$(1))
+ 	$(call Image/Build/Profile/MZK-750DHP,$(1))
+ 	$(call Image/Build/Profile/NA930,$(1))
++	$(call Image/Build/Profile/HiWiFi-HC5661,$(1))
+ 	$(call Image/Build/Profile/Y1,$(1))
+ 	$(call Image/Build/Profile/Y1S,$(1))
+ endef
+Index: target/linux/ramips/dts/HiWiFi-HC5661.dts
+===================================================================
+--- target/linux/ramips/dts/HiWiFi-HC5661.dts	(revision 0)
++++ target/linux/ramips/dts/HiWiFi-HC5661.dts	(revision 0)
+@@ -0,0 +1,182 @@
++/dts-v1/;
++
++/include/ "mt7620a.dtsi"
++
++/ {
++	compatible = "HiWiFi-HC5661", "ralink,mt7620a-soc";
++	model = "HiWiFi HC5661";
++
++	chosen {
++		bootargs = "console=ttyS0,115200";
++	};
++
++	palmbus@10000000 {
++		sysc@0 {
++			ralink,gpiomux = "i2c", "jtag";
++			ralink,uartmux = "gpio";
++			ralink,wdtmux = <1>;
++		};
++		gpio0: gpio@600 {
++			status = "okay";
++		};
++		gpio2: gpio@660 {
++			status = "okay";
++		};
++		gpio3: gpio@688 {
++			status = "okay";
++		};
++
++		spi@b00 {
++			status = "okay";
++
++			m25p80@0 {
++				#address-cells = <1>;
++				#size-cells = <1>;
++				compatible = "w25q128";
++				reg = <0 0>;
++				linux,modalias = "m25p80", "w25q128";
++				spi-max-frequency = <10000000>;
++
++				partition@0 {
++					label = "u-boot";
++					reg = <0x0 0x30000>;
++					read-only;
++				};
++
++				partition@30000 {
++					label = "u-boot-env";
++					reg = <0x30000 0x10000>;
++					read-only;
++				};
++
++				factory: partition@40000 {
++					label = "factory";
++					reg = <0x40000 0x10000>;
++					read-only;
++				};
++
++				partition@50000 {
++					label = "firmware";
++					reg = <0x50000 0xfb0000>;
++				};
++
++				partition@60000 {
++					label = "hwf_config";
++					reg = <0x60000 0x10000>;
++				};
++
++				partition@70000 {
++					label = "bdinfo";
++					reg = <0x70000 0x10000>;
++				};
++			};
++		};
++	};
++
++	pinctrl {
++		state_default: pinctrl0 {
++			gpio {
++				ralink,group = "uartf", "wled", "nd_sd";
++				ralink,function = "gpio";
++			};
++			pa {
++				ralink,group = "pa";
++				ralink,function = "pa";
++			};
++		};
++	};
++
++	ethernet@10100000 {
++		status = "okay";
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
++
++		ralink,port-map = "wllll";
++
++		port@4 {
++			status = "okay";
++			phy-mode = "rgmii";
++			phy-handle = <&phy4>;
++		};
++
++		port@5 {
++			status = "okay";
++			phy-mode = "rgmii";
++			phy-handle = <&phy5>;
++		};
++
++		mdio-bus {
++			status = "okay";
++
++			phy4: ethernet-phy@4 {
++				reg = <4>;
++				phy-mode = "rgmii";
++			};
++
++			phy5: ethernet-phy@5 {
++				reg = <5>;
++				phy-mode = "rgmii";
++			};
++		};
++	};
++
++	wmac@10180000 {
++		ralink,mtd-eeprom = <&factory 0>;
++	};
++
++	gsw@10110000 {
++		ralink,port4 = "gmac";
++	};
++
++	ehci@101c0000 {
++		status = "okay";
++	};
++
++	sdhci@10130000 {
++		status = "okay";
++	};
++
++	pcie@10140000 {
++		status = "okay";
++	};
++
++	gpio-keys-polled {
++		compatible = "gpio-keys-polled";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		poll-interval = <20>;
++		reset {
++			label = "reset";
++			gpios = <&gpio0 12 1>;
++			linux,code = <0x198>;
++		};
++	};
++
++	gpio-leds {
++		compatible = "gpio-leds";
++		power {
++			label = "HC5661:blue:power";
++			gpios = <&gpio0 9 1>;
++		};
++		wlan {
++			label = "HC5661:blue:wifi";
++			gpios = <&gpio3 0 1>;
++		};
++		internet {
++			label = "HC5661:blue:internet";
++			gpios = <&gpio0 11 1>;
++		};
++	};
++
++	gpio_export {
++		compatible = "gpio-export";
++		#size-cells = <0>;
++		usbpower {
++			gpio-export,name = "usbpower";
++			gpio-export,output = <1>;
++			gpios = <&gpio0 13 0>;
++		};
++	};
++
++};
+Index: target/linux/ramips/mt7620a/profiles/HiWiFi-HC5661.mk
+===================================================================
+--- target/linux/ramips/mt7620a/profiles/HiWiFi-HC5661.mk	(revision 0)
++++ target/linux/ramips/mt7620a/profiles/HiWiFi-HC5661.mk	(revision 0)
+@@ -0,0 +1,20 @@
++#
++# Copyright (C) 2011 OpenWrt.org
++#
++# This is free software, licensed under the GNU General Public License v2.
++# See /LICENSE for more information.
++#
++
++define Profile/HiWiFi-HC5661
++ NAME:=HiWiFi HC5661
++ PACKAGES:=\
++   kmod-usb-core kmod-usb-dwc2 kmod-usb2 kmod-usb-storage  \
++   kmod-mmc-spi kmod-sdhci kmod-sdhci-mt7620 \
++   block-mount mountd kmod-fs-ext4 ppp-mod-pppoe e2fsprogs \
++   kmod-ledtrig-usbdev fdisk
++endef
++
++define Profile/HiWiFi-HC5661/Description
++ Default on SD cards and USB storage support.
++endef
++$(eval $(call Profile,HiWiFi-HC5661))
+Index: target/linux/ramips/base-files/lib/ramips.sh
+===================================================================
+--- target/linux/ramips/base-files/lib/ramips.sh	(revision 42871)
++++ target/linux/ramips/base-files/lib/ramips.sh	(working copy)
+@@ -334,6 +334,9 @@
+ 	*"ZBT WR8305RT")
+ 		name="wr8305rt"
+ 		;;
++	*"HiWiFi HC5661")
++		name="hiwifi-hc5661"
++		;;
+ 	*"Lenovo Y1")
+ 		name="y1"
+ 		;;
+Index: target/linux/ramips/base-files/lib/upgrade/platform.sh
+===================================================================
+--- target/linux/ramips/base-files/lib/upgrade/platform.sh	(revision 42871)
++++ target/linux/ramips/base-files/lib/upgrade/platform.sh	(working copy)
+@@ -100,6 +100,7 @@
+ 	x5 |\
+ 	x8 |\
+ 	zbt-wa05 |\
++	hiwifi-hc5661 |\
+ 	y1 |\
+ 	y1s)
+ 		[ "$magic" != "27051956" ] && {
+Index: target/linux/ramips/base-files/etc/board.d/01_leds
+===================================================================
+--- target/linux/ramips/base-files/etc/board.d/01_leds	(revision 42871)
++++ target/linux/ramips/base-files/etc/board.d/01_leds	(working copy)
+@@ -210,6 +210,11 @@
+ 		set_usb_led "wr8305rt:usb"
+ 		set_wifi_led "wr8305rt:wifi"
+ 		;;
++	hiwifi-hc5661)
++		ucidef_set_led_default "power" "power" "HC5661:blue:power" "1"
++		ucidef_set_led_netdev "internet" "HC5661:blue:internet"
++		set_wifi_led "HC5661:blue:wifi"
++		;;
+ 	wt1520)
+ 		set_wifi_led "rt2800pci-phy0::radio"
+ 		;;
+Index: target/linux/ramips/base-files/etc/board.d/02_network
+===================================================================
+--- target/linux/ramips/base-files/etc/board.d/02_network	(revision 42871)
++++ target/linux/ramips/base-files/etc/board.d/02_network	(working copy)
+@@ -192,6 +192,7 @@
+ 		;;
+ 
+ 	y1 |\
++	hiwifi-hc5661 |\
+ 	y1s)
+ 		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
+ 		ucidef_add_switch "switch0" "1" "1"
+@@ -266,6 +267,7 @@
+ 	psr-680w |\
+ 	sl-r7205 |\
+ 	y1 |\
++	hiwifi-hc5661 |\
+ 	y1s)
+ 		lan_mac=$(cat /sys/class/net/eth0/address)
+ 		lan_mac=$(macaddr_setbit_la "$lan_mac")
+Index: target/linux/ramips/base-files/etc/diag.sh
+===================================================================
+--- target/linux/ramips/base-files/etc/diag.sh	(revision 42871)
++++ target/linux/ramips/base-files/etc/diag.sh	(working copy)
+@@ -194,6 +194,9 @@
+ 	na930)
+ 		status_led="na930:blue:power"
+ 		;;
++  hiwifi-hc5661)
++    status_led="HC5661:blue:power"
++    ;;
+ 	y1 | \
+ 	y1s)
+ 		status_led="lenovo:blue:power"
+Index: target/linux/ramips/base-files/etc/hotplug.d/firmware/10-rt2x00-eeprom
+===================================================================
+--- target/linux/ramips/base-files/etc/hotplug.d/firmware/10-rt2x00-eeprom	(revision 42871)
++++ target/linux/ramips/base-files/etc/hotplug.d/firmware/10-rt2x00-eeprom	(working copy)
+@@ -32,7 +32,8 @@
+ "soc_wmac.eeprom")
+ 	case $board in
+ 	*)
+-		rt2x00_eeprom_die "Please define mtd-eeprom in $board DTS file!"
++		#rt2x00_eeprom_die "Please define mtd-eeprom in $board DTS file!"
++		rt2x00_eeprom_extract "factory" 0 512
+ 		;;
+ 	esac
+ 	;;
