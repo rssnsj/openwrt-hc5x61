@@ -9,7 +9,7 @@ openwrt_feeds = libevent2 luci luci-app-radvd luci-app-samba
 final: s_build_openwrt
 	make -C recovery.bin
 
-s_build_openwrt: s_sync_files
+s_build_openwrt: s_hiwifi_patch
 # 7. Always replace .config with the repository's
 	@cd $(openwrt_dir); \
 		if [ -e .config ]; then \
@@ -26,8 +26,8 @@ clean:
 	make clean -C recovery.bin
 	make clean -C $(openwrt_dir) V=s
 
-s_sync_files: s_install_feeds
-	rsync -av --exclude=.svn files/ $(openwrt_dir)/
+s_hiwifi_patch: s_install_feeds
+	@cd $(openwrt_dir); patch -p0 < ../hiwifi-hc5761.patch
 
 s_install_feeds: s_update_feeds
 	@cd $(openwrt_dir); ./scripts/feeds install -a;
@@ -56,7 +56,7 @@ s_check_hostdeps:
 	fi;
 	@touch s_check_hostdeps
 
-menuconfig: s_sync_files
+menuconfig: s_hiwifi_patch
 	@cd $(openwrt_dir); [ -f .config ] && mv -vf .config .config.bak || :
 	@cp -vf config-openwrt-mt7620a $(openwrt_dir)/.config
 	@touch config-openwrt-mt7620a  # change modification time
