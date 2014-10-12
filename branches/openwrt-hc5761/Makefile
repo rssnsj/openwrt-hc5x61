@@ -28,6 +28,7 @@ clean:
 
 s_hiwifi_patch: s_install_feeds
 	@cd $(openwrt_dir); patch -p0 < ../hiwifi-hc5761.patch
+	@touch s_hiwifi_patch
 
 s_install_feeds: s_update_feeds
 	@cd $(openwrt_dir); ./scripts/feeds install -a;
