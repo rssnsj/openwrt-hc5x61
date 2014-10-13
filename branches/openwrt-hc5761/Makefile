@@ -25,7 +25,7 @@ s_hiwifi_patch: s_install_feeds
 	@touch s_hiwifi_patch
 
 s_install_feeds: s_update_feeds
-	@cd $(openwrt_dir); ./scripts/feeds install -a;
+	@cd $(openwrt_dir); ./scripts/feeds install $(openwrt_feeds);
 	@touch s_install_feeds
 
 s_update_feeds: s_checkout_svn
