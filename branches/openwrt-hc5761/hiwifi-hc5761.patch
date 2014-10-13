@@ -22,7 +22,7 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 ===================================================================
 --- target/linux/ramips/dts/HiWiFi-HC5761.dts	(revision 0)
 +++ target/linux/ramips/dts/HiWiFi-HC5761.dts	(revision 0)
-@@ -0,0 +1,186 @@
+@@ -0,0 +1,158 @@
 +/dts-v1/;
 +
 +/include/ "mt7620a.dtsi"
@@ -98,6 +98,26 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 +		};
 +	};
 +
++	ehci@101c0000 {
++		status = "okay";
++	};
++
++	ohci@101c1000 {
++		status = "okay";
++	};
++
++	sdhci@10130000 {
++		status = "okay";
++	};
++
++	pcie@10140000 {
++		status = "okay";
++	};
++
++	wmac@10180000 {
++		ralink,mtd-eeprom = <&factory 0>;
++	};
++
 +	pinctrl {
 +		state_default: pinctrl0 {
 +			gpio {
@@ -112,60 +132,12 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 +	};
 +
 +	ethernet@10100000 {
-+		status = "okay";
-+
 +		pinctrl-names = "default";
-+		pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
-+
-+		ralink,port-map = "wllll";
-+
-+		port@4 {
-+			status = "okay";
-+			phy-mode = "rgmii";
-+			phy-handle = <&phy4>;
-+		};
-+
-+		port@5 {
-+			status = "okay";
-+			phy-mode = "rgmii";
-+			phy-handle = <&phy5>;
-+		};
-+
-+		mdio-bus {
-+			status = "okay";
-+
-+			phy4: ethernet-phy@4 {
-+				reg = <4>;
-+				phy-mode = "rgmii";
-+			};
-+
-+			phy5: ethernet-phy@5 {
-+				reg = <5>;
-+				phy-mode = "rgmii";
-+			};
-+		};
++		pinctrl-0 = <&ephy_pins>;
++		mtd-mac-address = <&factory 0x4>;
++		ralink,port-map = "llllw";
 +	};
-+
-+	wmac@10180000 {
-+		ralink,mtd-eeprom = <&factory 0>;
-+	};
-+
-+	gsw@10110000 {
-+		ralink,port4 = "gmac";
-+	};
-+
-+	ehci@101c0000 {
-+		status = "okay";
-+	};
-+
-+	sdhci@10130000 {
-+		status = "okay";
-+	};
-+
-+	pcie@10140000 {
-+		status = "okay";
-+	};
-+
++	
 +	gpio-keys-polled {
 +		compatible = "gpio-keys-polled";
 +		#address-cells = <1>;
@@ -270,7 +242,7 @@ Index: target/linux/ramips/base-files/etc/board.d/01_leds
  		;;
 +	hiwifi-hc5761)
 +		ucidef_set_led_default "system" "system" "HC5761:green:system" "1"
-+		ucidef_set_led_netdev "internet" "ETH" "HC5761:green:internet" "eth0.2"
++		ucidef_set_led_netdev "internet" "internet" "HC5761:green:internet" "eth0.2"
 +		set_wifi_led "HC5761:green:wlan-2p4"
 +		;;
  	wt1520)
@@ -310,17 +282,3 @@ Index: target/linux/ramips/base-files/etc/diag.sh
  	y1 | \
  	y1s)
  		status_led="lenovo:blue:power"
-Index: target/linux/ramips/base-files/etc/hotplug.d/firmware/10-rt2x00-eeprom
-===================================================================
---- target/linux/ramips/base-files/etc/hotplug.d/firmware/10-rt2x00-eeprom	(revision 42871)
-+++ target/linux/ramips/base-files/etc/hotplug.d/firmware/10-rt2x00-eeprom	(working copy)
-@@ -32,7 +32,8 @@
- "soc_wmac.eeprom")
- 	case $board in
- 	*)
--		rt2x00_eeprom_die "Please define mtd-eeprom in $board DTS file!"
-+		#rt2x00_eeprom_die "Please define mtd-eeprom in $board DTS file!"
-+		rt2x00_eeprom_extract "factory" 0 512
- 		;;
- 	esac
- 	;;
