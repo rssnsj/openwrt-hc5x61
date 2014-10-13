@@ -6,7 +6,7 @@ Index: target/linux/ramips/image/Makefile
  na930_mtd_size=20971520
  Image/Build/Profile/NA930=$(call BuildFirmware/CustomFlash/$(1),$(1),na930,NA930,$(na930_mtd_size))
  Image/Build/Profile/MZK-750DHP=$(call BuildFirmware/Default8M/$(1),$(1),mzk-750dhp,MZK-750DHP)
-+Image/Build/Profile/HiWiFi-HC5661=$(call BuildFirmware/Default16M/$(1),$(1),hiwifi-hc5661,HiWiFi-HC5661)
++Image/Build/Profile/HiWiFi-HC5761=$(call BuildFirmware/Default16M/$(1),$(1),hiwifi-hc5761,HiWiFi-HC5761)
  Image/Build/Profile/Y1=$(call BuildFirmware/Default16M/$(1),$(1),Lenovo-y1,Y1)
  Image/Build/Profile/Y1S=$(call BuildFirmware/Default16M/$(1),$(1),Lenovo-y1s,Y1S)
  
@@ -14,22 +14,22 @@ Index: target/linux/ramips/image/Makefile
  	$(call Image/Build/Profile/WHR1166D,$(1))
  	$(call Image/Build/Profile/MZK-750DHP,$(1))
  	$(call Image/Build/Profile/NA930,$(1))
-+	$(call Image/Build/Profile/HiWiFi-HC5661,$(1))
++	$(call Image/Build/Profile/HiWiFi-HC5761,$(1))
  	$(call Image/Build/Profile/Y1,$(1))
  	$(call Image/Build/Profile/Y1S,$(1))
  endef
-Index: target/linux/ramips/dts/HiWiFi-HC5661.dts
+Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 ===================================================================
---- target/linux/ramips/dts/HiWiFi-HC5661.dts	(revision 0)
-+++ target/linux/ramips/dts/HiWiFi-HC5661.dts	(revision 0)
+--- target/linux/ramips/dts/HiWiFi-HC5761.dts	(revision 0)
++++ target/linux/ramips/dts/HiWiFi-HC5761.dts	(revision 0)
 @@ -0,0 +1,186 @@
 +/dts-v1/;
 +
 +/include/ "mt7620a.dtsi"
 +
 +/ {
-+	compatible = "HiWiFi-HC5661", "ralink,mt7620a-soc";
-+	model = "HiWiFi HC5661";
++	compatible = "HiWiFi-HC5761", "ralink,mt7620a-soc";
++	model = "HiWiFi HC5761";
 +
 +	chosen {
 +		bootargs = "console=ttyS0,115200";
@@ -209,10 +209,10 @@ Index: target/linux/ramips/dts/HiWiFi-HC5661.dts
 +	};
 +
 +};
-Index: target/linux/ramips/mt7620a/profiles/HiWiFi-HC5661.mk
+Index: target/linux/ramips/mt7620a/profiles/HiWiFi-HC5761.mk
 ===================================================================
---- target/linux/ramips/mt7620a/profiles/HiWiFi-HC5661.mk	(revision 0)
-+++ target/linux/ramips/mt7620a/profiles/HiWiFi-HC5661.mk	(revision 0)
+--- target/linux/ramips/mt7620a/profiles/HiWiFi-HC5761.mk	(revision 0)
++++ target/linux/ramips/mt7620a/profiles/HiWiFi-HC5761.mk	(revision 0)
 @@ -0,0 +1,20 @@
 +#
 +# Copyright (C) 2011 OpenWrt.org
@@ -221,8 +221,8 @@ Index: target/linux/ramips/mt7620a/profiles/HiWiFi-HC5661.mk
 +# See /LICENSE for more information.
 +#
 +
-+define Profile/HiWiFi-HC5661
-+ NAME:=HiWiFi HC5661
++define Profile/HiWiFi-HC5761
++ NAME:=HiWiFi HC5761
 + PACKAGES:=\
 +   kmod-usb-core kmod-usb-dwc2 kmod-usb2 kmod-usb-storage  \
 +   kmod-mmc-spi kmod-sdhci kmod-sdhci-mt7620 \
@@ -230,10 +230,10 @@ Index: target/linux/ramips/mt7620a/profiles/HiWiFi-HC5661.mk
 +   kmod-ledtrig-usbdev fdisk
 +endef
 +
-+define Profile/HiWiFi-HC5661/Description
++define Profile/HiWiFi-HC5761/Description
 + Default on SD cards and USB storage support.
 +endef
-+$(eval $(call Profile,HiWiFi-HC5661))
++$(eval $(call Profile,HiWiFi-HC5761))
 Index: target/linux/ramips/base-files/lib/ramips.sh
 ===================================================================
 --- target/linux/ramips/base-files/lib/ramips.sh	(revision 42871)
@@ -242,8 +242,8 @@ Index: target/linux/ramips/base-files/lib/ramips.sh
  	*"ZBT WR8305RT")
  		name="wr8305rt"
  		;;
-+	*"HiWiFi HC5661")
-+		name="hiwifi-hc5661"
++	*"HiWiFi HC5761")
++		name="hiwifi-hc5761"
 +		;;
  	*"Lenovo Y1")
  		name="y1"
@@ -256,7 +256,7 @@ Index: target/linux/ramips/base-files/lib/upgrade/platform.sh
  	x5 |\
  	x8 |\
  	zbt-wa05 |\
-+	hiwifi-hc5661 |\
++	hiwifi-hc5761 |\
  	y1 |\
  	y1s)
  		[ "$magic" != "27051956" ] && {
@@ -268,7 +268,7 @@ Index: target/linux/ramips/base-files/etc/board.d/01_leds
  		set_usb_led "wr8305rt:usb"
  		set_wifi_led "wr8305rt:wifi"
  		;;
-+	hiwifi-hc5661)
++	hiwifi-hc5761)
 +		ucidef_set_led_default "system" "system" "HC5761:green:system" "1"
 +		ucidef_set_led_netdev "internet" "ETH" "HC5761:green:internet" "eth0.2"
 +		set_wifi_led "HC5761:green:wlan-2p4"
@@ -284,7 +284,7 @@ Index: target/linux/ramips/base-files/etc/board.d/02_network
  		;;
  
  	y1 |\
-+	hiwifi-hc5661 |\
++	hiwifi-hc5761 |\
  	y1s)
  		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
  		ucidef_add_switch "switch0" "1" "1"
@@ -292,7 +292,7 @@ Index: target/linux/ramips/base-files/etc/board.d/02_network
  	psr-680w |\
  	sl-r7205 |\
  	y1 |\
-+	hiwifi-hc5661 |\
++	hiwifi-hc5761 |\
  	y1s)
  		lan_mac=$(cat /sys/class/net/eth0/address)
  		lan_mac=$(macaddr_setbit_la "$lan_mac")
@@ -304,8 +304,8 @@ Index: target/linux/ramips/base-files/etc/diag.sh
  	na930)
  		status_led="na930:blue:power"
  		;;
-+  hiwifi-hc5661)
-+    status_led="HC5661:blue:power"
++  hiwifi-hc5761)
++    status_led="HC5761:green:system"
 +    ;;
  	y1 | \
  	y1s)
