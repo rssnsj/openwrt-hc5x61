@@ -6,20 +6,14 @@ packages_required = build-essential git flex gettext libncurses5-dev \
   unzip gawk liblzma-dev u-boot-tools rsync
 openwrt_feeds = libevent2 luci luci-app-radvd luci-app-samba
 
-final: s_build_openwrt
-	make -C recovery.bin
-
-s_build_openwrt: s_hiwifi_patch
-# 7. Always replace .config with the repository's
+final: s_hiwifi_patch
 	@cd $(openwrt_dir); \
 		if [ -e .config ]; then \
 			mv -vf .config .config.bak; \
 			echo "WARNING: .config is updated, backed up as '.config.bak'"; \
 		fi; \
-		cp -vf ../config-openwrt-mt7620a .config
-#
-	make -C $(openwrt_dir) V=s -j8
-	@touch s_build_openwrt
+		cp -vf ../config-hiwifi-hc5761 .config
+	make -C $(openwrt_dir) V=s -j4
 
 clean:
 	rm -f s_build_openwrt
@@ -38,7 +32,7 @@ s_update_feeds: s_checkout_svn
 	@cd $(openwrt_dir); ./scripts/feeds update;
 	@touch s_update_feeds
 
-# 2. Checkout source code (this is the latest stable version recommended by OpenWrt Wiki):
+# 2. Checkout source code:
 s_checkout_svn: s_check_hostdeps
 	svn co svn://svn.openwrt.org/openwrt/trunk $(openwrt_dir) -r42871
 	@[ -d /var/dl ] && ln -sf /var/dl $(openwrt_dir)/dl || :
@@ -59,8 +53,8 @@ s_check_hostdeps:
 
 menuconfig: s_hiwifi_patch
 	@cd $(openwrt_dir); [ -f .config ] && mv -vf .config .config.bak || :
-	@cp -vf config-openwrt-mt7620a $(openwrt_dir)/.config
-	@touch config-openwrt-mt7620a  # change modification time
+	@cp -vf config-hiwifi-hc5761 $(openwrt_dir)/.config
+	@touch config-hiwifi-hc5761  # change modification time
 	@make -C $(openwrt_dir) menuconfig
-	@[ $(openwrt_dir)/.config -nt config-openwrt-mt7620a ] && cp -vf $(openwrt_dir)/.config config-openwrt-mt7620a || :
+	@[ $(openwrt_dir)/.config -nt config-hiwifi-hc5761 ] && cp -vf $(openwrt_dir)/.config config-hiwifi-hc5761 || :
 
