@@ -6,7 +6,7 @@ packages_required = build-essential git flex gettext libncurses5-dev \
   unzip gawk liblzma-dev u-boot-tools rsync
 openwrt_feeds = libevent2 luci luci-app-radvd luci-app-samba
 
-final: s_hiwifi_patch
+final: s_install_feeds
 	@cd $(openwrt_dir); \
 		if [ -e .config ]; then \
 			mv -vf .config .config.bak; \
@@ -20,17 +20,18 @@ clean:
 	make clean -C recovery.bin
 	make clean -C $(openwrt_dir) V=s
 
-s_hiwifi_patch: s_install_feeds
-	@cd $(openwrt_dir); patch -p0 < ../hiwifi-hc5761.patch
-	@touch s_hiwifi_patch
-
 s_install_feeds: s_update_feeds
 	@cd $(openwrt_dir); ./scripts/feeds install $(openwrt_feeds);
 	@touch s_install_feeds
 
-s_update_feeds: s_checkout_svn
+s_update_feeds: s_hiwifi_patch
 	@cd $(openwrt_dir); ./scripts/feeds update;
 	@touch s_update_feeds
+
+s_hiwifi_patch: s_checkout_svn
+	@cd $(openwrt_dir); patch -p0 < ../hiwifi-hc5761.patch
+	@cp -vf config-hiwifi-hc5761 $(openwrt_dir)/.config
+	@touch s_hiwifi_patch
 
 # 2. Checkout source code:
 s_checkout_svn: s_check_hostdeps
@@ -51,7 +52,7 @@ s_check_hostdeps:
 	fi;
 	@touch s_check_hostdeps
 
-menuconfig: s_hiwifi_patch
+menuconfig: s_install_feeds
 	@cd $(openwrt_dir); [ -f .config ] && mv -vf .config .config.bak || :
 	@cp -vf config-hiwifi-hc5761 $(openwrt_dir)/.config
 	@touch config-hiwifi-hc5761  # change modification time
