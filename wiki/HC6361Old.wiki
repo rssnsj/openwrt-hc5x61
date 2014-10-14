@@ -1,12 +1,12 @@
 #summary [Deprecated] OpenWrt Firmware Patch for HiWiFi Router (tw150v1)
-= 【旧版】极路由HC6361 OpenWrt固件补丁 (HiWiFi tw150v1) =
+= 【旧版】极路由HC6361 !OpenWrt固件补丁 (!HiWiFi tw150v1) =
 
 == 文件下载 ==
  * 编译日期：2014/06/22
  * 固件下载：https://docs.google.com/file/d/0B4OfGJNugH2EeHVPZ2g5VVdlSmM
  * 刷机用的TFTP服务端工具：https://openwrt-hiwifi.googlecode.com/svn/downloads/tftpd64.400-original.zip
  * 固件内置功能概述：
-  * 使用OpenWrt官方代码r38140；
+  * 使用!OpenWrt官方代码r38140；
   * Linux 3.10.12 内核；
   * 默认启用3个LED灯的闪烁配置；
   * 支持基于VLAN的WAN口/LAN口配置；
@@ -15,7 +15,7 @@
   * 内置软件包：6relayd, relayd, radvd, IPv6 tunnel, Multi-WAN, Samba, PPTP, ...
 
 == 关于极路由 ==
-  北京极科极客科技有限公司，发布了一款基于OpenWrt的路由器--极路由（HiWiFi）。这被认为是全球第一款智能路由器，有着良好的外观和硬件设计，非常适合运行OpenWrt。
+  北京极科极客科技有限公司，发布了一款基于!OpenWrt的路由器--极路由（!HiWiFi）。这被认为是全球第一款智能路由器，有着良好的外观和硬件设计，非常适合运行!OpenWrt。
   * 硬件配置如下:
     * Atheros AR9331 SOC
     * 64MB RAM
@@ -24,7 +24,7 @@
   * 官方网址: http://www.hiwifi.com/
 
 == 关于本项目 ==
-  本项目利用OpenWrt官方的源码编译生成兼容“极路由”的OpenWrt固件。提供了适配“极路由”的mach代码, 和用于自动生成固件的脚本。
+  本项目利用!OpenWrt官方的源码编译生成兼容“极路由”的!OpenWrt固件。提供了适配“极路由”的mach代码, 和用于自动生成固件的脚本。
 
 == 系统要求 ==
   * 建议使用 Ubuntu 12.04, 其它版本Ubuntu亦可, 但未测试过.
@@ -40,21 +40,21 @@ svn co https://openwrt-hiwifi.googlecode.com/svn/branches/hiwifi-v1-r38140
 cd openwrt-hiwifi
 make
 }}}
-  # 最终 HiWiFi recovery.bin 格式的映像: *openwrt-tw150v1-recovery.bin*
+  # 最终 !HiWiFi recovery.bin 格式的映像: *openwrt-tw150v1-recovery.bin*
 
 == 刷机方法 ==
   # 为你电脑的“本地连接”加一个IP: 192.168.1.88 / 255.255.255.0 
   # 解压刷机工具包（例如 tftpd64.400.rar）, 根据操作系统位数, 32位运行tftpd32, 64位运行tftpd64.
   # 用上面生成的 openwrt-tw150v1-recovery.bin 替换刷机包目录下的 recovery.bin .
-  # 拔掉HiWiFi电源线.
-  # 网线一头连HiWiFi的LAN口, 一头连电脑.
-  # 用尖锐物按住HiWiFi背后的reset孔不松动, 同时给路由器接电.
+  # 拔掉!HiWiFi电源线.
+  # 网线一头连!HiWiFi的LAN口, 一头连电脑.
+  # 用尖锐物按住!HiWiFi背后的reset孔不松动, 同时给路由器接电.
   # 直到看到tftpd出现进度条, 松开.
   # 前面板的指示灯会轮流闪烁, 表明内部Flash正在擦写, 此时不要断电.
   # ping 192.168.1.1, 直到ping通, 刷机过程总共3-5分钟.
 
 == 检查结果 ==
-  * 若长时间（超过5分钟）ping不通192.168.1.1, 可能固件有错误, 若无法通过串口看到启动信息, 建议刷回HiWiFi官方固件.
+  * 若长时间（超过5分钟）ping不通192.168.1.1, 可能固件有错误, 若无法通过串口看到启动信息, 建议刷回!HiWiFi官方固件.
   * 建议焊接TTL串口以查看刷机过程. 参考: https://code.google.com/p/openwrt-hiwifi/wiki/SerialFlyWires.
 
 == 目标系统配置 ==
@@ -63,14 +63,14 @@ make
 
 ----
 
-= OpenWrt Firmware Patch for HiWiFi HC6361 (tw150v1) =
+= !OpenWrt Firmware Patch for !HiWiFi HC6361 (tw150v1) =
 
 == Downloads ==
  * Date: 2014/06/22
  * Firmware: https://docs.google.com/file/d/0B4OfGJNugH2EeHVPZ2g5VVdlSmM
  * TFTP server tool: https://openwrt-hiwifi.googlecode.com/svn/downloads/tftpd64.400-original.zip
  * Summary of built-in features:
-  * Based on OpenWrt official source code - r38140;
+  * Based on !OpenWrt official source code - r38140;
   * Linux 3.10.12;
   * Full LED configuration with proper default configuration;
   * Supports VLAN-based WAN/LAN ports configuration;
@@ -78,8 +78,8 @@ make
   * Supports upgrading firmware with "sysupgrade";
   * Integrates 6relayd, relayd, radvd, IPv6 tunneling, Multi-WAN, Samba, PPTP, ...
 
-== About HiWiFi ==
-  A Chinese company released their new OpenWrt based router named HiWiFi. This is a recently very popular "smart" router. It has very well-designed hardware, with good features as below and performance, and perfect for OpenWrt working with.
+== About !HiWiFi ==
+  A Chinese company released their new !OpenWrt based router named !HiWiFi. This is a recently very popular "smart" router. It has very well-designed hardware, with good features as below and performance, and perfect for !OpenWrt working with.
 
   * Features:
     * Atheros AR9331 SOC
@@ -88,10 +88,10 @@ make
     * 8GB on-board USB Disk
   * Office Site: http://www.hiwifi.com/
 
-  There is an IOS App in AppStore, which can be used to config and install plugin for the HiWiFi router: https://itunes.apple.com/cn/app/ji-lu-you/id598232355?mt=8
+  There is an IOS App in AppStore, which can be used to config and install plugin for the !HiWiFi router: https://itunes.apple.com/cn/app/ji-lu-you/id598232355?mt=8
 
 == About this Project ==
-  This project is for building a general OpenWrt firmware from source code for HiWiFi router. I've written a mach file to support this, and a few scripts to generate the firmware.
+  This project is for building a general !OpenWrt firmware from source code for !HiWiFi router. I've written a mach file to support this, and a few scripts to generate the firmware.
 
 == Requirements ==
   * Ubuntu 12.04 is recommended, while untested for other Ubuntu versions.
@@ -107,7 +107,7 @@ svn co https://openwrt-hiwifi.googlecode.com/svn/branches/hiwifi-v1-r38140
 cd openwrt-hiwifi
 make
 }}}
-  # Target HiWiFi recovery.bin image: *openwrt-tw150v1-recovery.bin*
+  # Target !HiWiFi recovery.bin image: *openwrt-tw150v1-recovery.bin*
 
 == Firmware Flash How-to ==
   # Add a new IP on your PC's wired interface port: 192.168.1.88 / 255.255.255.0.
@@ -121,11 +121,11 @@ make
   # Ping 192.168.1.1 until it echoes (will take up 3-5 mins to complete).
 
 == Check the Results ==
-  * If cannot ping 192.168.1.1 for more than 5 mins, most probably the firmware is bad, please flash to HiWiFi's official firmware if you are unable to get serial console output.
+  * If cannot ping 192.168.1.1 for more than 5 mins, most probably the firmware is bad, please flash to !HiWiFi's official firmware if you are unable to get serial console output.
   * I strongly recommend you to deploy a TTL console for watching the flashing progress. Please refer to https://code.google.com/p/openwrt-hiwifi/wiki/SerialFlyWires
 
 == Target System Configuration ==
   * By default, the internal switch does not forward data between wired ports. Please refer to this to add an initial "switch" configuration: https://code.google.com/p/openwrt-hiwifi/wiki/OnboardSwitchConfig
   * For LED lights configuration, please refer to the picture below: 
 
-  https://openwrt-hiwifi.googlecode.com/svn/trunk/docs/HiWiFi-openwrt-LED-reference.png
+  https://openwrt-hiwifi.googlecode.com/svn/trunk/docs/!HiWiFi-openwrt-LED-reference.png
