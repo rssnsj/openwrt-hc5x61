@@ -1,13 +1,13 @@
-#summary Generate HiWiFi HC6361 (tw150v1) firmware with OpenWrt official code
+#summary Generate !HiWiFi HC6361 (tw150v1) firmware with !OpenWrt official code
 
-= 极路由HC6361 OpenWrt固件补丁 (HiWiFi tw150v1) =
+= 极路由HC6361 !OpenWrt固件补丁 (!HiWiFi tw150v1) =
 
 == 说明 ==
- * OpenWrt官方源码自r40975起（2014/06/02）支持HC6361，本项目只做基于官方版本的优化。
- * OpenWrt HC6361 Wiki: http://wiki.openwrt.org/toh/hiwifi/hc6361
+ * !OpenWrt官方源码自r40975起（2014/06/02）支持HC6361，本项目只做基于官方版本的优化。
+ * !OpenWrt HC6361 Wiki: http://wiki.openwrt.org/toh/hiwifi/hc6361
  * 【旧版】编译方法、固件下载请移步至：https://code.google.com/p/openwrt-hiwifi/wiki/ProjectIntroduction
 
-== HC6361 OpenWrt固件生成方法 ==
+== HC6361 !OpenWrt固件生成方法 ==
  * 下载源代码，并配置
 {{{
 svn co svn://svn.openwrt.org/openwrt/trunk openwrt-ar71xx
@@ -18,7 +18,7 @@ make menuconfig
 {{{
 Target System: Atheros AR7xxx/AR9xxx
 Subtarget: Generic
-Target Profile: HiWiFi HC6361
+Target Profile: !HiWiFi HC6361
 }}}
  * 然后按ESC保存配置退出
  * 编译
@@ -31,9 +31,9 @@ make V=s -jN   # N=编译机CPU数目
 openwrt-ar71xx-generic-hiwifi-hc6361-squashfs-sysupgrade.bin
 }}}
  * 极路由“recovery.bin”格式固件生成方法
-  需要注意的是，OpenWrt官方代码只生成了sysupgrade格式的固件，某些老版本u-boot的极1可能无法直接通过tftp刷机。处理方法很简单，就是在sysupgrade文件之前增加128KB的u-boot前缀即可。具体请参考以下方法（生成方法在Makefile里）：
+  需要注意的是，!OpenWrt官方代码只生成了sysupgrade格式的固件，某些老版本u-boot的极1可能无法直接通过tftp刷机。处理方法很简单，就是在sysupgrade文件之前增加128KB的u-boot前缀即可。具体请参考以下方法（生成方法在Makefile里）：
 {{{
-svn co https://openwrt-hiwifi.googlecode.com/svn/trunk/tw150v1
+svn co https://openwrt-hiwifi.googlecode.com/svn/branches/hiwifi-hc6361-tools/tw150v1
 cd tw150v1
 make
 }}}
@@ -77,4 +77,4 @@ opkg install luci
 
 ----
 
-= OpenWrt Firmware Patch for HiWiFi HC6361 (tw150v1) =
+= !OpenWrt Firmware Patch for !HiWiFi HC6361 (tw150v1) =
