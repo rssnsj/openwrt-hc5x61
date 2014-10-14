@@ -3,7 +3,7 @@
 KDIR = $(shell ls -d ../openwrt-ramips/build_dir/target-mipsel_*)/linux-ramips_mt7620a
 HOSTBIN = ../openwrt-ramips/staging_dir/host/bin
 
-all: openwrt-HC5661-recovery.bin openwrt-HC5761-recovery.bin
+all: openwrt-HC5761-recovery.bin openwrt-HC5661-recovery.bin
 	ln -sf $< recovery.bin
 	@echo ""
 	@echo ">>>> Final images in 'recovery.bin' format:"
@@ -47,7 +47,7 @@ openwrt-HC5761-recovery.bin: vmlinux-mt7620a root.squashfs
 	  dd if=openwrt-HC5761-sysupgrade.bin || exit 1; \
 	) > $@ || ( rm -vf $@; exit 1 );
 
-vmlinux-mt7620a: $(KDIR)/vmlinux-mt7620a
+vmlinux-mt7620a: $(KDIR)/vmlinux-hiwifi-hc5761
 	cp -vf $< $@
 
 root.squashfs: $(KDIR)/root.squashfs
