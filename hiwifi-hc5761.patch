@@ -22,7 +22,7 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 ===================================================================
 --- target/linux/ramips/dts/HiWiFi-HC5761.dts	(revision 0)
 +++ target/linux/ramips/dts/HiWiFi-HC5761.dts	(revision 0)
-@@ -0,0 +1,158 @@
+@@ -0,0 +1,163 @@
 +/dts-v1/;
 +
 +/include/ "mt7620a.dtsi"
@@ -82,17 +82,22 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 +
 +				partition@50000 {
 +					label = "firmware";
-+					reg = <0x50000 0xfb0000>;
++					reg = <0x50000 0xf80000>;
 +				};
 +
-+				partition@60000 {
++				partition@fd0000 {
 +					label = "hwf_config";
-+					reg = <0x60000 0x10000>;
++					reg = <0xfd0000 0x10000>;
 +				};
 +
-+				partition@70000 {
++				partition@fe0000 {
 +					label = "bdinfo";
-+					reg = <0x70000 0x10000>;
++					reg = <0xfe0000 0x10000>;
++				};
++
++				partition@ff0000 {
++					label = "backup";
++					reg = <0xff0000 0x10000>;
 +				};
 +			};
 +		};
