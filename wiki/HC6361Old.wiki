@@ -1,5 +1,5 @@
-#summary OpenWrt Firmware Patch for HiWiFi Router (tw150v1)
-= 极路由HC6361 OpenWrt固件补丁 (HiWiFi tw150v1) =
+#summary [Deprecated] OpenWrt Firmware Patch for HiWiFi Router (tw150v1)
+= 【旧版】极路由HC6361 OpenWrt固件补丁 (HiWiFi tw150v1) =
 
 == 文件下载 ==
  * 编译日期：2014/06/22
