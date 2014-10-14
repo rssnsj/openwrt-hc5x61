@@ -6,7 +6,10 @@ packages_required = build-essential git flex gettext libncurses5-dev \
   unzip gawk liblzma-dev u-boot-tools rsync
 openwrt_feeds = libevent2 luci luci-app-radvd luci-app-samba xl2tpd
 
-final: s_install_feeds
+final: s_build_openwrt
+	make -C recovery.bin
+
+s_build_openwrt: s_install_feeds
 	@cd $(openwrt_dir); \
 		if [ -e .config ]; then \
 			mv -vf .config .config.bak; \
@@ -14,11 +17,6 @@ final: s_install_feeds
 		fi; \
 		cp -vf ../config-hiwifi-hc5761 .config
 	make -C $(openwrt_dir) V=s -j4
-
-clean:
-	rm -f s_build_openwrt
-	make clean -C recovery.bin
-	make clean -C $(openwrt_dir) V=s
 
 s_install_feeds: s_update_feeds
 	@cd $(openwrt_dir); ./scripts/feeds install $(openwrt_feeds);
@@ -59,4 +57,9 @@ menuconfig: s_install_feeds
 	@touch config-hiwifi-hc5761  # change modification time
 	@make -C $(openwrt_dir) menuconfig
 	@[ $(openwrt_dir)/.config -nt config-hiwifi-hc5761 ] && cp -vf $(openwrt_dir)/.config config-hiwifi-hc5761 || :
+
+clean:
+	rm -f s_build_openwrt
+	make clean -C recovery.bin
+	make clean -C $(openwrt_dir) V=s
 
