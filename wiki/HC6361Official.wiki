@@ -1,4 +1,4 @@
-#summary Generate !HiWiFi HC6361 (tw150v1) firmware with !OpenWrt official code
+#summary Generate HiWiFi HC6361 (tw150v1) firmware with OpenWrt code
 
 = 极路由HC6361 !OpenWrt固件补丁 (!HiWiFi tw150v1) =
 
