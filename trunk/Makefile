@@ -4,7 +4,7 @@ hiwifi_root = $(shell pwd)
 openwrt_dir = openwrt-ramips
 packages_required = build-essential git flex gettext libncurses5-dev \
   unzip gawk liblzma-dev u-boot-tools rsync
-openwrt_feeds = libevent2 luci luci-app-radvd luci-app-samba
+openwrt_feeds = libevent2 luci luci-app-radvd luci-app-samba xl2tpd
 
 final: s_install_feeds
 	@cd $(openwrt_dir); \
@@ -22,6 +22,7 @@ clean:
 
 s_install_feeds: s_update_feeds
 	@cd $(openwrt_dir); ./scripts/feeds install $(openwrt_feeds);
+	@svn co svn://svn.openwrt.org/openwrt/packages/net/pptpd $(openwrt_dir)/package/pptpd
 	@touch s_install_feeds
 
 s_update_feeds: s_hiwifi_patch
