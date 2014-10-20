@@ -1179,7 +1179,7 @@ CONFIG_PACKAGE_jsonfilter=y
 # CONFIG_PACKAGE_libatomic is not set
 CONFIG_PACKAGE_libc=y
 CONFIG_PACKAGE_libgcc=y
-# CONFIG_PACKAGE_libpthread is not set
+CONFIG_PACKAGE_libpthread=y
 # CONFIG_PACKAGE_librt is not set
 # CONFIG_PACKAGE_libstdcpp is not set
 # CONFIG_PACKAGE_libthread-db is not set
@@ -1309,7 +1309,7 @@ CONFIG_PACKAGE_kmod-fs-ntfs=y
 # CONFIG_PACKAGE_kmod-fs-udf is not set
 CONFIG_PACKAGE_kmod-fs-vfat=y
 # CONFIG_PACKAGE_kmod-fs-xfs is not set
-# CONFIG_PACKAGE_kmod-fuse is not set
+CONFIG_PACKAGE_kmod-fuse=y
 
 #
 # FireWire support
@@ -1459,6 +1459,7 @@ CONFIG_PACKAGE_kmod-nf-nathelper-extra=y
 # CONFIG_PACKAGE_kmod-nft-core is not set
 # CONFIG_PACKAGE_kmod-nft-nat is not set
 # CONFIG_PACKAGE_kmod-nft-nat6 is not set
+CONFIG_PACKAGE_kmod-salist=y
 
 #
 # Network Devices
@@ -1543,6 +1544,7 @@ CONFIG_PACKAGE_kmod-pppoe=y
 CONFIG_PACKAGE_kmod-pppol2tp=y
 CONFIG_PACKAGE_kmod-pppox=y
 # CONFIG_PACKAGE_kmod-pptp is not set
+CONFIG_PACKAGE_kmod-proto-bridge=y
 # CONFIG_PACKAGE_kmod-rxrpc is not set
 # CONFIG_PACKAGE_kmod-sched is not set
 # CONFIG_PACKAGE_kmod-sched-connmark is not set
@@ -2365,6 +2367,11 @@ CONFIG_PACKAGE_wpad-mini=y
 # CONFIG_PACKAGE_badblocks is not set
 CONFIG_PACKAGE_e2fsprogs=y
 # CONFIG_PACKAGE_fuse-utils is not set
+CONFIG_PACKAGE_ntfs-3g=y
+# CONFIG_PACKAGE_NTFS-3G_USE_LIBFUSE is not set
+# CONFIG_PACKAGE_ntfs-3g-low is not set
+# CONFIG_PACKAGE_ntfs-3g-utils is not set
+# CONFIG_PACKAGE_ntfsprogs_ntfs-3g is not set
 # CONFIG_PACKAGE_owfs is not set
 # CONFIG_PACKAGE_owshell is not set
 # CONFIG_PACKAGE_resize2fs is not set
