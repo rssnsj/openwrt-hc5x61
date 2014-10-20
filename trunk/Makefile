@@ -41,8 +41,9 @@ s_checkout_svn: s_check_hostdeps
 
 s_check_hostdeps:
 # 1. Install required host components:
-	@for p in $(packages_required); do \
-		dpkg -s $$p &>/dev/null || to_install="$$to_install$$p "; \
+	@which dpkg >/dev/null 2>&1 || exit 0; \
+	for p in $(packages_required); do \
+		dpkg -s $$p >/dev/null 2>&1 || to_install="$$to_install$$p "; \
 	done; \
 	if [ -n "$$to_install" ]; then \
 		echo "Please install missing packages by running the following commands:"; \
