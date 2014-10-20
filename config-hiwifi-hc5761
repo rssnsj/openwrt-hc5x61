@@ -1828,8 +1828,8 @@ CONFIG_LIBCURL_HTTP=y
 # CONFIG_LIBCURL_THREADED_RESOLVER is not set
 # CONFIG_LIBCURL_TLS-SRP is not set
 # CONFIG_LIBCURL_ZLIB is not set
+# CONFIG_PACKAGE_libdb47-full is not set
 # CONFIG_PACKAGE_libdb47 is not set
-# CONFIG_PACKAGE_libdb47xx is not set
 CONFIG_PACKAGE_libevent2=y
 # CONFIG_PACKAGE_libevent2-core is not set
 # CONFIG_PACKAGE_libevent2-extra is not set
@@ -2441,7 +2441,7 @@ CONFIG_PACKAGE_libjson-script=y
 # CONFIG_PACKAGE_mcookie is not set
 # CONFIG_PACKAGE_mdadm is not set
 # CONFIG_PACKAGE_mount-utils is not set
-CONFIG_PACKAGE_mountd=y
+# CONFIG_PACKAGE_mountd is not set
 # CONFIG_PACKAGE_namei is not set
 # CONFIG_PACKAGE_ocf-crypto-headers is not set
 # CONFIG_PACKAGE_openssl-util is not set
