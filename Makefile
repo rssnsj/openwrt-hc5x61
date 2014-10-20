@@ -3,8 +3,8 @@
 hiwifi_root = $(shell pwd)
 openwrt_dir = openwrt-ramips
 packages_required = build-essential git flex gettext libncurses5-dev \
-  unzip gawk liblzma-dev u-boot-tools rsync
-openwrt_feeds = libevent2 luci luci-app-radvd luci-app-samba xl2tpd
+  unzip gawk liblzma-dev u-boot-tools
+openwrt_feeds = libevent2 luci luci-app-radvd luci-app-samba xl2tpd ntfs-3g
 
 final: s_build_openwrt
 	make -C recovery.bin
