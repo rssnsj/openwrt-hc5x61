@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ ! -f $OPKG_INTERCEPT_DIR/ldconfig ]; then
+  echo "ldconfig" > $OPKG_INTERCEPT_DIR/ldconfig
+  chmod +x $OPKG_INTERCEPT_DIR/ldconfig
+fi
+

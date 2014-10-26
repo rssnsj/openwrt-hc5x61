@@ -1,0 +1,42 @@
+
+See issue list: http://code.google.com/p/opkg/issues/list
+
+
+ * Regression test suite.
+
+ * Fix comments marked "XXX".
+
+ * Clean up out of date comments.
+
+ * Consistent indentation.
+
+ * Propagate errors up the call stack. In particular, unarchive.c fails to do
+   this. Errors and error messages must be usable by libopkg frontends.
+   Don't try to use errno after its been clobbered by other libc calls.
+
+ * Remove dead and duplicate code. Refactor duplicated functionality.
+
+ * Remove pkg_info_preinstall_check().
+
+ * Reduce memory used per pkg_t and peak memory use in general.
+
+ * #includes are a mess.
+
+ * Refactor opkg_install_pkg() into more precise functions.
+
+ * pkg_hash_fetch_best_installation_candidate() is linear search O(P*PN)
+   and is slow (frequently called).
+      P provider
+      PN pkgs in a provider
+   It can be O(P) if a hash table is used.
+
+ * Update libbb.
+
+
+
+FEATURES
+
+ * Start with all "XXX: FEATURE" comments. Remove them if they are bogus.
+
+ * Improve dpkg compatibility, according to the Debian Policy Manual.
+   http://www.debian.org/doc/debian-policy/ch-controlfields.html

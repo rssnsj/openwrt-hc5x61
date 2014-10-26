@@ -1,0 +1,12 @@
+OPKG Package Management System
+==============================
+
+Opkg is a lightweight package management system based on Ipkg.
+
+Website: http://code.google.com/p/opkg/
+Mailing list: http://groups.google.com/group/opkg-devel
+Bug tracker: http://code.google.com/p/opkg/issues/list
+
+The previous website can still be found at:
+http://wiki.openmoko.org/wiki/Opkg
+

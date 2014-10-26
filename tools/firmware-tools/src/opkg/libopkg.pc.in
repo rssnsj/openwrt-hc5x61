@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libopkg
+Description: opkg package manager library
+Version: @VERSION@
+Libs: -L${libdir} -lopkg
+Cflags: -I${includedir}/libopkg
+

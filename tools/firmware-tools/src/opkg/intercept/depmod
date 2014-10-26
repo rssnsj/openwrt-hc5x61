@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ "x$1" = "x-a" ] || [ "x$1" = "x-A" ]; then
+  echo "depmod $@" >> $OPKG_INTERCEPT_DIR/depmod
+  sort -u $OPKG_INTERCEPT_DIR/depmod > $OPKG_INTERCEPT_DIR/depmod.tmp
+  mv $OPKG_INTERCEPT_DIR/depmod.tmp $OPKG_INTERCEPT_DIR/depmod
+  chmod +x $OPKG_INTERCEPT_DIR/depmod
+  exit 0
+fi
+
+/sbin/depmod $*
+

@@ -1,0 +1,37 @@
+.TH "@PACKAGE_NAME@" 1 "@CLEAN_DATE@" "@PACKAGE_STRING@" "User Commands"
+.SH NAME
+opkg-key \- utility to manage opkg's list of trusted keys
+
+.
+.SH SYNOPSIS
+.B \fBopkg-key\fP [\fIOPTIONS...\fP] \fIsub-command\fP [\fIARGUMENTS...\fP]
+.
+.SH DESCRIPTION
+\fBopkg-key\fP is a utility to manage opkg's list of trusted keys. Opkg
+is a lightweight package management system based on Ipkg.
+.
+.SH SUB-COMMANDS
+.TP
+\fBadd <\fIfile\fP>\fR
+add the key contained in \fIfile\fP ('\-' for stdin)
+.TP
+\fBdel <\fIkeyid\fP>\fR
+remove the key \fIkeyid\fP
+.TP
+\fBlist\fR
+list trusted keys
+.
+.SH OPTIONS
+.TP
+\fB\-o <\fIroot\fP>\fR
+use \fIroot\fP as the offline root directory
+.
+.SH "REPORTING BUGS"
+Report bugs to http://code.google.com/p/opkg/issues/list
+.
+.SH COPYRIGHT
+.P
+Copyright \(co Opkg development team.
+.P
+Copyright \(co Ipkg development team.
+.

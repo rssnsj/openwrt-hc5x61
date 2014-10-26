@@ -1,0 +1,190 @@
+.TH "@PACKAGE_NAME@" 1 "@CLEAN_DATE@" "@PACKAGE_STRING@" "User Commands"
+.SH NAME
+opkg-cl \- command line utility to install, upgrade and uninstall opkg
+software packages
+.
+.SH SYNOPSIS
+.B \fBopkg-cl\fP [\fIOPTIONS...\fP] \fIsub-command\fP [\fIARGUMENTS...\fP]
+.
+.SH DESCRIPTION
+\fBopkg-cl\fP is a simple utility to install, upgrade and uninstall opkg
+software packages. Opkg is a lightweight package management system based 
+on Ipkg.
+.
+.SH "OPTIONS AND COMMANDS"
+.SS SUB-COMMANDS : PACKAGE MANIPULATION
+.TP
+\fBupdate\fR
+Update list of available packages
+.TP
+\fBupgrade\fR
+Upgrade installed packages
+.TP
+\fBinstall <\fIpackage(s)\fP>\fR
+Install \fIpackage(s)\fP
+.TP
+\fBconfigure <\fIpackage(s)\fP>\fR
+Configure unpacked \fIpackage(s)\fP
+.TP
+\fBremove <\fIpackages\fP|\fIregexp\fP>\fR
+Remove \fIpackage(s)\fP. \fIregexp\fP could be something like 'pkgname*' '*file*' or similar
+.TP
+\fBflag <\fIflag\fP> <\fIpackages\fP>\fR
+Flag \fIpackage(s)\fP. Available flags (one per invocation):
+.TS
+tab(@);
+l. 
+hold
+noprune
+user
+ok
+installed
+unpacked
+.TE
+.SS INFORMATIONAL SUB-COMMANDS
+.TP
+\fBlist\fR
+List available packages
+.TP
+\fBlist-installed\fR
+List installed packages
+.TP
+\fBlist-upgradable\fR
+List installed and upgradable packages
+.TP
+\fBlist-changed-conffiles\fR
+List package configuration files which have been modified after installation
+.TP
+\fBfiles <\fIpackage\fP>\fR
+List files belonging to \fIpackage\fP
+.TP
+\fBsearch <\fIfile\fP|\fIregexp\fP>\fR
+List package providing \fIfile\fP
+.TP
+\fBinfo [\fIpackage\fP|\fIregexp\fP]\fR
+Display all info for selected packages
+.TP
+\fBstatus [\fIpackage\fP|\fIregexp\fP]\fR
+Display all statuses for selected packages
+.TP
+\fBdownload <\fIpackage\fP>\fR
+Download \fIpackage\fP to current directory
+.TP
+\fBcompare-version <\fIversion1\fP> <\fIoperator\fP> <\fIversion2\fP>\fR
+compare versions using following operators :
+.TS
+tab(@);
+c l. 
+<<@less than
+<@less than or equal to
+<=@less than or equal to
+ =@equal to
+>=@greater than or equal to
+>@greater than or equal to
+>>@greater than
+.TE
+.TP
+\fBprint-architecture\fR
+List installable package architectures
+.TP
+\fBwhatdepends [\fI\-A\fP] <\fIpackage(s)\fP|\fIregexp\fP>\fR
+.TP
+\fBwhatdependsrec [\fI\-A\fP] <\fIpackage(s)\fP|\fIregexp\fP>\fR
+.TP
+\fBwhatprovides [\fI\-A\fP] <\fIpackage(s)\fP|\fIregexp\fP>\fR
+.TP
+\fBwhatconflicts [\fI\-A\fP] <\fIpackage(s)\fP|\fIregexp\fP>\fR
+.TP
+\fBwhatreplaces [\fI\-A\fP] <\fIpackage(s)\fP|\fIregexp\fP>\fR
+
+.SS OPTIONS
+.TP 
+\fB\-A\fR
+Query all packages not just those installed
+.
+.TP
+\fB\-v <\fIlevel\fP>, --verbosity <\fIlevel\fP>\fR
+Set verbosity level to \fIlevel\fP. Verbosity levels :
+.TS
+tab(@);
+l l.
+0@errors only
+1@normal messages (default)
+2@informative messages
+3@debug
+4@debug level 2
+.TE
+.
+.TP
+\fB\-f <\fIconf_file\fP>, \fB\--conf <\fIconf_file\fP>\fR
+Use \fIconf_file\fP as the opkg configuration file
+.TP
+\fB\--cache <\fIdirectory\fP>\fR
+Use a package cache
+.TP
+\fB\-d <\fIdest_name\fP>, \fB\--dest <\fIdest_name\fP>\fR
+Use \fIdest_name\fP as the the root directory for
+package installation, removal, upgrading. \fIdest_name\fP should be a 
+defined dest name from the configuration file, (but can also be a
+directory name in a pinch).
+.TP 
+\fB\-o <\fIdirectory\fP>, \fB\--offline-root <\fIdirectory\fP>\fR
+Use \fIdirectory\fP as the root directory for offline installation of 
+packages.
+.TP 
+\fB\--add-dest <\fIname\fP>:<\fIpath\fP>\fR
+Register \fIpath\fP as installation target \fIname\fP for use in
+conjunction with \fB\--dest\fP
+.TP 
+\fB\--add-arch <\fIarch\fP>:<\fIprio\fP>\fR
+Register the package architecture \fIarch\fP with the numeric
+priority \fIprio\fP. Lower priorities take precedence.
+.SS FORCE OPTIONS
+.TP 
+\fB\--force-depends \fR
+Install/remove despite failed dependencies
+.TP 
+\fB\--force-maintainer \fR
+Overwrite preexisting config files
+.TP 
+\fB\--force-reinstall \fR
+Reinstall package(s)
+.TP 
+\fB\--force-overwrite\fR
+Overwrite files from other package(s)
+.TP 
+\fB\--force-downgrade\fR
+Allow opkg-cl to downgrade packages
+.TP 
+\fB\--force-space \fR
+Disable free space checks
+.TP 
+\fB\--force-postinstall \fR
+Execute package postinstall scripts in offline installation mode
+.TP 
+\fB\--noaction\fR
+No action \- test only
+.TP 
+\fB\--download-only\fR
+No action \- download only
+.TP 
+\fB\--nodeps\fR
+Do not follow dependencies
+.TP 
+\fB\--force-removal-of-dependent-packages\fR
+Remove package and all dependencies
+.TP 
+\fB\--autoremove\fR
+Remove packages that were installed automatically to satisfy dependencies
+.TP 
+\fB\-t <\fIdirectory\fP>, \--tmp-dir <\fIdirectory\fP>\fR
+Specify \fIdirectory\fP as temporary directory
+.
+.SH "REPORTING BUGS"
+Report bugs to http://code.google.com/p/opkg/issues/list
+.
+.P
+Copyright \(co Opkg development team.
+.P
+Copyright \(co Ipkg development team.
+.
