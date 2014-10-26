@@ -14,6 +14,7 @@ opkg/src/opkg-cl:
 clean:
 	make clean -C squashfs-tools
 	make clean -C padjffs2
+	make clean -C hexof
 	make clean -C opkg
 
 install: all
@@ -21,7 +22,5 @@ install: all
 	install -m755 padjffs2/padjffs2 /usr/bin/
 	install -m755 opkg/src/opkg-cl /usr/bin/opkg
 	install -m755 hexof/hexof /usr/bin/
-	install -m755 ../merge-firmware.sh /usr/bin/
-	mkdir -p /usr/share/firmware-merger
-	cp -f ../*-oemparts.bin /usr/share/firmware-merger/
+	install -m755 ../openwrt-repack.sh /usr/bin/
 
