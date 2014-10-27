@@ -168,11 +168,9 @@ do_firmware_repack()
 	print_green ">>> Repackaging the modified firmware ..."
 
 	mksquashfs $SQUASHFS_ROOT root.squashfs -nopad -noappend -root-owned -comp xz -Xpreset 9 -Xe -Xlc 0 -Xlp 2 -Xpb 2 -b 256k -p '/dev d 755 0 0' -p '/dev/console c 600 0 0 5 1' -processors 1
-	dd if=root.squashfs of=root.squashfs.128k bs=128k conv=sync
-	cat uImage.bin root.squashfs.128k > "$new_romfile"
+	cat uImage.bin root.squashfs > "$new_romfile"
 	padjffs2 "$new_romfile" 4 8 16 64 128 256
 
-	# Combine the prefix data and SquashFS to build the final sysupgrade image
 	print_green ">>> Done. New firmware: $new_romfile"
 
 	[ -d /tftpboot ] && cp -vf "$new_romfile" /tftpboot/recovery.bin
