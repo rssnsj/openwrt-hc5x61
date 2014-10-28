@@ -150,9 +150,11 @@ do_firmware_repack()
 	print_green ">>> Extracting kernel, rootfs partitions ..."
 
 	# Partition: kernel
-	dd if="$old_romfile" bs=1 count=$squashfs_offset > uImage.bin
+	# dd if="$old_romfile" bs=1 count=$squashfs_offset > uImage.bin
+	head "$old_romfile" -c$squashfs_offset > uImage.bin
 	# Partition: rootfs
-	dd if="$old_romfile" bs=1 skip=$squashfs_offset > root.squashfs.orig
+	# dd if="$old_romfile" bs=1 skip=$squashfs_offset > root.squashfs.orig
+	tail "$old_romfile" -c+`expr $squashfs_offset + 1` > root.squashfs.orig
 
 	print_green ">>> Extracting SquashFS into directory squashfs-root/ ..."
 	# Extract the file system, to squashfs-root/
