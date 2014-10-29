@@ -1,7 +1,8 @@
 #!/bin/bash -e
 
 export SQUASHFS_ROOT=`pwd`/squashfs-root
-export ENABLE_ROOT_LOGIN=Y
+ENABLE_ROOT_LOGIN=Y
+ENABLE_WIRELESS=N
 OPKG_REMOVE_LIST=
 OPKG_INSTALL_LIST=
 ROOTFS_CMDS=
@@ -41,7 +42,8 @@ Options:
  -r <package>              remove opkg package, can be multiple
  -i <ipk_file>             install package with ipk file path or URL, can be multiple
  -e                        enable root login
- -x <commands>             execute commands after opkg operations
+ -w                        enable wireless by default
+ -x <commands>             execute commands after all other operations
 EOF
 }
 
@@ -53,6 +55,38 @@ opkg_exec()
 		--add-dest root:/ \
 		--add-arch all:100 --add-arch $MAJOR_ARCH:200 "$@"
 }
+
+__opkg_all_deps()
+{
+	local j="$1"
+	[ -n "$j" ] || return 1
+	touch "$j"
+	local k
+	opkg_exec info "$j" | awk -F: '/^Depends:/{print $2}' |
+		sed 's/([^)]*)//g' | sed 's/,/ /g' | xargs -n1 | grep -v '^[ \t]*$' |
+		while read k; do
+			[ -e "$k" ] || __opkg_all_deps "$k"
+		done || :
+	return 0
+}
+opkg_all_deps()
+{
+	local m="$1"
+	local OO=/tmp/oo-$$
+	rm -rf $OO
+	mkdir -p $OO
+	(
+		cd $OO
+		if __opkg_all_deps "$m"; then
+			rm -f "$m" firewall iptables kernel kmod-ipt-core kmod-ipt-nat kmod-nf-nat libc libgcc
+			echo *
+		fi
+	)
+	rm -rf $OO
+}
+
+
+
 
 modify_rootfs()
 {
@@ -69,6 +103,15 @@ modify_rootfs()
 	for ipkg in $OPKG_INSTALL_LIST; do
 		opkg_exec install "$ipkg"
 	done
+
+	# Enable wireless on first startup
+	if [ "$ENABLE_WIRELESS" = Y ]; then
+		sed -i '/option \+disabled \+1/d;/# *REMOVE THIS LINE/d' $SQUASHFS_ROOT/lib/wifi/mac80211.sh
+	fi
+
+	#echo _______________________________________
+	#opkg_all_deps luci-app-mwan3
+	#echo _______________________________________
 
 	(
 		cd $SQUASHFS_ROOT
@@ -102,6 +145,9 @@ do_firmware_repack()
 				;;
 			-e)
 				ENABLE_ROOT_LOGIN=Y
+				;;
+			-w)
+				ENABLE_WIRELESS=Y
 				;;
 			-x)
 				shift 1
