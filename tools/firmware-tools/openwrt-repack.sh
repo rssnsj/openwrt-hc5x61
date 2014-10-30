@@ -49,6 +49,11 @@ EOF
 
 opkg_exec()
 {
+	# Get system architecture on first execution
+	if [ -z "$MAJOR_ARCH" ]; then
+		MAJOR_ARCH=`cat "$SQUASHFS_ROOT"/usr/lib/opkg/status | awk -F': *' '/^Architecture:/&&$2!~/^all$/{print $2}' | sort -u | head -n1`
+	fi
+
 	IPKG_INSTROOT="$SQUASHFS_ROOT" IPKG_CONF_DIR="$SQUASHFS_ROOT"/etc IPKG_OFFLINE_ROOT="$SQUASHFS_ROOT" \
 	opkg --offline-root "$SQUASHFS_ROOT" \
 		--force-depends --force-overwrite --force-maintainer \
@@ -56,6 +61,10 @@ opkg_exec()
 		--add-arch all:100 --add-arch $MAJOR_ARCH:200 "$@"
 }
 
+ipkg_basename()
+{
+	basename "$1" | awk -F_ '{print $1}'
+}
 __opkg_all_deps()
 {
 	local j="$1"
@@ -71,21 +80,30 @@ __opkg_all_deps()
 }
 opkg_all_deps()
 {
-	local m="$1"
 	local OO=/tmp/oo-$$
 	rm -rf $OO
+
 	mkdir -p $OO
 	(
 		cd $OO
-		if __opkg_all_deps "$m"; then
-			rm -f "$m" firewall iptables kernel kmod-ipt-core kmod-ipt-nat kmod-nf-nat libc libgcc
-			echo *
-		fi
+		local m
+		for m in "$@"; do
+			__opkg_all_deps `ipkg_basename "$m"`
+		done
+		rm -f "$@" firewall iptables kernel kmod-ipt-core kmod-ipt-nat kmod-nf-nat libc libgcc
+		ls -d * >/dev/null 2>&1 && echo * || :
 	)
 	rm -rf $OO
 }
 
-
+opkg_package_exists()
+{
+	if [ -e "$SQUASHFS_ROOT"/usr/lib/opkg/info/"$1".control ]; then
+		return 0
+	else
+		return 1
+	fi
+}
 
 
 modify_rootfs()
@@ -104,14 +122,20 @@ modify_rootfs()
 		opkg_exec install "$ipkg"
 	done
 
+	local dependency_ok=Y
+	for ipkg in `opkg_all_deps $OPKG_INSTALL_LIST`; do
+		if ! opkg_package_exists "$ipkg"; then
+			[ "$dependency_ok" = Y ] && echo "*** Missing opkg dependencies:" || :
+			echo " $ipkg"
+			dependency_ok=N
+		fi
+	done
+	[ "$dependency_ok" != Y ] && exit 2
+
 	# Enable wireless on first startup
 	if [ "$ENABLE_WIRELESS" = Y ]; then
 		sed -i '/option \+disabled \+1/d;/# *REMOVE THIS LINE/d' $SQUASHFS_ROOT/lib/wifi/mac80211.sh
 	fi
-
-	#echo _______________________________________
-	#opkg_all_deps luci-app-mwan3
-	#echo _______________________________________
 
 	(
 		cd $SQUASHFS_ROOT
@@ -119,7 +143,7 @@ modify_rootfs()
 		sh -c "$ROOTFS_CMDS" || :
 	)
 
-	rm -rf tmp/*
+	rm -rf $SQUASHFS_ROOT/tmp/*
 }
 
 do_firmware_repack()
