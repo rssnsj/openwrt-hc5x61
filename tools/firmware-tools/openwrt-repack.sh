@@ -55,85 +55,45 @@ opkg_exec()
 	fi
 
 	IPKG_INSTROOT="$SQUASHFS_ROOT" IPKG_CONF_DIR="$SQUASHFS_ROOT"/etc IPKG_OFFLINE_ROOT="$SQUASHFS_ROOT" \
-	opkg --offline-root "$SQUASHFS_ROOT" \
+	opkg --offline-root "$SQUASHFS_ROOT" --conf "$SQUASHFS_ROOT"/etc/opkg.conf \
 		--force-depends --force-overwrite --force-maintainer \
 		--add-dest root:/ \
-		--add-arch all:100 --add-arch $MAJOR_ARCH:200 "$@"
+		--add-arch all:100 --add-arch $MAJOR_ARCH:200 "$@" || return $?
 }
-
-ipkg_basename()
-{
-	basename "$1" | awk -F_ '{print $1}'
-}
-__opkg_all_deps()
-{
-	local j="$1"
-	[ -n "$j" ] || return 1
-	touch "$j"
-	local k
-	opkg_exec info "$j" | awk -F: '/^Depends:/{print $2}' |
-		sed 's/([^)]*)//g' | sed 's/,/ /g' | xargs -n1 | grep -v '^[ \t]*$' |
-		while read k; do
-			[ -e "$k" ] || __opkg_all_deps "$k"
-		done || :
-	return 0
-}
-opkg_all_deps()
-{
-	local OO=/tmp/oo-$$
-	rm -rf $OO
-
-	mkdir -p $OO
-	(
-		cd $OO
-		local m
-		local n=
-		for m in "$@"; do
-			m=`ipkg_basename "$m"`
-			n="$n$m "
-			__opkg_all_deps "$m"
-		done
-		rm -f $n firewall iptables kernel kmod-ipt-core kmod-ipt-nat kmod-nf-nat libc libgcc
-		ls -d * >/dev/null 2>&1 && echo * || :
-	)
-	rm -rf $OO
-}
-
-opkg_package_exists()
-{
-	if [ -e "$SQUASHFS_ROOT"/usr/lib/opkg/info/"$1".control ]; then
-		return 0
-	else
-		return 1
-	fi
-}
-
 
 modify_rootfs()
 {
+	local __rc=0
+
 	# Uninstall old packages
 	local ipkg
 	for ipkg in $OPKG_REMOVE_LIST; do
 		opkg_exec remove "$ipkg"
 	done
+
 	# Install extra ipk packages
 	for ipkg in ipk.$MAJOR_ARCH/*.ipk ipk.$MODEL_NAME/*.ipk; do
 		[ -f "$ipkg" ] || continue
-		opkg_exec install "$ipkg"
+		opkg_exec install "$ipkg" || __rc=104
 	done
-	for ipkg in $OPKG_INSTALL_LIST; do
-		opkg_exec install "$ipkg"
-	done
+	if [ -n "$OPKG_INSTALL_LIST" ]; then
+		opkg_exec update
+	fi
+	opkg_exec install $OPKG_INSTALL_LIST || __rc=104
 
-	local dependency_ok=Y
-	for ipkg in `opkg_all_deps $OPKG_INSTALL_LIST`; do
-		if ! opkg_package_exists "$ipkg"; then
-			[ "$dependency_ok" = Y ] && echo "*** Missing opkg dependencies:" || :
-			echo " $ipkg"
-			dependency_ok=N
+	# Fix auto-start symlinks for /etc/init.d scripts
+	print_green ">>> Checking init.d scripts for newly installed services ..."
+	local initsc
+	for initsc in $SQUASHFS_ROOT/etc/init.d/*; do
+		local initname=`basename "$initsc"`
+		local start_no=`awk -F= '/^START=/{print $2; exit}' "$initsc"`
+		local stop_no=`awk -F= '/^STOP=/{print $2; exit}' "$initsc"`
+		if [ -n "$start_no" -o -n "$stop_no" ] && ! ls -d $SQUASHFS_ROOT/etc/rc.d/*$initname >/dev/null 2>&1; then
+			echo "Setting auto-start for '$initname' ..."
+			[ -n "$start_no" ] && ln -sf ../init.d/$initname $SQUASHFS_ROOT/etc/rc.d/S$start_no$initname || :
+			[ -n "$stop_no" ] && ln -sf ../init.d/$initname $SQUASHFS_ROOT/etc/rc.d/K$stop_no$initname || :
 		fi
 	done
-	[ "$dependency_ok" != Y ] && exit 2
 
 	# Enable wireless on first startup
 	if [ "$ENABLE_WIRELESS" = Y ]; then
@@ -147,12 +107,15 @@ modify_rootfs()
 	)
 
 	rm -rf $SQUASHFS_ROOT/tmp/*
+
+	return $__rc
 }
 
 do_firmware_repack()
 {
 	local old_romfile=
 	local new_romfile=
+	local __rc=0
 
 	# Parse options and parameters
 	local opt
@@ -236,7 +199,12 @@ do_firmware_repack()
 
 	#######################################################
 	print_green ">>> Patching the firmware ..."
-	modify_rootfs
+	# Ignore errors of "opkg install" but exits on other errors
+	if modify_rootfs; then
+		:
+	else
+		[ $? -eq 104 ] && __rc=104 || exit 1
+	fi
 	#######################################################
 
 	# Rebuild SquashFS image
@@ -252,6 +220,8 @@ do_firmware_repack()
 	ln -sf "$new_romfile" recovery.bin
 
 	rm -f root.squashfs* uImage.bin
+
+	exit $__rc
 }
 
 clean_env()
