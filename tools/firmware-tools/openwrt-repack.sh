@@ -87,10 +87,13 @@ opkg_all_deps()
 	(
 		cd $OO
 		local m
+		local n=
 		for m in "$@"; do
-			__opkg_all_deps `ipkg_basename "$m"`
+			m=`ipkg_basename "$m"`
+			n="$n$m "
+			__opkg_all_deps "$m"
 		done
-		rm -f "$@" firewall iptables kernel kmod-ipt-core kmod-ipt-nat kmod-nf-nat libc libgcc
+		rm -f $n firewall iptables kernel kmod-ipt-core kmod-ipt-nat kmod-nf-nat libc libgcc
 		ls -d * >/dev/null 2>&1 && echo * || :
 	)
 	rm -rf $OO
