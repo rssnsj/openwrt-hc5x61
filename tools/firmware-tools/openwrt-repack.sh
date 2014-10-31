@@ -18,6 +18,17 @@ print_green()
 	fi
 }
 
+print_red()
+{
+	if tty -s 2>/dev/null; then
+		echo -ne "\033[31m"
+		echo -n "$@"
+		echo -e "\033[0m"
+	else
+		echo "$@"
+	fi
+}
+
 get_magic_long()
 {
 	dd bs=4 count=1 2>/dev/null 2>/dev/null | hexdump -v -n 4 -e '1/1 "%02x"'
@@ -82,7 +93,7 @@ modify_rootfs()
 	opkg_exec install $OPKG_INSTALL_LIST || __rc=104
 
 	# Fix auto-start symlinks for /etc/init.d scripts
-	print_green ">>> Checking init.d scripts for newly installed services ..."
+	print_green "Checking init.d scripts for newly installed services ..."
 	local initsc
 	for initsc in $SQUASHFS_ROOT/etc/init.d/*; do
 		local initname=`basename "$initsc"`
@@ -158,6 +169,21 @@ do_firmware_repack()
 		esac
 		shift 1
 	done
+
+
+	# Download file if the filename starts with "http*://"
+	case "$old_romfile" in
+		http*://*)
+			local romfile_url="$old_romfile"
+			old_romfile=`basename "$old_romfile"`
+			if [ -f "$old_romfile" ]; then
+				print_red "WARNING: File exists, not downloading original file."
+			else
+				print_green ">>> Downloading file $romfile_url ..."
+				wget -4 "$romfile_url" -O "$old_romfile"
+			fi
+			;;
+	esac
 
 	if [ -z "$old_romfile" -o ! -f "$old_romfile" ]; then
 		echo "*** Invalid source firmware file '$old_romfile'"
