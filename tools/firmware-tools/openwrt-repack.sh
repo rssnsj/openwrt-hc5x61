@@ -76,6 +76,12 @@ modify_rootfs()
 {
 	local __rc=0
 
+	(
+		cd $SQUASHFS_ROOT
+		# Run customized commands
+		sh -c "$ROOTFS_CMDS" || :
+	)
+
 	# Uninstall old packages
 	local ipkg
 	for ipkg in $OPKG_REMOVE_LIST; do
@@ -89,8 +95,8 @@ modify_rootfs()
 	done
 	if [ -n "$OPKG_INSTALL_LIST" ]; then
 		opkg_exec update
+		opkg_exec install $OPKG_INSTALL_LIST || __rc=104
 	fi
-	opkg_exec install $OPKG_INSTALL_LIST || __rc=104
 
 	# Fix auto-start symlinks for /etc/init.d scripts
 	print_green "Checking init.d scripts for newly installed services ..."
@@ -110,12 +116,6 @@ modify_rootfs()
 	if [ "$ENABLE_WIRELESS" = Y ]; then
 		sed -i '/option \+disabled \+1/d;/# *REMOVE THIS LINE/d' $SQUASHFS_ROOT/lib/wifi/mac80211.sh
 	fi
-
-	(
-		cd $SQUASHFS_ROOT
-		# Run customized commands
-		sh -c "$ROOTFS_CMDS" || :
-	)
 
 	rm -rf $SQUASHFS_ROOT/tmp/*
 
