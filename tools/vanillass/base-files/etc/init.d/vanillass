@@ -1,0 +1,142 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2014 HiWiFi Co., Ltd
+# http://www.hiwifi.com/
+
+START=93
+
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+__netmask_to_bits()
+{
+	local netmask="$1"
+	local __masklen=0
+	local __byte
+
+	for __byte in `echo "$netmask" | sed 's/\./ /g'`; do
+		case "$__byte" in
+			255) __masklen=`expr $__masklen + 8`;;
+			254) __masklen=`expr $__masklen + 7`;;
+			252) __masklen=`expr $__masklen + 6`;;
+			248) __masklen=`expr $__masklen + 5`;;
+			240) __masklen=`expr $__masklen + 4`;;
+			224) __masklen=`expr $__masklen + 3`;;
+			192) __masklen=`expr $__masklen + 2`;;
+			128) __masklen=`expr $__masklen + 1`;;
+			0) break;;
+		esac
+	done
+
+	echo "$__masklen"
+}
+
+get_iface_subnet()
+{
+	local iface="$1"
+	local addrline=`ifconfig "$iface" | grep -i '[ \t]inet addr:.*Mask:' | head -n1`
+	[ -z "$addrline" ] && return 1
+	local ipaddr=`expr X"$addrline" : '.*inet addr:\([0-9\.]*\)'`
+	[ -z "$ipaddr" ] && return 1
+	local netmask=`expr X"$addrline" : '.*Mask:\([0-9\.]*\)'`
+	[ -z "$netmask" ] && return 1
+	local masklen=`__netmask_to_bits "$netmask"`
+	echo "$ipaddr/$masklen"
+	return 0
+}
+
+get_iface_ipaddr()
+{
+	local iface="$1"
+	local addrline=`ifconfig "$iface" | grep -i '[ \t]inet addr:.*Mask:' | head -n1`
+	[ -z "$addrline" ] && return 1
+	local ipaddr=`expr X"$addrline" : '.*inet addr:\([0-9\.]*\)'`
+	[ -z "$ipaddr" ] && return 1
+	echo "$ipaddr"
+	return 0
+}
+
+
+SS_REDIR_PORT=7077
+SS_REDIR_PIDFILE=/var/run/ss-redir-go.pid 
+
+start()
+{
+	local subnet gfw_host loc_addr
+
+	stop >/dev/null 2>&1
+
+	# Get network running parameters
+	local_address=`get_iface_ipaddr br-lan`
+	served_subnet=`get_iface_subnet br-lan`
+	[ -z "$local_address" ] && local_address="192.168.199.1"
+	[ -z "$served_subnet" ] && served_subnet="192.168.199.0/24"
+
+	. /etc/default/ss-redir.defs.sh
+
+	###### shadowsocks
+	[ -f $SS_REDIR_PIDFILE ] && kill -9 `cat $SS_REDIR_PIDFILE` 2>/dev/null
+	if ! /usr/lib/vanillass/ss-redir -b:: -l$SS_REDIR_PORT -s$SS_SERVER_ADDR -p$SS_SERVER_PORT \
+		-k"$SS_SERVER_PASSWORD" -m$SS_SERVER_METHOD -f $SS_REDIR_PIDFILE; then
+		user_echo "Failed to start Shadowsocks service. Please reboot your device and retry."
+		user_echo "无法启动Shadowsocks服务, 您可以尝试重启路由器重试."
+		return 1
+	fi
+
+	# HOTFIX: REDIRECT was not loaded on boot in HiWiFi OS
+	insmod ipt_REDIRECT 2>/dev/null
+	insmod xt_REDIRECT 2>/dev/null
+
+	# IPv4 firewall rules
+	iptables -t nat -N shadowsocks_pre
+	iptables -t nat -F shadowsocks_pre
+
+	iptables -t nat -A shadowsocks_pre -m salist --salist local --match-dip -j RETURN
+	iptables -t nat -A shadowsocks_pre -m salist --salist hiwifi --match-dip -j RETURN
+	[ "$SS_MODE" = 1 ] || iptables -t nat -A shadowsocks_pre -m salist --salist china --match-dip -j RETURN
+	iptables -t nat -A shadowsocks_pre -d $SS_SERVER_ADDR -j RETURN
+	iptables -t nat -A shadowsocks_pre -s $served_subnet -p tcp -j REDIRECT --to $SS_REDIR_PORT
+
+	iptables -t nat -I PREROUTING -p tcp -j shadowsocks_pre
+
+	###### dnsmasq
+	# Check SAFE_DNS_SERVER to determine whether to run dnsmasq
+	if [ -n "$SAFE_DNS_SERVER" ]; then
+		case "$SAFE_DNS_SERVER" in
+			*:*'#'*)
+				local __dns_addr=`echo "$SAFE_DNS_SERVER" | awk -F'[#]' '{print $1}'`
+				local __dns_port=`echo "$SAFE_DNS_SERVER" | awk -F'[#]' '{print $2}'`
+				;;
+			*)
+				local __dns_addr=`echo "$SAFE_DNS_SERVER" | awk -F'[:#]' '{print $1}'`
+				local __dns_port=`echo "$SAFE_DNS_SERVER" | awk -F'[:#]' '{print $2}'`
+				;;
+		esac
+		[ -z "$__dns_port" ] && __dns_port=53
+
+		# Convert ss-fanglist.txt to dnsmasq configuration
+		mkdir -p /tmp/dnsmasq.d
+		while read gfw_host; do
+			[ -z "$gfw_host" ] && continue
+			echo "server=/$gfw_host/$__dns_addr#$__dns_port"
+		done < /etc/ss-fanglist.txt > /tmp/dnsmasq.d/ss-fanglist.conf
+		#
+		/etc/init.d/dnsmasq restart
+	fi
+
+	return 0
+}
+
+stop()
+{
+	if [ -f /tmp/dnsmasq.d/ss-fanglist.conf ]; then
+		rm -f /tmp/dnsmasq.d/ss-fanglist.conf
+		/etc/init.d/dnsmasq restart
+	fi
+
+	while iptables -t nat -D PREROUTING -p tcp -j shadowsocks_pre 2>/dev/null; do :; done
+	iptables -t nat -F shadowsocks_pre
+	iptables -t nat -X shadowsocks_pre
+
+	if [ -f $SS_REDIR_PIDFILE ]; then
+		kill -9 `cat $SS_REDIR_PIDFILE`
+		rm -f $SS_REDIR_PIDFILE
+	fi
+}

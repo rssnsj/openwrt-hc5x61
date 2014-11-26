@@ -1,0 +1,280 @@
+<%
+--[[
+	Info	Shadowsocks
+	Author	Adadada <j2eeex@gmail.com>
+	Copyright	2014
+]]--
+
+local ver = require "luci.version"
+local adv_menu = luci.util.get_adv_menu()
+local request_uri = luci.http.getenv("REQUEST_URI")
+local ok, json = pcall(require, "hiwifi.json")
+if not ok then
+  ok, json = pcall(require, "json")
+end
+if not ok then
+  ok, json = pcall(require, "luci.json")
+end
+if not ok then
+  print("*** No 'json' module candidate.")
+  os.exit(9)
+end
+
+-- -------------------------------------------------
+
+-- Translate shell parameters into JSON
+local __param_json_cmd = [[
+###
+if [ -f /etc/default/ss-redir.defs.sh ]; then
+	. /etc/default/ss-redir.defs.sh
+else
+	exit 9
+fi
+SAFE_DNS_PORT=`echo "$SAFE_DNS_SERVER" | awk -F'#' '{print $2}'`
+SAFE_DNS_SERVER=`echo "$SAFE_DNS_SERVER" | awk -F'#' '{print $1}'`
+cat <<EOF
+{"SS_SERVER_ADDR":"$SS_SERVER_ADDR","SS_SERVER_PORT":"$SS_SERVER_PORT","SS_SERVER_PASSWORD":"$SS_SERVER_PASSWORD",
+ "SS_SERVER_METHOD":"$SS_SERVER_METHOD","SAFE_DNS_SERVER":"$SAFE_DNS_SERVER","SAFE_DNS_PORT":"$SAFE_DNS_PORT",
+ "SS_MODE":"$SS_MODE"}
+EOF
+]]
+-- print(__param_json_cmd)
+local param = json.decode(io.popen(__param_json_cmd):read("*a"))
+
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="format-detection" content="telephone=no" />
+<title>HiWiFi 路由器</title>
+<link rel="stylesheet" href="<%=resource%>/web/css/style.css?v=<%=ver.svnRevNum%>" type="text/css"/>
+<script type="text/javascript" src="<%=resource%>/web/js/jquery-1.8.1.min.js?v=<%=ver.svnRevNum%>"></script>
+<script type="text/javascript" src="<%=resource%>/web/js/artDialog/jquery.artDialog.js?skin=blueskin"></script>
+<script src="<%=resource%>/web/js/artDialog/plugins/iframeTools.source.js?v=<%=ver.svnRevNum%>"></script>
+</head>
+
+<style type="text/css">
+table.zone td.tor { text-align:right; width:120px; line-height:14px; }
+#con_stauts { width:300px; }
+</style>
+<body>
+<div class="title">
+	<h2>高级设置<i>设置路由器安全 , 及其他高级设置</i></h2>
+</div>
+<div class="menu">
+	<% include("admin_web/menu/adv_menu") %>
+</div>
+
+<div class="box setup_box" style="height: auto; overflow:auto">
+	<form id="form1"> 
+	
+	<ul class="ullist">
+	<li class="ipt_from">
+		<div class="memu row">
+			<p>
+				<label><font color="red">*</font> 服务器地址</label>
+				<input type="text" name="SS_SERVER_ADDR" class="txt" value="<%=param.SS_SERVER_ADDR%>" />
+			</p>
+			<p>
+				<label><font color="red">*</font> 服务器端口</label>
+				<input type="text" name="SS_SERVER_PORT" class="txt" value="<%=param.SS_SERVER_PORT%>" />
+			</p>
+			<p>
+				<label><font color="red">*</font> 加密密钥</label>
+				<input type="text" name="SS_SERVER_PASSWORD" class="txt" value="<%=param.SS_SERVER_PASSWORD%>" />
+			</p>
+			<p>
+				<label><font color="red">*</font> 加密类型</label>
+				<select name="SS_SERVER_METHOD" class="txt">
+				<%
+					local ss_methods = { "table", "rc4", "aes-128-cfb", "aes-192-cfb", "aes-256-cfb", "bf-cfb",
+							"camellia-128-cfb", "camellia-192-cfb", "camellia-256-cfb", "cast5-cfb", "des-cfb" }
+					for __k, __v in pairs(ss_methods) do
+						if __v == param.SS_SERVER_METHOD then
+							print("<option selected=\"selected\" value=\"" .. __v .. "\">" .. __v .. "</option>")
+						else
+							print("<option value=\"" .. __v .. "\">" .. __v .. "</option>")
+						end
+					end
+				%>
+				</select>
+			</p>
+			<p>
+				<label>&nbsp; 安全DNS</label>
+				<input type="text" name="SAFE_DNS_SERVER" class="txt" style="width:130px;" value="<%=param.SAFE_DNS_SERVER%>" />
+				<label>端口</label>
+				<input type="text" name="SAFE_DNS_PORT" class="txt" style="margin-left:40px;width:50px;" value="<%=param.SAFE_DNS_PORT%>" />
+			</p>
+			<p>
+				<label>&nbsp; 模式</label>
+				<select name="SS_MODE" class="txt">
+					<%
+						local s0 = param.SS_MODE == "0" and "selected=\"selected\"" or ""
+						local s1 = param.SS_MODE == "1" and "selected=\"selected\"" or ""
+					%>
+					<option value="0" <%=s0%>>智能模式</option>
+					<option value="1" <%=s1%>>全局模式</option>
+				</select>
+			</p>
+			
+			<div class="form-row">
+				<p>
+					<label>&nbsp; 状态:</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<span id="con_stauts">读取中... </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+					<a href="javascript:void();" id="start_button">启动</a> 
+					<a href="javascript:void();" id="stop_button">停止</a>
+					<a href="javascript:void();" id="status_button">刷新</a>
+				</p>
+			</div>
+		</div>
+	</li>
+	<li  class="ipt_from">
+		<div class="btnbox">
+			<input type="button" value="<%:保存%>" class="btn" id="submit_button" />
+			<img style="display:none;" id="loading2" src="<%=resource%>/web/js/artDialog/skins/icons/loading.gif" alt="Loading..." />
+		</div>
+	</li>
+	</ul>
+	</form>
+</div>
+<script type="text/javascript">
+var t;
+$(function(){
+        var request_date = {}; 
+        $.getJSON("<%=luci.dispatcher.build_url("api", "geewan","get_shadowsocks")%>",request_date,function(rsp) 
+            { 
+            $("#submit_btn").attr("disabled",false);
+            if (rsp.code == 0){
+            $("input[name='port']").val(rsp.server_port);
+            $("input[name='password']").val(rsp.password);
+            $("input[name='server']").val(rsp.server);
+            $("input[name='timeout']").val(rsp.timeout);
+
+            $("select[name='defaultroute']").val(rsp.defaultroute);
+            $("select[name='enctype']").val(rsp.enctype);
+            $("select[name='dnsserver']").val(rsp.dnsserver);
+
+            var enable = rsp.enable;
+            if (enable == "1"){
+                switch_status(1);
+            } else {
+                switch_status(0);
+            }
+			if(rsp.status == "stopped"){
+				rsp.status = "<span style='color:red'>未运行</span>";
+				//$("#start_shadowsocks").show();
+				//$("#shutdown_shadowsocks").hide();
+			} else if (rsp.status == "running") {
+				rsp.status = "运行中";
+				//$("#start_shadowsocks").hide();
+				//$("#shutdown_shadowsocks").show();
+			} else {
+				rsp.status = "未知";
+			}
+			$("#con_stauts").html(rsp.status);
+	 	}
+	})
+
+	$(".on-off").click(function(){
+        var switch_b = $(this).children("button");
+        var status_now = switch_b.attr("class");
+        var enable = "";
+        if(status_now == "on"){
+            enable="0";
+        } else {
+            enable="1";
+        }
+        $("#loading2").show();
+        $("input[name='enable']").val(enable);
+        
+        var request_date = $("#form1").serializeArray(); 
+        $.getJSON("<%=luci.dispatcher.build_url("api", "geewan","set_shadowsocks_switch")%>",request_date,function(rsp) 
+        {
+            if(status_now == "on"){
+                switch_status(0);
+            } else {
+                switch_status(1);
+            }
+            $("#loading2").hide();  
+        })
+    })
+	
+	function switch_status(status){
+        if (status == 1 || status == "1"){
+            $("#loading").hide();
+            $("#cfg_box").show();
+            $("#adv_cfg").show();
+            $("#shadowsocks_btn_box").show();
+            $("#prompt_box").show();
+            var switch_b = $(".on-off").children("button");
+            switch_b.addClass("on");
+            switch_b.removeClass("off");
+			t = setInterval("update_status()", 7000);
+        } else {
+            $("#loading").html("shadowsocks 加速未打开").show();
+            $("#cfg_box").hide();
+            $("#adv_cfg").hide();
+            $("#shadowsocks_btn_box").hide();
+            $("#prompt_box").hide();
+            var switch_b = $(".on-off").children("button");
+            switch_b.addClass("off");
+            switch_b.removeClass("on");
+			clearInterval(t);
+        }
+    }
+	
+	$("#show_passwd").click(function(){
+            if ($(this).attr('checked')) {
+                $('#password').clone().attr('type','text').insertAfter('#password').prev().remove();
+            } else {
+                $('#password').clone().attr('type','password').insertAfter('#password').prev().remove();
+            }
+     })
+	
+	//提交
+	$("#submit_btn").click(function(){
+		
+		$("#loading2").show();
+		$("#submit_btn").attr("disabled",true);
+		
+		var request_date =  $("#form1").serializeArray(); 
+		$.getJSON("<%=luci.dispatcher.build_url("api", "geewan","set_shadowsocks")%>",request_date,function(rsp) 
+		{ 
+			
+			if(rsp.code == 0){
+				art.dialog({icon:"succeed",title:false,content:"设置成功!"}).lock().time(4);
+			} else {
+				art.dialog({icon:"error",title:false,content:rsp.msg}).lock().time(4);
+			}
+			
+			$("#loading2").hide();
+			$("#submit_btn").attr("disabled",false);
+		})
+	})
+});
+
+function update_status() {
+	var request_date = {};
+	$.getJSON("<%=luci.dispatcher.build_url("api", "geewan","get_shadowsocks_status")%>",request_date,function(rsp)
+	{
+        var status = "";
+		if (rsp.code == 0){
+			if(rsp.status == "stopped"){
+				status = "<span style='color:red'>未运行</span>";
+			} else if (rsp.status == "running") {
+                if (rsp.accel == "yes")
+                    status = "运行中 <span style='color:green'>已加速</span>";
+                else
+                    status = "运行中 <span style='color:red'>未加速</span>";
+			} else {
+				status = "未知";
+			}
+			$("#con_stauts").html(status);
+		}
+	})
+}
+
+</script>
+</body>
+</html>
