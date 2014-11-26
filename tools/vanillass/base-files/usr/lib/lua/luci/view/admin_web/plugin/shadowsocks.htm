@@ -1,7 +1,7 @@
 <%
 --[[
 	Info	Shadowsocks
-	Author	Adadada <j2eeex@gmail.com>
+	Author	Adadada <rssnsj@gmail.com>
 	Copyright	2014
 ]]--
 
@@ -10,14 +10,14 @@ local adv_menu = luci.util.get_adv_menu()
 local request_uri = luci.http.getenv("REQUEST_URI")
 local ok, json = pcall(require, "hiwifi.json")
 if not ok then
-  ok, json = pcall(require, "json")
+	ok, json = pcall(require, "json")
 end
 if not ok then
-  ok, json = pcall(require, "luci.json")
+	ok, json = pcall(require, "luci.json")
 end
 if not ok then
-  print("*** No 'json' module candidate.")
-  os.exit(9)
+	print("*** No 'json' module candidate.")
+	os.exit(9)
 end
 
 -- -------------------------------------------------
@@ -141,26 +141,26 @@ table.zone td.tor { text-align:right; width:120px; line-height:14px; }
 <script type="text/javascript">
 var t;
 $(function(){
-        var request_date = {}; 
-        $.getJSON("<%=luci.dispatcher.build_url("api", "geewan","get_shadowsocks")%>",request_date,function(rsp) 
-            { 
-            $("#submit_btn").attr("disabled",false);
-            if (rsp.code == 0){
-            $("input[name='port']").val(rsp.server_port);
-            $("input[name='password']").val(rsp.password);
-            $("input[name='server']").val(rsp.server);
-            $("input[name='timeout']").val(rsp.timeout);
+		var request_date = {}; 
+		$.getJSON("<%=luci.dispatcher.build_url("api", "geewan","get_shadowsocks")%>",request_date,function(rsp) 
+			{ 
+			$("#submit_btn").attr("disabled",false);
+			if (rsp.code == 0){
+			$("input[name='port']").val(rsp.server_port);
+			$("input[name='password']").val(rsp.password);
+			$("input[name='server']").val(rsp.server);
+			$("input[name='timeout']").val(rsp.timeout);
 
-            $("select[name='defaultroute']").val(rsp.defaultroute);
-            $("select[name='enctype']").val(rsp.enctype);
-            $("select[name='dnsserver']").val(rsp.dnsserver);
+			$("select[name='defaultroute']").val(rsp.defaultroute);
+			$("select[name='enctype']").val(rsp.enctype);
+			$("select[name='dnsserver']").val(rsp.dnsserver);
 
-            var enable = rsp.enable;
-            if (enable == "1"){
-                switch_status(1);
-            } else {
-                switch_status(0);
-            }
+			var enable = rsp.enable;
+			if (enable == "1"){
+				switch_status(1);
+			} else {
+				switch_status(0);
+			}
 			if(rsp.status == "stopped"){
 				rsp.status = "<span style='color:red'>未运行</span>";
 				//$("#start_shadowsocks").show();
@@ -177,60 +177,60 @@ $(function(){
 	})
 
 	$(".on-off").click(function(){
-        var switch_b = $(this).children("button");
-        var status_now = switch_b.attr("class");
-        var enable = "";
-        if(status_now == "on"){
-            enable="0";
-        } else {
-            enable="1";
-        }
-        $("#loading2").show();
-        $("input[name='enable']").val(enable);
-        
-        var request_date = $("#form1").serializeArray(); 
-        $.getJSON("<%=luci.dispatcher.build_url("api", "geewan","set_shadowsocks_switch")%>",request_date,function(rsp) 
-        {
-            if(status_now == "on"){
-                switch_status(0);
-            } else {
-                switch_status(1);
-            }
-            $("#loading2").hide();  
-        })
-    })
+		var switch_b = $(this).children("button");
+		var status_now = switch_b.attr("class");
+		var enable = "";
+		if(status_now == "on"){
+			enable="0";
+		} else {
+			enable="1";
+		}
+		$("#loading2").show();
+		$("input[name='enable']").val(enable);
+		
+		var request_date = $("#form1").serializeArray(); 
+		$.getJSON("<%=luci.dispatcher.build_url("api", "geewan","set_shadowsocks_switch")%>",request_date,function(rsp) 
+		{
+			if(status_now == "on"){
+				switch_status(0);
+			} else {
+				switch_status(1);
+			}
+			$("#loading2").hide();  
+		})
+	})
 	
 	function switch_status(status){
-        if (status == 1 || status == "1"){
-            $("#loading").hide();
-            $("#cfg_box").show();
-            $("#adv_cfg").show();
-            $("#shadowsocks_btn_box").show();
-            $("#prompt_box").show();
-            var switch_b = $(".on-off").children("button");
-            switch_b.addClass("on");
-            switch_b.removeClass("off");
+		if (status == 1 || status == "1"){
+			$("#loading").hide();
+			$("#cfg_box").show();
+			$("#adv_cfg").show();
+			$("#shadowsocks_btn_box").show();
+			$("#prompt_box").show();
+			var switch_b = $(".on-off").children("button");
+			switch_b.addClass("on");
+			switch_b.removeClass("off");
 			t = setInterval("update_status()", 7000);
-        } else {
-            $("#loading").html("shadowsocks 加速未打开").show();
-            $("#cfg_box").hide();
-            $("#adv_cfg").hide();
-            $("#shadowsocks_btn_box").hide();
-            $("#prompt_box").hide();
-            var switch_b = $(".on-off").children("button");
-            switch_b.addClass("off");
-            switch_b.removeClass("on");
+		} else {
+			$("#loading").html("shadowsocks 加速未打开").show();
+			$("#cfg_box").hide();
+			$("#adv_cfg").hide();
+			$("#shadowsocks_btn_box").hide();
+			$("#prompt_box").hide();
+			var switch_b = $(".on-off").children("button");
+			switch_b.addClass("off");
+			switch_b.removeClass("on");
 			clearInterval(t);
-        }
-    }
+		}
+	}
 	
 	$("#show_passwd").click(function(){
-            if ($(this).attr('checked')) {
-                $('#password').clone().attr('type','text').insertAfter('#password').prev().remove();
-            } else {
-                $('#password').clone().attr('type','password').insertAfter('#password').prev().remove();
-            }
-     })
+			if ($(this).attr('checked')) {
+				$('#password').clone().attr('type','text').insertAfter('#password').prev().remove();
+			} else {
+				$('#password').clone().attr('type','password').insertAfter('#password').prev().remove();
+			}
+	 })
 	
 	//提交
 	$("#submit_btn").click(function(){
@@ -258,15 +258,15 @@ function update_status() {
 	var request_date = {};
 	$.getJSON("<%=luci.dispatcher.build_url("api", "geewan","get_shadowsocks_status")%>",request_date,function(rsp)
 	{
-        var status = "";
+		var status = "";
 		if (rsp.code == 0){
 			if(rsp.status == "stopped"){
 				status = "<span style='color:red'>未运行</span>";
 			} else if (rsp.status == "running") {
-                if (rsp.accel == "yes")
-                    status = "运行中 <span style='color:green'>已加速</span>";
-                else
-                    status = "运行中 <span style='color:red'>未加速</span>";
+				if (rsp.accel == "yes")
+					status = "运行中 <span style='color:green'>已加速</span>";
+				else
+					status = "运行中 <span style='color:red'>未加速</span>";
 			} else {
 				status = "未知";
 			}
