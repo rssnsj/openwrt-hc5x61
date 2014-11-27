@@ -67,14 +67,14 @@ if page_action == "save_params" then
 
 	if not string.match(ss_server_addr, '^[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+$') and
 		not string.match(ss_server_addr, '^[A-Za-z0-9_:\.-]\+$') then
-		failure_msg = "无效的服务器IP地址或域名"
+		failure_msg = "配置错误：无效的服务器IP地址或域名"
 	elseif ss_server_port == nil then
-		failure_msg = "无效的服务器端口号"
+		failure_msg = "配置错误：无效的服务器端口号"
 	elseif ss_server_method == "" then
-		failure_msg = "无效的加密类型"
+		failure_msg = "配置错误：无效的加密类型"
 	elseif safe_dns_server and not string.match(safe_dns_server, '^[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+$') and 
 		not string.match(safe_dns_server, '^[0-9a-f:\.]\+$') then
-		failure_msg = "无效的DNS服务器IP"
+		failure_msg = "配置错误：无效的DNS服务器IP"
 	end
 
 	if safe_dns_server then
@@ -128,6 +128,7 @@ SS_MODE='%s'
 elseif page_action == "flush_status" then
 %>
 <%
+	local code, msg, status = 0, "", ""
 	if is_shadowsocks_on() then
 		print("{\"status\":\"running\"}")
 	else
@@ -190,20 +191,20 @@ table.zone td.tor { text-align:right;width:120px;line-height:14px; }
 <script type="text/javascript">
 $(document).ready(function () {
 
-	function set_status_text(status) {
+	function set_status_text(status, msg) {
 		var text = "未知", color = "grey";
 		switch (status) {
 		case "starting":
-			text = "正在启动..."; color = "black";
+			text = "正在启动..."; color = "#555555";
 			break;
 		case "stopping":
-			text = "正在停止..."; color = "black";
+			text = "正在停止..."; color = "#555555";
 			break;
 		case "configuring":
-			text = "配置中..."; color = "black";
+			text = "配置中..."; color = "#555555";
 			break;
 		case "flushing":
-			text = "刷新中..."; color = "black";
+			text = "刷新中..."; color = "#555555";
 			break;
 		case "running":
 			text = "运行中"; color = "green";
@@ -213,11 +214,16 @@ $(document).ready(function () {
 			break;
 		}
 		document.getElementById("status_text").innerHTML = "<font color='" + color + "'>" + text + "</font>";
+		if (msg) {
+			document.getElementById("failure_msg").innerHTML = msg;
+		} else {
+			document.getElementById("failure_msg").innerHTML = "";
+		}
 	}
 	function __flush_ss_status() {
 		set_status_text("flushing");
 		var req_data = [ { name:"PAGE_ACTION", value:"flush_status" } ];
-		$.getJSON("<%=luci.dispatcher.build_url("admin_web", "plugin","shadowsocks")%>", req_data, function (rsp_data) {
+		$.getJSON("<%=luci.dispatcher.build_url("admin_web", "plugin", "shadowsocks")%>", req_data, function (rsp_data) {
 			set_status_text(rsp_data.status);
 		});
 	}
@@ -227,14 +233,14 @@ $(document).ready(function () {
 	$("#start_button").on("click", function () {
 		set_status_text("starting");
 		var req_data = [ { name:"PAGE_ACTION", value:"start_ss" } ];
-		$.getJSON("<%=luci.dispatcher.build_url("admin_web", "plugin","shadowsocks")%>", req_data, function (rsp_data) {
+		$.getJSON("<%=luci.dispatcher.build_url("admin_web", "plugin", "shadowsocks")%>", req_data, function (rsp_data) {
 			set_status_text(rsp_data.status);
 		});
 	});
 	$("#stop_button").on("click", function () {
 		set_status_text("stopping");
 		var req_data = [ { name:"PAGE_ACTION", value:"stop_ss" } ];
-		$.getJSON("<%=luci.dispatcher.build_url("admin_web", "plugin","shadowsocks")%>", req_data, function (rsp_data) {
+		$.getJSON("<%=luci.dispatcher.build_url("admin_web", "plugin", "shadowsocks")%>", req_data, function (rsp_data) {
 			set_status_text(rsp_data.status);
 		});
 	});
@@ -242,8 +248,12 @@ $(document).ready(function () {
 	$("#save_button").on("click", function () {
 		set_status_text("configuring");
 		var req_data = $("#form1").serializeArray(); 
-		$.post("<%=luci.dispatcher.build_url("admin_web", "plugin","shadowsocks")%>", req_data, function (rsp_data) {
-			set_status_text(rsp_data.status);
+		$.post("<%=luci.dispatcher.build_url("admin_web", "plugin", "shadowsocks")%>", req_data, function (rsp_data) {
+			if (rsp_data.code == "0") {
+				set_status_text(rsp_data.status, "");
+			} else {
+				set_status_text(rsp_data.status, rsp_data.msg);
+			}
 		}, "json");
 	});
 });
@@ -320,9 +330,9 @@ $(document).ready(function () {
 					end
 %>
 					</span>
-					<a href="javascript:void();" id="start_button">启动</a> 
-					<a href="javascript:void();" id="stop_button">停止</a>
-					<a href="javascript:void();" id="flush_button">刷新</a>
+					<a href="javascript:void(0);" id="start_button">启动</a> 
+					<a href="javascript:void(0);" id="stop_button">停止</a>
+					<a href="javascript:void(0);" id="flush_button">刷新</a>
 					<span id="failure_msg" style="margin:0px 0px 0px 50px;color:#ff0000;"></span>
 				</p>
 			</div>
