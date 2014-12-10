@@ -186,10 +186,10 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 +	};
 +
 +};
-Index: target/linux/ramips/mt7620a/profiles/HiWiFi-HC5761.mk
+Index: target/linux/ramips/mt7620/profiles/HiWiFi-HC5761.mk
 ===================================================================
---- target/linux/ramips/mt7620a/profiles/HiWiFi-HC5761.mk	(revision 0)
-+++ target/linux/ramips/mt7620a/profiles/HiWiFi-HC5761.mk	(revision 0)
+--- target/linux/ramips/mt7620/profiles/HiWiFi-HC5761.mk	(revision 0)
++++ target/linux/ramips/mt7620/profiles/HiWiFi-HC5761.mk	(revision 0)
 @@ -0,0 +1,20 @@
 +#
 +# Copyright (C) 2011 OpenWrt.org
