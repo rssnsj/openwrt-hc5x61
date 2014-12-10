@@ -1,23 +1,23 @@
 Index: target/linux/ramips/image/Makefile
 ===================================================================
---- target/linux/ramips/image/Makefile	(revision 42871)
+--- target/linux/ramips/image/Makefile	(revision 43594)
 +++ target/linux/ramips/image/Makefile	(working copy)
-@@ -738,6 +738,7 @@
+@@ -781,6 +781,7 @@
  na930_mtd_size=20971520
  Image/Build/Profile/NA930=$(call BuildFirmware/CustomFlash/$(1),$(1),na930,NA930,$(na930_mtd_size))
  Image/Build/Profile/MZK-750DHP=$(call BuildFirmware/Default8M/$(1),$(1),mzk-750dhp,MZK-750DHP)
 +Image/Build/Profile/HiWiFi-HC5761=$(call BuildFirmware/Default16M/$(1),$(1),hiwifi-hc5761,HiWiFi-HC5761)
  Image/Build/Profile/Y1=$(call BuildFirmware/Default16M/$(1),$(1),Lenovo-y1,Y1)
  Image/Build/Profile/Y1S=$(call BuildFirmware/Default16M/$(1),$(1),Lenovo-y1s,Y1S)
- 
-@@ -754,6 +755,7 @@
+ Image/Build/Profile/MLW221=$(call BuildFirmware/Default16M/$(1),$(1),mlw221,MLW221)
+@@ -806,6 +807,7 @@
  	$(call Image/Build/Profile/WHR1166D,$(1))
  	$(call Image/Build/Profile/MZK-750DHP,$(1))
  	$(call Image/Build/Profile/NA930,$(1))
 +	$(call Image/Build/Profile/HiWiFi-HC5761,$(1))
  	$(call Image/Build/Profile/Y1,$(1))
  	$(call Image/Build/Profile/Y1S,$(1))
- endef
+ 	$(call Image/Build/Profile/MLW221,$(1))
 Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 ===================================================================
 --- target/linux/ramips/dts/HiWiFi-HC5761.dts	(revision 0)
@@ -213,9 +213,9 @@ Index: target/linux/ramips/mt7620a/profiles/HiWiFi-HC5761.mk
 +$(eval $(call Profile,HiWiFi-HC5761))
 Index: target/linux/ramips/base-files/lib/ramips.sh
 ===================================================================
---- target/linux/ramips/base-files/lib/ramips.sh	(revision 42871)
+--- target/linux/ramips/base-files/lib/ramips.sh	(revision 43594)
 +++ target/linux/ramips/base-files/lib/ramips.sh	(working copy)
-@@ -334,6 +334,9 @@
+@@ -355,6 +355,9 @@
  	*"ZBT WR8305RT")
  		name="wr8305rt"
  		;;
@@ -227,21 +227,21 @@ Index: target/linux/ramips/base-files/lib/ramips.sh
  		;;
 Index: target/linux/ramips/base-files/lib/upgrade/platform.sh
 ===================================================================
---- target/linux/ramips/base-files/lib/upgrade/platform.sh	(revision 42871)
+--- target/linux/ramips/base-files/lib/upgrade/platform.sh	(revision 43594)
 +++ target/linux/ramips/base-files/lib/upgrade/platform.sh	(working copy)
-@@ -100,6 +100,7 @@
+@@ -106,6 +106,7 @@
+ 	wt3020 |\
  	x5 |\
  	x8 |\
- 	zbt-wa05 |\
 +	hiwifi-hc5761 |\
  	y1 |\
- 	y1s)
- 		[ "$magic" != "27051956" ] && {
+ 	y1s |\
+ 	zbt-wa05)
 Index: target/linux/ramips/base-files/etc/board.d/01_leds
 ===================================================================
---- target/linux/ramips/base-files/etc/board.d/01_leds	(revision 42871)
+--- target/linux/ramips/base-files/etc/board.d/01_leds	(revision 43594)
 +++ target/linux/ramips/base-files/etc/board.d/01_leds	(working copy)
-@@ -210,6 +210,11 @@
+@@ -212,6 +212,11 @@
  		set_usb_led "wr8305rt:usb"
  		set_wifi_led "wr8305rt:wifi"
  		;;
@@ -255,9 +255,9 @@ Index: target/linux/ramips/base-files/etc/board.d/01_leds
  		;;
 Index: target/linux/ramips/base-files/etc/board.d/02_network
 ===================================================================
---- target/linux/ramips/base-files/etc/board.d/02_network	(revision 42871)
+--- target/linux/ramips/base-files/etc/board.d/02_network	(revision 43594)
 +++ target/linux/ramips/base-files/etc/board.d/02_network	(working copy)
-@@ -192,6 +192,7 @@
+@@ -213,6 +213,7 @@
  		;;
  
  	y1 |\
@@ -265,7 +265,7 @@ Index: target/linux/ramips/base-files/etc/board.d/02_network
  	y1s)
  		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
  		ucidef_add_switch "switch0" "1" "1"
-@@ -266,6 +267,7 @@
+@@ -296,6 +297,7 @@
  	psr-680w |\
  	sl-r7205 |\
  	y1 |\
@@ -275,9 +275,9 @@ Index: target/linux/ramips/base-files/etc/board.d/02_network
  		lan_mac=$(macaddr_setbit_la "$lan_mac")
 Index: target/linux/ramips/base-files/etc/diag.sh
 ===================================================================
---- target/linux/ramips/base-files/etc/diag.sh	(revision 42871)
+--- target/linux/ramips/base-files/etc/diag.sh	(revision 43594)
 +++ target/linux/ramips/base-files/etc/diag.sh	(working copy)
-@@ -194,6 +194,9 @@
+@@ -207,6 +207,9 @@
  	na930)
  		status_led="na930:blue:power"
  		;;
