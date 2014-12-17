@@ -22,6 +22,9 @@ s_install_feeds: s_update_feeds
 	@cd $(openwrt_dir); ./scripts/feeds install $(openwrt_feeds);
 	@svn co svn://svn.openwrt.org/openwrt/packages/net/pptpd $(openwrt_dir)/package/pptpd
 	@svn co https://github.com/madeye/shadowsocks-libev.git/tags/v1.4.8/openwrt $(openwrt_dir)/package/shadowsocks
+	@svn co https://proto-bridge.googlecode.com/svn/trunk/proto-bridge $(openwrt_dir)/package/proto-bridge
+	@cd $(openwrt_dir)/package; \
+	 [ -d ../../../hc5761/package/xt_salist -a ! -e xt_salist ] && ln -sf ../../../hc5761/package/xt_salist || :
 	@touch s_install_feeds
 
 s_update_feeds: s_checkout_svn
