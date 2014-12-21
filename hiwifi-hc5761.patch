@@ -90,7 +90,7 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 +					reg = <0xfd0000 0x10000>;
 +				};
 +
-+				partition@fe0000 {
++				bdinfo: partition@fe0000 {
 +					label = "bdinfo";
 +					reg = <0xfe0000 0x10000>;
 +				};
@@ -139,7 +139,7 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 +	ethernet@10100000 {
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&ephy_pins>;
-+		mtd-mac-address = <&factory 0x4>;
++		mtd-mac-address = <&bdinfo 0x18a>;
 +		ralink,port-map = "llllw";
 +	};
 +	
@@ -303,3 +303,46 @@ Index: target/linux/ramips/patches-3.14/0105-mtd-gd25q.patch
 + 	/* Catalyst / On Semiconductor -- non-JEDEC */
 + 	{ "cat25c11", CAT25_INFO(  16, 8, 16, 1, M25P_NO_ERASE | M25P_NO_FR) },
 + 	{ "cat25c03", CAT25_INFO(  32, 8, 16, 2, M25P_NO_ERASE | M25P_NO_FR) },
+Index: 0034-NET-add-of_get_mac_address_mtd.patch
+===================================================================
+--- target/linux/ramips/patches-3.14/0034-NET-add-of_get_mac_address_mtd.patch	(revision 43594)
++++ target/linux/ramips/patches-3.14/0034-NET-add-of_get_mac_address_mtd.patch	(working copy)
+@@ -24,7 +24,7 @@
+  
+  /**
+   * It maps 'enum phy_interface_t' found in include/linux/phy.h
+-@@ -94,3 +95,39 @@ const void *of_get_mac_address(struct de
++@@ -94,3 +95,53 @@ const void *of_get_mac_address(struct de
+  	return NULL;
+  }
+  EXPORT_SYMBOL(of_get_mac_address);
+@@ -38,6 +38,7 @@
+ +	const char *part;
+ +	const __be32 *list;
+ +	phandle phandle;
+++	char macbuf[20];
+ +
+ +	list = of_get_property(np, "mtd-mac-address", &size);
+ +	if (!list || (size != (2 * sizeof(*list))))
+@@ -58,7 +59,20 @@
+ +	if (IS_ERR(mtd))
+ +		return PTR_ERR(mtd);
+ +
+-+	ret = mtd_read(mtd, be32_to_cpup(list), 6, &retlen, (u_char *) mac);
+++	if ((ret = mtd_read(mtd, be32_to_cpup(list), 17, &retlen, (u_char *) macbuf)) == 0) {
+++		u8 __mac[6];
+++		macbuf[17] = '\0';
+++		if (sscanf(macbuf, "%2hhx:%2hhx:%2hhx:%2hhx:%2hhx:%2hhx",
+++			&__mac[0], &__mac[1], &__mac[2], &__mac[3],
+++			&__mac[4], &__mac[5]) == 6) {
+++			memcpy(mac, __mac, 6);
+++		} else {
+++			memcpy(mac, macbuf, 6);
+++		}
+++	} else {
+++		ret = mtd_read(mtd, be32_to_cpup(list), 6, &retlen, (u_char *) mac);
+++	}
+++
+ +	put_mtd_device(mtd);
+ +
+ +	return ret;
