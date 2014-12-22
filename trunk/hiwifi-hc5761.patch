@@ -22,7 +22,7 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 ===================================================================
 --- target/linux/ramips/dts/HiWiFi-HC5761.dts	(revision 0)
 +++ target/linux/ramips/dts/HiWiFi-HC5761.dts	(revision 0)
-@@ -0,0 +1,163 @@
+@@ -0,0 +1,191 @@
 +/dts-v1/;
 +
 +/include/ "mt7620a.dtsi"
@@ -137,10 +137,38 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 +	};
 +
 +	ethernet@10100000 {
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&ephy_pins>;
++		status = "okay";
 +		mtd-mac-address = <&bdinfo 0x18a>;
-+		ralink,port-map = "llllw";
++		pinctrl-names = "default";
++		pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
++
++		ralink,port-map = "wllll";
++
++		port@4 {
++			status = "okay";
++			phy-handle = <&phy4>;
++			phy-mode = "rgmii";
++		};
++
++		port@5 {
++			status = "okay";
++			phy-handle = <&phy5>;
++			phy-mode = "rgmii";
++		};
++
++		mdio-bus {
++			status = "okay";
++
++			phy4: ethernet-phy@4 {
++				reg = <4>;
++				phy-mode = "rgmii";
++			};
++
++			phy5: ethernet-phy@5 {
++				reg = <5>;
++				phy-mode = "rgmii";
++			};
++		};
 +	};
 +	
 +	gpio-keys-polled {
