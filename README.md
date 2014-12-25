@@ -3,13 +3,12 @@ openwrt-hiwifi
 
 OpenWrt Patch for HiWiFi HC6361 / HC5761 / HC5661
 
-极路由 HC6361 / HC5761 / HC5661（极壹、极贰、极壹S）!OpenWrt补丁
+极路由 HC6361 / HC5761 / HC5661（极壹、极贰、极壹S）OpenWrt补丁
 
 ### 关于极贰
 * 极贰官方产品页：http://www.hiwifi.com/j2
 * 极贰购买页面：http://item.jd.com/1184730.html
-* 图片展示：
- http://www.hiwifi.com/wp-content/themes/hi4/images/products/j2-p1.jpg
+* 图片展示：http://www.hiwifi.com/wp-content/themes/hi4/images/products/j2-p1.jpg
   
 -------
 
@@ -36,7 +35,7 @@ OpenWrt Patch for HiWiFi HC6361 / HC5761 / HC5661
 
 #### 固件编译方法
 
-    svn co https://openwrt-hiwifi.googlecode.com/svn/trunk openwrt-hc5761
+    git clone https://github.com/rssnsj/openwrt-hiwifi.git openwrt-hc5761
     cd openwrt-hc5761
     make
 
