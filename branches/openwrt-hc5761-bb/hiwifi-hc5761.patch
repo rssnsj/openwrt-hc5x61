@@ -315,6 +315,21 @@ Index: target/linux/ramips/base-files/etc/diag.sh
  	y1 | \
  	y1s)
  		status_led="lenovo:blue:power"
+Index: target/linux/ramips/patches-3.10/0402-mtd-gd25q.patch
+===================================================================
+--- target/linux/ramips/patches-3.10/0402-mtd-gd25q.patch	(revision 0)
++++ target/linux/ramips/patches-3.10/0402-mtd-gd25q.patch	(revision 0)
+@@ -0,0 +1,10 @@
++--- a/drivers/mtd/devices/m25p80.c
+++++ b/drivers/mtd/devices/m25p80.c
++@@ -984,6 +984,7 @@ static const struct spi_device_id m25p_ids[] = {
++ 	{ "w25q80bl", INFO(0xef4014, 0, 64 * 1024,  16, SECT_4K) },
++ 	{ "w25q128", INFO(0xef4018, 0, 64 * 1024, 256, SECT_4K) },
++ 	{ "w25q256", INFO(0xef4019, 0, 64 * 1024, 512, SECT_4K) },
+++	{ "gd25q128b", INFO(0xc84018, 0, 64 * 1024, 256, SECT_4K)},
++ 
++ 	/* Catalyst / On Semiconductor -- non-JEDEC */
++ 	{ "cat25c11", CAT25_INFO(  16, 8, 16, 1) },
 Index: target/linux/ramips/patches-3.10/0117-NET-add-of_get_mac_address_mtd.patch
 ===================================================================
 --- target/linux/ramips/patches-3.10/0117-NET-add-of_get_mac_address_mtd.patch	(revision 43770)
