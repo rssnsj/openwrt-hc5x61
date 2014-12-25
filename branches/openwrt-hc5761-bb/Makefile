@@ -39,7 +39,7 @@ s_hiwifi_patch: s_checkout_svn
 
 # 2. Checkout source code:
 s_checkout_svn: s_check_hostdeps
-	svn co svn://svn.openwrt.org/openwrt/trunk $(openwrt_dir) -r43594
+	svn co svn://svn.openwrt.org/openwrt/branches/barrier_breaker $(openwrt_dir) -r43770
 	@[ -d /var/dl ] && ln -sf /var/dl $(openwrt_dir)/dl || :
 	@touch s_checkout_svn
 

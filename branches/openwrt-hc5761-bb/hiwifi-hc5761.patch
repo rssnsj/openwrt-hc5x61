@@ -1,23 +1,23 @@
 Index: target/linux/ramips/image/Makefile
 ===================================================================
---- target/linux/ramips/image/Makefile	(revision 43594)
+--- target/linux/ramips/image/Makefile	(revision 43770)
 +++ target/linux/ramips/image/Makefile	(working copy)
-@@ -781,6 +781,7 @@
+@@ -724,6 +724,7 @@
  na930_mtd_size=20971520
  Image/Build/Profile/NA930=$(call BuildFirmware/CustomFlash/$(1),$(1),na930,NA930,$(na930_mtd_size))
  Image/Build/Profile/MZK-750DHP=$(call BuildFirmware/Default8M/$(1),$(1),mzk-750dhp,MZK-750DHP)
 +Image/Build/Profile/HiWiFi-HC5761=$(call BuildFirmware/Default16M/$(1),$(1),hiwifi-hc5761,HiWiFi-HC5761)
  Image/Build/Profile/Y1=$(call BuildFirmware/Default16M/$(1),$(1),Lenovo-y1,Y1)
  Image/Build/Profile/Y1S=$(call BuildFirmware/Default16M/$(1),$(1),Lenovo-y1s,Y1S)
- Image/Build/Profile/MLW221=$(call BuildFirmware/Default16M/$(1),$(1),mlw221,MLW221)
-@@ -806,6 +807,7 @@
+ 
+@@ -740,6 +741,7 @@
  	$(call Image/Build/Profile/WHR1166D,$(1))
  	$(call Image/Build/Profile/MZK-750DHP,$(1))
  	$(call Image/Build/Profile/NA930,$(1))
 +	$(call Image/Build/Profile/HiWiFi-HC5761,$(1))
  	$(call Image/Build/Profile/Y1,$(1))
  	$(call Image/Build/Profile/Y1S,$(1))
- 	$(call Image/Build/Profile/MLW221,$(1))
+ endef
 Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 ===================================================================
 --- target/linux/ramips/dts/HiWiFi-HC5761.dts	(revision 0)
@@ -214,10 +214,10 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 +	};
 +
 +};
-Index: target/linux/ramips/mt7620/profiles/HiWiFi-HC5761.mk
+Index: target/linux/ramips/mt7620a/profiles/HiWiFi-HC5761.mk
 ===================================================================
---- target/linux/ramips/mt7620/profiles/HiWiFi-HC5761.mk	(revision 0)
-+++ target/linux/ramips/mt7620/profiles/HiWiFi-HC5761.mk	(revision 0)
+--- target/linux/ramips/mt7620a/profiles/HiWiFi-HC5761.mk	(revision 0)
++++ target/linux/ramips/mt7620a/profiles/HiWiFi-HC5761.mk	(revision 0)
 @@ -0,0 +1,20 @@
 +#
 +# Copyright (C) 2011 OpenWrt.org
@@ -241,9 +241,9 @@ Index: target/linux/ramips/mt7620/profiles/HiWiFi-HC5761.mk
 +$(eval $(call Profile,HiWiFi-HC5761))
 Index: target/linux/ramips/base-files/lib/ramips.sh
 ===================================================================
---- target/linux/ramips/base-files/lib/ramips.sh	(revision 43594)
+--- target/linux/ramips/base-files/lib/ramips.sh	(revision 43770)
 +++ target/linux/ramips/base-files/lib/ramips.sh	(working copy)
-@@ -355,6 +355,9 @@
+@@ -325,6 +325,9 @@
  	*"ZBT WR8305RT")
  		name="wr8305rt"
  		;;
@@ -255,21 +255,21 @@ Index: target/linux/ramips/base-files/lib/ramips.sh
  		;;
 Index: target/linux/ramips/base-files/lib/upgrade/platform.sh
 ===================================================================
---- target/linux/ramips/base-files/lib/upgrade/platform.sh	(revision 43594)
+--- target/linux/ramips/base-files/lib/upgrade/platform.sh	(revision 43770)
 +++ target/linux/ramips/base-files/lib/upgrade/platform.sh	(working copy)
-@@ -106,6 +106,7 @@
- 	wt3020 |\
+@@ -98,6 +98,7 @@
  	x5 |\
  	x8 |\
+ 	zbt-wa05 |\
 +	hiwifi-hc5761 |\
  	y1 |\
- 	y1s |\
- 	zbt-wa05)
-Index: target/linux/ramips/base-files/etc/board.d/01_leds
+ 	y1s)
+ 		[ "$magic" != "27051956" ] && {
+Index: target/linux/ramips/base-files/etc/uci-defaults/01_leds
 ===================================================================
---- target/linux/ramips/base-files/etc/board.d/01_leds	(revision 43594)
-+++ target/linux/ramips/base-files/etc/board.d/01_leds	(working copy)
-@@ -212,6 +212,11 @@
+--- target/linux/ramips/base-files/etc/uci-defaults/01_leds	(revision 43770)
++++ target/linux/ramips/base-files/etc/uci-defaults/01_leds	(working copy)
+@@ -203,6 +203,11 @@
  		set_usb_led "wr8305rt:usb"
  		set_wifi_led "wr8305rt:wifi"
  		;;
@@ -278,14 +278,14 @@ Index: target/linux/ramips/base-files/etc/board.d/01_leds
 +		ucidef_set_led_netdev "internet" "internet" "HC5761:green:internet" "eth0.2"
 +		set_wifi_led "HC5761:green:wlan-2p4"
 +		;;
- 	wt1520)
- 		set_wifi_led "rt2800pci-phy0::radio"
- 		;;
-Index: target/linux/ramips/base-files/etc/board.d/02_network
+ 	y1 |\
+ 	y1s)
+ 		ucidef_set_led_default "power" "power" "lenovo:blue:power" "1"
+Index: target/linux/ramips/base-files/etc/uci-defaults/02_network
 ===================================================================
---- target/linux/ramips/base-files/etc/board.d/02_network	(revision 43594)
-+++ target/linux/ramips/base-files/etc/board.d/02_network	(working copy)
-@@ -213,6 +213,7 @@
+--- target/linux/ramips/base-files/etc/uci-defaults/02_network	(revision 43770)
++++ target/linux/ramips/base-files/etc/uci-defaults/02_network	(working copy)
+@@ -184,6 +184,7 @@
  		;;
  
  	y1 |\
@@ -293,7 +293,7 @@ Index: target/linux/ramips/base-files/etc/board.d/02_network
  	y1s)
  		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
  		ucidef_add_switch "switch0" "1" "1"
-@@ -296,6 +297,7 @@
+@@ -257,6 +258,7 @@
  	psr-680w |\
  	sl-r7205 |\
  	y1 |\
@@ -303,44 +303,28 @@ Index: target/linux/ramips/base-files/etc/board.d/02_network
  		lan_mac=$(macaddr_setbit_la "$lan_mac")
 Index: target/linux/ramips/base-files/etc/diag.sh
 ===================================================================
---- target/linux/ramips/base-files/etc/diag.sh	(revision 43594)
+--- target/linux/ramips/base-files/etc/diag.sh	(revision 43770)
 +++ target/linux/ramips/base-files/etc/diag.sh	(working copy)
-@@ -207,6 +207,9 @@
+@@ -188,6 +188,9 @@
  	na930)
  		status_led="na930:blue:power"
  		;;
-+  hiwifi-hc5761)
-+    status_led="HC5761:green:system"
-+    ;;
++	hiwifi-hc5761)
++		status_led="HC5761:green:system"
++		;;
  	y1 | \
  	y1s)
  		status_led="lenovo:blue:power"
-Index: target/linux/ramips/patches-3.14/0105-mtd-gd25q.patch
+Index: target/linux/ramips/patches-3.10/0117-NET-add-of_get_mac_address_mtd.patch
 ===================================================================
---- target/linux/ramips/patches-3.14/0105-mtd-gd25q.patch	(revision 0)
-+++ target/linux/ramips/patches-3.14/0105-mtd-gd25q.patch	(revision 0)
-@@ -0,0 +1,11 @@
-+--- a/drivers/mtd/devices/m25p80.c
-++++ b/drivers/mtd/devices/m25p80.c
-+@@ -1162,6 +1162,8 @@ static const struct spi_device_id m25p_ids[] = {
-+ 	{ "w25q128", INFO(0xef4018, 0, 64 * 1024, 256, SECT_4K) },
-+ 	{ "w25q256", INFO(0xef4019, 0, 64 * 1024, 512, SECT_4K) },
-+ 
-++	{ "gd25q128b", INFO(0xc84018, 0, 64 * 1024, 256, SECT_4K)},
-++
-+ 	/* Catalyst / On Semiconductor -- non-JEDEC */
-+ 	{ "cat25c11", CAT25_INFO(  16, 8, 16, 1, M25P_NO_ERASE | M25P_NO_FR) },
-+ 	{ "cat25c03", CAT25_INFO(  32, 8, 16, 2, M25P_NO_ERASE | M25P_NO_FR) },
-Index: target/linux/ramips/patches-3.14/0034-NET-add-of_get_mac_address_mtd.patch
-===================================================================
---- target/linux/ramips/patches-3.14/0034-NET-add-of_get_mac_address_mtd.patch	(revision 43594)
-+++ target/linux/ramips/patches-3.14/0034-NET-add-of_get_mac_address_mtd.patch	(working copy)
+--- target/linux/ramips/patches-3.10/0117-NET-add-of_get_mac_address_mtd.patch	(revision 43770)
++++ target/linux/ramips/patches-3.10/0117-NET-add-of_get_mac_address_mtd.patch	(working copy)
 @@ -24,7 +24,7 @@
   
   /**
    * It maps 'enum phy_interface_t' found in include/linux/phy.h
--@@ -94,3 +95,39 @@ const void *of_get_mac_address(struct de
-+@@ -94,3 +95,54 @@ const void *of_get_mac_address(struct de
+-@@ -92,3 +93,39 @@ const void *of_get_mac_address(struct de
++@@ -92,3 +93,54 @@ const void *of_get_mac_address(struct de
   	return NULL;
   }
   EXPORT_SYMBOL(of_get_mac_address);
