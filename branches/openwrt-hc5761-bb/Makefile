@@ -4,7 +4,7 @@ hiwifi_root = $(shell pwd)
 openwrt_dir = openwrt-ramips
 packages_required = build-essential git flex gettext libncurses5-dev \
   unzip gawk liblzma-dev u-boot-tools
-openwrt_feeds = libevent2 luci luci-app-radvd luci-app-samba xl2tpd ntfs-3g
+openwrt_feeds = libevent2 luci luci-app-radvd luci-app-samba xl2tpd pptpd ntfs-3g
 ### mwan3 luci-app-mwan3
 
 final: s_build_openwrt
@@ -21,7 +21,6 @@ s_build_openwrt: s_install_feeds
 
 s_install_feeds: s_update_feeds
 	@cd $(openwrt_dir); ./scripts/feeds install $(openwrt_feeds);
-	@svn co svn://svn.openwrt.org/openwrt/packages/net/pptpd $(openwrt_dir)/package/pptpd
 	@svn co https://github.com/madeye/shadowsocks-libev.git/tags/v1.4.8/openwrt $(openwrt_dir)/package/shadowsocks
 	@svn co https://proto-bridge.googlecode.com/svn/trunk/proto-bridge $(openwrt_dir)/package/proto-bridge
 	@cd $(openwrt_dir)/package; \
