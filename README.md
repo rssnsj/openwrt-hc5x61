@@ -54,7 +54,4 @@ OpenWrt Patch for HiWiFi HC6361 / HC5761 / HC5661 (based on "barrier_breaker" br
 
 -------
 #### 旧资料
-* HC6361（极壹）已被OpenWrt官方支持 ( http://wiki.openwrt.org/toh/hiwifi/hc6361 )，关于HC6361的编译、配置方法请移步至：
-  https://code.google.com/p/openwrt-hiwifi/wiki/HC6361Official
-* 【旧版】旧版HC6361编译方法、固件下载请移步至：
-  https://code.google.com/p/openwrt-hiwifi/wiki/HC6361Old
+* HC6361（极壹）已被OpenWrt官方支持 ( http://wiki.openwrt.org/toh/hiwifi/hc6361 )，关于HC6361的编译、配置方法请移步至：https://github.com/rssnsj/openwrt-hc6361
