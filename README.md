@@ -1,9 +1,9 @@
-openwrt-hiwifi
+openwrt-hc5761
 ==============
 
-OpenWrt Patch for HiWiFi HC6361 / HC5761 / HC5661
+OpenWrt Patch for HiWiFi HC6361 / HC5761 / HC5661 (based on "barrier_breaker" branch)
 
-极路由 HC6361 / HC5761 / HC5661（极壹、极贰、极壹S）OpenWrt补丁
+极路由 HC6361 / HC5761 / HC5661（极壹、极贰、极壹S）OpenWrt补丁（基于barrier_breaker分支）
 
 ### 关于极贰
 * 极贰官方产品页：http://www.hiwifi.com/j2
