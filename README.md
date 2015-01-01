@@ -22,16 +22,7 @@ OpenWrt Patch for HiWiFi HC6361 / HC5761 / HC5661 (based on "barrier_breaker" br
 * 注意：HC5761（极2）的5G Wi-Fi（MT7610E）驱动暂未有开源支持。
 
 #### 编译好的固件下载
- * [2014/12/25] https://drive.google.com/file/d/0B4OfGJNugH2EZnVrdTJ3M09wXzA/
-  * 基于 OpenWrt Barrier Breaker - r43770 编译；
-  * 支持获取正确的MAC地址（HiWiFi bdinfo中的文本格式）；
-  * 修正了板级支持中LAN口、WAN口布局配置；
-  * 极1S、极2通用。
- * [2014/12/23] https://drive.google.com/file/d/0B4OfGJNugH2ETkY1WDNfc2x3eFU/   (备用地址：http://rssn.cn/openwrt-ramips-mt7620-hiwifi-hc5761-squashfs-sysupgrade.bin ）
-  * 基于 OpenWrt trunk - r43594 编译；
-  * 支持获取正确的MAC地址（HiWiFi bdinfo中的文本格式）；
-  * 修正了板级支持中LAN口、WAN口布局配置；
-  * 极1S、极2通用。
+ * 请在本项目的Releases下载。
 
 #### 固件编译方法
 
