@@ -65,7 +65,6 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 +				partition@0 {
 +					label = "u-boot";
 +					reg = <0x0 0x30000>;
-+					read-only;
 +				};
 +
 +				partition@30000 {
@@ -93,6 +92,7 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 +				bdinfo: partition@fe0000 {
 +					label = "bdinfo";
 +					reg = <0xfe0000 0x10000>;
++					read-only;
 +				};
 +
 +				partition@ff0000 {
