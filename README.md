@@ -35,7 +35,7 @@ OpenWrt Patch for HiWiFi HC6361 / HC5761 / HC5661 (based on "barrier_breaker" br
 
 #### 固件编译方法
 
-    git clone https://github.com/rssnsj/openwrt-hiwifi.git -b master openwrt-hc5761
+    git clone https://github.com/rssnsj/openwrt-hc5761.git -b master openwrt-hc5761
     cd openwrt-hc5761
     make
 
