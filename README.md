@@ -8,7 +8,7 @@ OpenWrt Patch for HiWiFi HC5761 / HC5661 (based on "barrier_breaker" branch)
 ### 关于极贰
 * 极贰官方产品页：http://www.hiwifi.com/j2
 * 极贰购买页面：http://item.jd.com/1184730.html
-* 图片展示： ![极路由2外观](http://www.hiwifi.com/wp-content/themes/hi4/images/products/j2-p1.jpg)
+* 图片展示：http://www.hiwifi.com/wp-content/themes/hi4/images/products/j2-p1.jpg
 
 -------
 
