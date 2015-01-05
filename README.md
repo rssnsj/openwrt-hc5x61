@@ -35,7 +35,7 @@ OpenWrt Patch for HiWiFi HC5761 / HC5661 (based on "barrier_breaker" branch)
     make
 
 #### 说明
-* 以上svn目录包含了HC5761的!OpenWrt补丁，checkout下来代码直接make，会自动打补丁、自动配置menuconfig，并自动编译；
+* 以上svn目录包含了HC5761的OpenWrt补丁，checkout下来代码直接make，会自动打补丁、自动配置menuconfig，并自动编译；
 * 编译时若碰到代码包下载失败，或下载过于缓慢，请先 Ctrl + C 暂停，手动下载同名的文件放到 openwrt-ramips/dl 下面，再执行“make”继续编译；
 * openwrt-ramips-mt7620a-hiwifi-hc5761-squashfs-sysupgrade.bin 是sysupgrade格式的固件，传到路由器的/tmp下，通过串口登录极2/极1S，执行以下命令刷入：
 
@@ -49,9 +49,9 @@ OpenWrt Patch for HiWiFi HC5761 / HC5661 (based on "barrier_breaker" branch)
 * 为你电脑的“本地连接”加一个IP: 192.168.1.88 / 255.255.255.0 
 * 解压刷机工具包（例如 tftpd64.400.rar）, 根据操作系统位数, 32位运行tftpd32, 64位运行tftpd64.
 * 用上面生成的相应机型的 XXXX-recovery.bin 替换刷机包目录下的 recovery.bin .
-* 拔掉!HiWiFi电源线.
-* 网线一头连!HiWiFi的LAN口, 一头连电脑.
-* 用尖锐物按住!HiWiFi背后的reset孔不松动, 同时给路由器接电.
+* 拔掉HiWiFi电源线.
+* 网线一头连HiWiFi的LAN口, 一头连电脑.
+* 用尖锐物按住HiWiFi背后的reset孔不松动, 同时给路由器接电.
 * 直到看到tftpd出现进度条, 松开.
 * 前面板的指示灯会轮流闪烁, 表明内部Flash正在擦写, 此时不要断电.
 * ping 192.168.1.1, 直到ping通, 刷机过程总共3-5分钟.
