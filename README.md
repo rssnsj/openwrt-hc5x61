@@ -39,7 +39,7 @@ OpenWrt Patch for HiWiFi HC5761 / HC5661 (based on "barrier_breaker" branch)
 * 编译时若碰到代码包下载失败，或下载过于缓慢，请先 Ctrl + C 暂停，手动下载同名的文件放到 openwrt-ramips/dl 下面，再执行“make”继续编译；
 * openwrt-ramips-mt7620a-hiwifi-hc5761-squashfs-sysupgrade.bin 是sysupgrade格式的固件，传到路由器的/tmp下，通过串口登录极2/极1S，执行以下命令刷入：
 
-    sysupgrade -F -n openwrt-ramips-mt7620a-hiwifi-hc5761-squashfs-sysupgrade.bin
+    `sysupgrade -F -n openwrt-ramips-mt7620a-hiwifi-hc5761-squashfs-sysupgrade.bin`
 
 * 本编译方法同时会在recovery.bin目录下生成 openwrt-HC5761-recovery.bin、openwrt-HC5661-recovery.bin 两个文件，分别是极2、极1S的带u-boot固件，u-boot解锁后可用TFTP刷机。
 
