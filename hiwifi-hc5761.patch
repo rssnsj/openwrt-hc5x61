@@ -374,3 +374,57 @@ Index: target/linux/ramips/patches-3.10/0117-NET-add-of_get_mac_address_mtd.patc
  +	put_mtd_device(mtd);
  +
  +	return ret;
+Index: package/network/services/odhcpd/patches/100-nodnsv6-opts.patch
+===================================================================
+--- package/network/services/odhcpd/patches/100-nodnsv6-opts.patch	(revision 0)
++++ package/network/services/odhcpd/patches/100-nodnsv6-opts.patch	(revision 0)
+@@ -0,0 +1,49 @@
++--- a/src/dhcpv6.c	(revision 261)
+++++ b/src/dhcpv6.c	(working copy)
++@@ -283,6 +283,13 @@
++ 		[IOV_RELAY_MSG] = {NULL, 0}
++ 	};
++ 
+++	if (getenv("NODNSV6")) {
+++		iov[IOV_DNS].iov_len = 0;
+++		iov[IOV_DNS_ADDR].iov_len = 0;
+++		iov[IOV_SEARCH].iov_len = 0;
+++		iov[IOV_SEARCH_DOMAIN].iov_len = 0;
+++	}
+++
++ 	uint8_t *opts = (uint8_t*)&hdr[1], *opts_end = (uint8_t*)data + len;
++ 	if (hdr->msg_type == DHCPV6_MSG_RELAY_FORW)
++ 		handle_nested_message(data, len, &opts, &opts_end, iov);
++--- a/src/router.c	(revision 261)
+++++ b/src/router.c	(working copy)
++@@ -438,14 +438,22 @@
++ 	}
++ 
++ 
++-	struct iovec iov[] = {{&adv, (uint8_t*)&adv.prefix[cnt] - (uint8_t*)&adv},
++-			{&routes, routes_cnt * sizeof(*routes)},
++-			{&dns, (dns_cnt) ? sizeof(dns) : 0},
++-			{dns_addr, dns_cnt * sizeof(*dns_addr)},
++-			{search, search->len * 8}};
++-	struct sockaddr_in6 all_nodes = {AF_INET6, 0, 0, ALL_IPV6_NODES, 0};
++-	odhcpd_send(router_event.uloop.fd,
++-			&all_nodes, iov, ARRAY_SIZE(iov), iface);
+++	if (getenv("NODNSV6") == NULL) {
+++		struct iovec iov[] = {{&adv, (uint8_t*)&adv.prefix[cnt] - (uint8_t*)&adv},
+++				{&routes, routes_cnt * sizeof(*routes)},
+++				{&dns, (dns_cnt) ? sizeof(dns) : 0},
+++				{dns_addr, dns_cnt * sizeof(*dns_addr)},
+++				{search, search->len * 8}};
+++		struct sockaddr_in6 all_nodes = {AF_INET6, 0, 0, ALL_IPV6_NODES, 0};
+++		odhcpd_send(router_event.uloop.fd,
+++				&all_nodes, iov, ARRAY_SIZE(iov), iface);
+++	} else {
+++		struct iovec iov[] = {{&adv, (uint8_t*)&adv.prefix[cnt] - (uint8_t*)&adv},
+++				{&routes, routes_cnt * sizeof(*routes)}};
+++		struct sockaddr_in6 all_nodes = {AF_INET6, 0, 0, ALL_IPV6_NODES, 0};
+++		odhcpd_send(router_event.uloop.fd,
+++				&all_nodes, iov, ARRAY_SIZE(iov), iface);
+++	}
++ 
++ 	// Rearm timer if not shut down
++ 	if (event->cb) {
