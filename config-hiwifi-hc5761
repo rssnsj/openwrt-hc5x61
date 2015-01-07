@@ -1434,7 +1434,6 @@ CONFIG_PACKAGE_kmod-ipt-nathelper=y
 CONFIG_PACKAGE_kmod-nfnetlink=y
 # CONFIG_PACKAGE_kmod-nfnetlink-log is not set
 # CONFIG_PACKAGE_kmod-nfnetlink-queue is not set
-CONFIG_PACKAGE_kmod-salist=y
 
 #
 # Network Devices
