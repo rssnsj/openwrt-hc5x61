@@ -2285,6 +2285,7 @@ CONFIG_PACKAGE_iftop=y
 CONFIG_PACKAGE_iperf-mt=y
 CONFIG_PACKAGE_ipset=y
 # CONFIG_PACKAGE_ipset-dns is not set
+CONFIG_PACKAGE_ipset-lists=y
 # CONFIG_PACKAGE_iputils-arping is not set
 # CONFIG_PACKAGE_iputils-clockdiff is not set
 # CONFIG_PACKAGE_iputils-ping is not set

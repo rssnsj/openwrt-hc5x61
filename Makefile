@@ -21,8 +21,7 @@ s_build_openwrt: s_install_feeds
 
 s_install_feeds: s_update_feeds
 	@cd $(openwrt_dir); ./scripts/feeds install $(openwrt_feeds);
-	@svn co https://github.com/shadowsocks/shadowsocks-libev.git/tags/v1.6.2/openwrt $(openwrt_dir)/package/shadowsocks
-	@git clone https://github.com/rssnsj/proto-bridge.git -b master $(openwrt_dir)/package/proto-bridge
+	@git clone https://github.com/rssnsj/openwrt-feeds.git $(openwrt_dir)/package/rssnsj-feeds
 	@touch s_install_feeds
 
 s_update_feeds: s_hiwifi_patch
