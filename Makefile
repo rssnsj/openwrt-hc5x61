@@ -23,8 +23,6 @@ s_install_feeds: s_update_feeds
 	@cd $(openwrt_dir); ./scripts/feeds install $(openwrt_feeds);
 	@svn co https://github.com/shadowsocks/shadowsocks-libev.git/tags/v1.6.2/openwrt $(openwrt_dir)/package/shadowsocks
 	@git clone https://github.com/rssnsj/proto-bridge.git -b master $(openwrt_dir)/package/proto-bridge
-	@cd $(openwrt_dir)/package; \
-	 [ -d ../../../hc5761/package/xt_salist -a ! -e xt_salist ] && ln -sf ../../../hc5761/package/xt_salist || :
 	@touch s_install_feeds
 
 s_update_feeds: s_hiwifi_patch
