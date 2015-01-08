@@ -1989,6 +1989,7 @@ CONFIG_PACKAGE_luci-i18n-english=y
 # 6. Protocols
 #
 # CONFIG_PACKAGE_luci-proto-3g is not set
+# CONFIG_PACKAGE_luci-proto-hso is not set
 CONFIG_PACKAGE_luci-proto-ipv6=y
 CONFIG_PACKAGE_luci-proto-ppp=y
 CONFIG_PACKAGE_luci-proto-relay=y
@@ -2326,6 +2327,7 @@ CONFIG_PACKAGE_samba36-server=y
 CONFIG_PACKAGE_SAMBA_MAX_DEBUG_LEVEL=-1
 CONFIG_PACKAGE_shadowsocks-libev=y
 # CONFIG_PACKAGE_shadowsocks-libev-polarssl is not set
+CONFIG_PACKAGE_shadowsocks-tools=y
 # CONFIG_PACKAGE_snmp-utils is not set
 # CONFIG_PACKAGE_snmpd is not set
 # CONFIG_PACKAGE_snmpd-static is not set
