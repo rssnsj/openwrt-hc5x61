@@ -409,3 +409,16 @@ Index: package/network/services/odhcpd/patches/100-nodnsv6-opts.patch
 + 	struct sockaddr_in6 all_nodes = {AF_INET6, 0, 0, ALL_IPV6_NODES, 0};
 + 	odhcpd_send(router_event.uloop.fd,
 + 			&all_nodes, iov, ARRAY_SIZE(iov), iface);
+Index: package/network/services/dnsmasq/Makefile
+===================================================================
+--- package/network/services/dnsmasq/Makefile	(revision 43770)
++++ package/network/services/dnsmasq/Makefile	(working copy)
+@@ -88,7 +88,7 @@
+ 	COPTS += -DHAVE_DNSSEC
+ 	COPTS += $(if $(CONFIG_LIBNETTLE_MINI),-DNO_GMP,)
+ else
+-	COPTS += -DNO_AUTH -DNO_IPSET
++	COPTS += -DNO_AUTH
+ endif
+ 
+ MAKE_FLAGS := \
