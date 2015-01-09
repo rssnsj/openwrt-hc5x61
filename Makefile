@@ -4,7 +4,7 @@ hiwifi_root = $(shell pwd)
 openwrt_dir = openwrt-ramips
 packages_required = build-essential git flex gettext libncurses5-dev \
   unzip gawk liblzma-dev u-boot-tools
-openwrt_feeds = libevent2 luci luci-app-radvd luci-app-samba xl2tpd pptpd pdnsd ntfs-3g
+openwrt_feeds = libevent2 luci luci-app-samba xl2tpd pptpd pdnsd ntfs-3g
 ### mwan3 luci-app-mwan3
 
 final: s_build_openwrt
