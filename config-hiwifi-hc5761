@@ -2254,6 +2254,7 @@ CONFIG_PACKAGE_xl2tpd=y
 #
 # Web Servers/Proxies
 #
+CONFIG_PACKAGE_pdnsd=y
 # CONFIG_PACKAGE_polipo is not set
 # CONFIG_PACKAGE_sockd is not set
 # CONFIG_PACKAGE_socksify is not set
