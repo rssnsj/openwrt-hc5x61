@@ -30,7 +30,7 @@ OpenWrt Patch for HiWiFi HC5761 / HC5661 (based on "barrier_breaker" branch)
     sudo apt-get install build-essential git flex gettext libncurses5-dev unzip gawk liblzma-dev u-boot-tools
     
     # 编译
-    git clone https://github.com/rssnsj/openwrt-hc5761.git -b master openwrt-hc5761
+    git clone https://github.com/rssnsj/openwrt-hc5761.git
     cd openwrt-hc5761
     make
 
