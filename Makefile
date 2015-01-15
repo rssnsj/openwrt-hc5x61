@@ -29,7 +29,7 @@ s_update_feeds: s_hiwifi_patch
 	@touch s_update_feeds
 
 s_hiwifi_patch: s_checkout_svn
-	@cd $(openwrt_dir); patch -p0 < ../hiwifi-hc5761.patch
+	@cd $(openwrt_dir); cat ../patches/*.patch | patch -p0
 	@cp -vf config-hiwifi-hc5761 $(openwrt_dir)/.config
 	@touch s_hiwifi_patch
 

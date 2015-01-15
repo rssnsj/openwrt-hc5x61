@@ -1,0 +1,13 @@
+Index: package/network/services/dnsmasq/Makefile
+===================================================================
+--- package/network/services/dnsmasq/Makefile	(revision 43770)
++++ package/network/services/dnsmasq/Makefile	(working copy)
+@@ -88,7 +88,7 @@
+ 	COPTS += -DHAVE_DNSSEC
+ 	COPTS += $(if $(CONFIG_LIBNETTLE_MINI),-DNO_GMP,)
+ else
+-	COPTS += -DNO_AUTH -DNO_IPSET
++	COPTS += -DNO_AUTH
+ endif
+ 
+ MAKE_FLAGS := \
