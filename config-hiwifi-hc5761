@@ -1523,7 +1523,7 @@ CONFIG_PACKAGE_kmod-proto-bridge=y
 # CONFIG_PACKAGE_kmod-rxrpc is not set
 # CONFIG_PACKAGE_kmod-sched is not set
 # CONFIG_PACKAGE_kmod-sched-connmark is not set
-# CONFIG_PACKAGE_kmod-sched-core is not set
+CONFIG_PACKAGE_kmod-sched-core=y
 # CONFIG_PACKAGE_kmod-sched-esfq is not set
 # CONFIG_PACKAGE_kmod-sctp is not set
 CONFIG_PACKAGE_kmod-sit=y
@@ -1989,6 +1989,7 @@ CONFIG_PACKAGE_luci-i18n-english=y
 # 6. Protocols
 #
 # CONFIG_PACKAGE_luci-proto-3g is not set
+# CONFIG_PACKAGE_luci-proto-hso is not set
 CONFIG_PACKAGE_luci-proto-ipv6=y
 CONFIG_PACKAGE_luci-proto-ppp=y
 CONFIG_PACKAGE_luci-proto-relay=y
@@ -2159,7 +2160,7 @@ CONFIG_PACKAGE_ip=y
 # CONFIG_PACKAGE_olsrd is not set
 CONFIG_PACKAGE_relayd=y
 # CONFIG_PACKAGE_ss is not set
-# CONFIG_PACKAGE_tc is not set
+CONFIG_PACKAGE_tc=y
 
 #
 # THC-IPv6 attack and analyzing toolkit
