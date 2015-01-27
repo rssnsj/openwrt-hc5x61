@@ -4,4 +4,4 @@ Index: package/base-files/files/etc/uci-defaults/disable-pdnsd
 +++ package/base-files/files/etc/uci-defaults/disable-pdnsd	(revision 0)
 @@ -0,0 +1,2 @@
 +#!/bin/sh
-+/etc/init.d/pdnsd disable
++[ -x /etc/init.d/pdnsd ] && /etc/init.d/pdnsd disable
