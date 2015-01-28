@@ -2273,6 +2273,7 @@ CONFIG_PACKAGE_6to4=y
 # CONFIG_PACKAGE_ds-lite is not set
 # CONFIG_PACKAGE_eapol-test is not set
 # CONFIG_PACKAGE_etherwake is not set
+CONFIG_PACKAGE_ethtool=y
 # CONFIG_PACKAGE_gre is not set
 # CONFIG_PACKAGE_hostapd is not set
 CONFIG_PACKAGE_hostapd-common=y
