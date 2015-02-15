@@ -285,22 +285,14 @@ Index: target/linux/ramips/base-files/etc/uci-defaults/02_network
 ===================================================================
 --- target/linux/ramips/base-files/etc/uci-defaults/02_network	(revision 43770)
 +++ target/linux/ramips/base-files/etc/uci-defaults/02_network	(working copy)
-@@ -184,6 +184,7 @@
+@@ -183,6 +183,7 @@
+ 		ucidef_add_switch_vlan "switch0" "2" "4 6t"
  		;;
  
- 	y1 |\
 +	hiwifi-hc5761 |\
+ 	y1 |\
  	y1s)
  		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
- 		ucidef_add_switch "switch0" "1" "1"
-@@ -257,6 +258,7 @@
- 	psr-680w |\
- 	sl-r7205 |\
- 	y1 |\
-+	hiwifi-hc5761 |\
- 	y1s)
- 		lan_mac=$(cat /sys/class/net/eth0/address)
- 		lan_mac=$(macaddr_setbit_la "$lan_mac")
 Index: target/linux/ramips/base-files/etc/diag.sh
 ===================================================================
 --- target/linux/ramips/base-files/etc/diag.sh	(revision 43770)
