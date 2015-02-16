@@ -6,9 +6,6 @@ host_packages = build-essential git flex gettext libncurses5-dev unzip gawk libl
 openwrt_feeds = libevent2 luci luci-app-samba xl2tpd pptpd pdnsd ntfs-3g ethtool
 ### mwan3 luci-app-mwan3
 
-final: s_build_openwrt
-	make -C recovery.bin
-
 s_build_openwrt: s_install_feeds
 	@cd $(openwrt_dir); \
 		if [ -e .config ]; then \
@@ -17,6 +14,9 @@ s_build_openwrt: s_install_feeds
 		fi; \
 		cp -vf ../config-hiwifi-hc5761 .config
 	make -C $(openwrt_dir) V=s -j4
+
+final: s_build_openwrt
+	make -C recovery.bin
 
 s_install_feeds: s_update_feeds
 	@cd $(openwrt_dir); ./scripts/feeds install $(openwrt_feeds);
