@@ -1,4 +1,5 @@
 openwrt-ramips
+.config.extra
 
 s_check_hostdeps
 s_checkout_svn

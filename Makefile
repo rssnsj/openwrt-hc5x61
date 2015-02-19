@@ -12,7 +12,8 @@ s_build_openwrt: s_install_feeds
 			mv -vf .config .config.bak; \
 			echo "WARNING: .config is updated, backed up as '.config.bak'"; \
 		fi; \
-		cp -vf ../config-hiwifi-hc5761 .config
+		cp -vf ../config-hiwifi-hc5761 .config; \
+		[ -f ../.config.extra ] && cat ../.config.extra >> .config || :
 	make -C $(openwrt_dir) V=s -j4
 
 final: s_build_openwrt
