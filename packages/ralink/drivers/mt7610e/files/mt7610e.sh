@@ -24,6 +24,7 @@ detect_mt7610e() {
 	cd /sys/module
 	[ -d $module ] || return
 	uci get wireless.mt7610e >/dev/null 2>&1 && return
+	ifconfig rai0 >/dev/null 2>&1 || return
 	cat <<EOF
 config wifi-device mt7610e
 	option type mt7610e
