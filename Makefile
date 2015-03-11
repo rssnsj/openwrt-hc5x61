@@ -21,8 +21,9 @@ final: s_build_openwrt
 
 s_install_feeds: s_update_feeds
 	@cd $(openwrt_dir); ./scripts/feeds install $(openwrt_feeds);
-	@[ -e $(openwrt_dir)/package/rssnsj-feeds ] || \
-	  git clone https://github.com/rssnsj/network-feeds.git $(openwrt_dir)/package/rssnsj-feeds
+	@cd $(openwrt_dir)/package; \
+	 [ -e rssnsj-packages ] || ln -s ../../packages rssnsj-packages; \
+	 [ -e rssnsj-feeds ] || git clone https://github.com/rssnsj/network-feeds.git rssnsj-feeds
 	@touch s_install_feeds
 
 s_update_feeds: s_hiwifi_patch
