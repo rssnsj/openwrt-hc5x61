@@ -43,19 +43,3 @@ OpenWrt Patch for HiWiFi HC5761 / HC5661 (based on "barrier_breaker" branch)
 
 * 本编译方法同时会在recovery.bin目录下生成 openwrt-HC5761-recovery.bin、openwrt-HC5661-recovery.bin 两个文件，分别是极2、极1S的带u-boot固件，u-boot解锁后可用TFTP刷机。
 
--------
-#### 【附】TFTP刷机方法
-* 首先确认你的u-boot是已经解锁的，方法你懂的 :) .
-* 为你电脑的“本地连接”加一个IP: 192.168.1.88 / 255.255.255.0 
-* 解压刷机工具包（例如 tftpd64.400.rar）, 根据操作系统位数, 32位运行tftpd32, 64位运行tftpd64.
-* 用上面生成的相应机型的 XXXX-recovery.bin 替换刷机包目录下的 recovery.bin .
-* 拔掉HiWiFi电源线.
-* 网线一头连HiWiFi的LAN口, 一头连电脑.
-* 用尖锐物按住HiWiFi背后的reset孔不松动, 同时给路由器接电.
-* 直到看到tftpd出现进度条, 松开.
-* 前面板的指示灯会轮流闪烁, 表明内部Flash正在擦写, 此时不要断电.
-* ping 192.168.1.1, 直到ping通, 刷机过程总共3-5分钟.
-
--------
-#### 旧资料
-* HC6361（极壹）已被OpenWrt官方支持 ( http://wiki.openwrt.org/toh/hiwifi/hc6361 )，关于HC6361的编译、配置方法请移步至：https://github.com/rssnsj/openwrt-hc6361
