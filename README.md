@@ -19,7 +19,7 @@ OpenWrt Patch for HiWiFi HC5761 / HC5661 (based on "barrier_breaker" branch)
 * 2.4G Wi-Fi驱动支持;
 * SD卡驱动支持;
 * USB驱动支持;
-* 注意：HC5761（极2）的5G Wi-Fi（MT7610E）驱动暂未有开源支持。
+* 注意：HC5761（极2）的5G Wi-Fi（MT7610E）驱动暂未有开源支持，Releases中可下载到编译好的已带5G驱动的固件，但由于MTK版权限制本项目不提供其源代码。
 
 #### 编译好的固件下载
  * 请在本项目的Releases下载。
