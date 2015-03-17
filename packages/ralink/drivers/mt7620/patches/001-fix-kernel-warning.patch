@@ -1,0 +1,211 @@
+Index: mt7620-p4rev-113050/src/common/cmm_data_pci.c
+===================================================================
+--- mt7620-p4rev-113050.orig/src/common/cmm_data_pci.c
++++ mt7620-p4rev-113050/src/common/cmm_data_pci.c
+@@ -1164,6 +1164,14 @@ VOID	RTMPHandlePreTBTTInterrupt(
+ 	{
+ 		APUpdateAllBeaconFrame(pAd);
+ 
++	    POS_COOKIE pObj = (POS_COOKIE) pAd->OS_Cookie;
++#ifdef WORKQUEUE_BH
++        RTMP_OS_TASKLET_SCHE(&pObj->pretbtt_work);
++#else
++        RTMP_OS_TASKLET_SCHE(&pObj->pretbtt_task);
++#endif
++
++#if 0
+ 		RTMP_IO_WRITE32(pAd, MCU_INT_STATUS, 0x14);
+ 		pAd->MacTab.fMcastPsQEnable = FALSE;
+ 
+@@ -1222,6 +1230,7 @@ VOID	RTMPHandlePreTBTTInterrupt(
+ 				pAd->MacTab.fMcastPsQEnable = TRUE;
+ 			}
+ 		}
++#endif
+ 	}
+ 	else
+ #endif /* CONFIG_AP_SUPPORT */
+Index: mt7620-p4rev-113050/src/include/os/rt_drv.h
+===================================================================
+--- mt7620-p4rev-113050.orig/src/include/os/rt_drv.h
++++ mt7620-p4rev-113050/src/include/os/rt_drv.h
+@@ -337,6 +337,7 @@ struct os_cookie {
+ 	RTMP_NET_TASK_STRUCT	hcca_dma_done_work;
+ 	
+ 	RTMP_NET_TASK_STRUCT	tbtt_work;
++	RTMP_NET_TASK_STRUCT	pretbtt_work;
+ 
+ #else
+ 	RTMP_NET_TASK_STRUCT	rx_done_task;
+@@ -350,6 +351,7 @@ struct os_cookie {
+ 	RTMP_NET_TASK_STRUCT	ac3_dma_done_task;
+ 	RTMP_NET_TASK_STRUCT	hcca_dma_done_task;
+ 	RTMP_NET_TASK_STRUCT	tbtt_task;
++	RTMP_NET_TASK_STRUCT	pretbtt_task;
+ #endif /* WORKQUEUE_BH */
+ 
+ #ifdef RTMP_MAC_PCI
+Index: mt7620-p4rev-113050/src/include/os/rt_linux.h
+===================================================================
+--- mt7620-p4rev-113050.orig/src/include/os/rt_linux.h
++++ mt7620-p4rev-113050/src/include/os/rt_linux.h
+@@ -664,6 +664,7 @@ struct os_cookie {
+ 	struct work_struct   hcca_dma_done_work;
+ 	
+ 	struct work_struct   tbtt_work;
++	struct work_struct   pretbtt_work;
+ 
+ #else
+ 	RTMP_NET_TASK_STRUCT rx_done_task;
+@@ -677,6 +678,7 @@ struct os_cookie {
+ 	RTMP_NET_TASK_STRUCT ac3_dma_done_task;
+ 	RTMP_NET_TASK_STRUCT hcca_dma_done_task;
+ 	RTMP_NET_TASK_STRUCT tbtt_task;
++	RTMP_NET_TASK_STRUCT pretbtt_task;
+ #endif /* WORKQUEUE_BH */
+ 
+ #ifdef RTMP_MAC_PCI
+Index: mt7620-p4rev-113050/src/include/rtmp.h
+===================================================================
+--- mt7620-p4rev-113050.orig/src/include/rtmp.h
++++ mt7620-p4rev-113050/src/include/rtmp.h
+@@ -9631,8 +9631,10 @@ VOID RtmpMgmtTaskExit(
+ 
+ #ifdef WORKQUEUE_BH
+ void tbtt_workq(struct work_struct *work);
++void pretbtt_workq(struct work_struct *work);
+ #else
+ void tbtt_tasklet(unsigned long data);
++void pretbtt_tasklet(unsigned long data);
+ #endif /* WORKQUEUE_BH */
+ 
+ 
+Index: mt7620-p4rev-113050/src/os/linux/rt_profile.c
+===================================================================
+--- mt7620-p4rev-113050.orig/src/os/linux/rt_profile.c
++++ mt7620-p4rev-113050/src/os/linux/rt_profile.c
+@@ -515,6 +515,96 @@ void tbtt_tasklet(unsigned long data)
+ #endif /* CONFIG_AP_SUPPORT */
+ }
+ 
++#ifdef WORKQUEUE_BH
++void pretbtt_workq(struct work_struct *work)
++#else
++void pretbtt_tasklet(unsigned long data)
++#endif /* WORKQUEUE_BH */
++{
++/*#define MAX_TX_IN_TBTT       (16) */
++
++#ifdef CONFIG_AP_SUPPORT
++#ifdef WORKQUEUE_BH
++   POS_COOKIE pObj = container_of(work, struct os_cookie, pretbtt_work);
++   PRTMP_ADAPTER pAd = pObj->pAd_va;
++#else
++   PRTMP_ADAPTER pAd = (PRTMP_ADAPTER) data;
++#endif /* WORKQUEUE_BH */
++
++   RTMP_IO_WRITE32(pAd, MCU_INT_STATUS, 0x14);
++   pAd->MacTab.fMcastPsQEnable = FALSE;
++
++   if ((pAd->ApCfg.DtimCount == 0) &&
++       (pAd->MacTab.McastPsQueue.Head))
++   {
++       UINT32 macValue;
++       PQUEUE_ENTRY pEntry;
++       BOOLEAN bPS = FALSE;
++       UINT count = 0;
++       unsigned long IrqFlags;
++
++       RTMP_IO_READ32(pAd, PBF_CFG, &macValue);
++       macValue &= (~0x0C);
++       RTMP_IO_WRITE32(pAd, PBF_CFG, macValue);
++
++       RTMP_IRQ_LOCK(&pAd->irq_lock, IrqFlags);
++
++       while (pAd->MacTab.McastPsQueue.Head)
++       {
++           bPS = TRUE;
++#if 0
++           if (pAd->TxSwQueue[QID_AC_BE].Number <= (MAX_PACKETS_IN_QUEUE + MAX_PACKETS_IN_MCAST_PS_QUEUE))
++#else
++           if (pAd->TxSwQueue[QID_HCCA].Number <= (MAX_PACKETS_IN_QUEUE + MAX_PACKETS_IN_MCAST_PS_QUEUE))
++#endif
++           {
++               pEntry = RemoveHeadQueue(&pAd->MacTab.McastPsQueue);
++
++               if (count)
++               {
++                   RTMP_SET_PACKET_MOREDATA(pEntry, TRUE);
++               }
++#if 0
++               InsertHeadQueue(&pAd->TxSwQueue[QID_AC_BE], pEntry);
++#else
++               InsertHeadQueue(&pAd->TxSwQueue[QID_HCCA], pEntry);
++#endif
++               count++;
++           }
++           else
++           {
++               break;
++           }
++       }
++
++       RTMP_IRQ_UNLOCK(&pAd->irq_lock, IrqFlags);
++
++       if (pAd->MacTab.McastPsQueue.Number == 0)
++       {
++           UINT bss_index;
++
++           /* clear MCAST/BCAST backlog bit for all BSS */
++           for(bss_index=BSS0; bss_index<pAd->ApCfg.BssidNum; bss_index++)
++               WLAN_MR_TIM_BCMC_CLEAR(bss_index);
++           /* End of for */
++       }
++       pAd->MacTab.PsQIdleCount = 0;
++
++       // Dequeue outgoing framea from TxSwQueue0..3 queue and process it
++       if (bPS == TRUE)
++       {
++           UINT32 macValue1, idx;
++#if 0
++           RTMPDeQueuePacket(pAd, FALSE, NUM_OF_TX_RING, /*MAX_TX_IN_TBTT*/MAX_PACKETS_IN_MCAST_PS_QUEUE);
++#else
++           RTMPDeQueuePacket(pAd, FALSE, QID_HCCA, /*MAX_TX_IN_TBTT*/MAX_PACKETS_IN_MCAST_PS_QUEUE);
++#endif
++           pAd->MacTab.fMcastPsQEnable = TRUE;
++       }
++   }
++#endif /* CONFIG_AP_SUPPORT */
++}
++
+ 
+ void announce_802_3_packet(
+ 	IN	VOID			*pAdSrc,
+Index: mt7620-p4rev-113050/src/os/linux/rt_rbus_pci_drv.c
+===================================================================
+--- mt7620-p4rev-113050.orig/src/os/linux/rt_rbus_pci_drv.c
++++ mt7620-p4rev-113050/src/os/linux/rt_rbus_pci_drv.c
+@@ -93,6 +93,7 @@ NDIS_STATUS RtmpNetTaskInit(IN RTMP_ADAP
+ 	RTMP_OS_TASKLET_INIT(pAd, &pObj->ac3_dma_done_work, ac3_dma_done_workq);
+ 	RTMP_OS_TASKLET_INIT(pAd, &pObj->hcca_dma_done_work, hcca_dma_done_workq);
+ 	RTMP_OS_TASKLET_INIT(pAd, &pObj->tbtt_work, tbtt_workq);
++	RTMP_OS_TASKLET_INIT(pAd, &pObj->pretbtt_work, pretbtt_workq);
+ 	RTMP_OS_TASKLET_INIT(pAd, &pObj->fifo_statistic_full_work, fifo_statistic_full_workq);
+ #ifdef UAPSD_SUPPORT
+ 	RTMP_OS_TASKLET_INIT(pAd, &pObj->uapsd_eosp_sent_work, uapsd_eosp_sent_workq);
+@@ -121,6 +122,7 @@ NDIS_STATUS RtmpNetTaskInit(IN RTMP_ADAP
+ 	RTMP_OS_TASKLET_INIT(pAd, &pObj->ac3_dma_done_task, ac3_dma_done_tasklet, (unsigned long)pAd);
+ 	RTMP_OS_TASKLET_INIT(pAd, &pObj->hcca_dma_done_task, hcca_dma_done_tasklet, (unsigned long)pAd);
+ 	RTMP_OS_TASKLET_INIT(pAd, &pObj->tbtt_task, tbtt_tasklet, (unsigned long)pAd);
++	RTMP_OS_TASKLET_INIT(pAd, &pObj->pretbtt_task, pretbtt_tasklet, (unsigned long)pAd);
+ 	RTMP_OS_TASKLET_INIT(pAd, &pObj->fifo_statistic_full_task, fifo_statistic_full_tasklet, (unsigned long)pAd);
+ #ifdef UAPSD_SUPPORT	
+ 	RTMP_OS_TASKLET_INIT(pAd, &pObj->uapsd_eosp_sent_task, uapsd_eosp_sent_tasklet, (unsigned long)pAd);
+@@ -160,6 +162,7 @@ void RtmpNetTaskExit(IN RTMP_ADAPTER *pA
+ 	RTMP_OS_TASKLET_KILL(&pObj->ac3_dma_done_task);
+ 	RTMP_OS_TASKLET_KILL(&pObj->hcca_dma_done_task);
+ 	RTMP_OS_TASKLET_KILL(&pObj->tbtt_task);
++	RTMP_OS_TASKLET_KILL(&pObj->pretbtt_task);
+ 	RTMP_OS_TASKLET_KILL(&pObj->fifo_statistic_full_task);
+ #ifdef UAPSD_SUPPORT
+ 		RTMP_OS_TASKLET_KILL(&pObj->uapsd_eosp_sent_task);
