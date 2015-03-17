@@ -2361,14 +2361,14 @@ CONFIG_PACKAGE_wpad-mini=y
 #
 # Applications
 #
-# CONFIG_PACKAGE_8021xd is not set
-# CONFIG_PACKAGE_uci2dat is not set
+CONFIG_PACKAGE_8021xd=y
+CONFIG_PACKAGE_uci2dat=y
 
 #
 # Drivers
 #
 # CONFIG_PACKAGE_kmod-mt7610e is not set
-# CONFIG_PACKAGE_kmod-mt76x2e is not set
+# CONFIG_PACKAGE_kmod-mt7620 is not set
 
 #
 # Utilities

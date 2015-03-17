@@ -60,6 +60,7 @@ define Build/Compile
 		ARCH="$(LINUX_KARCH)" \
 		SUBDIRS="$(PKG_BUILD_DIR)/build/" \
 		$(foreach c, $(PKG_KCONFIG),$(if $(CONFIG_$c),CONFIG_$(c)=y))\
+		CONFIG_SUPPORT_OPENWRT=y \
 		modules
 endef
 
