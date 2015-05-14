@@ -1,6 +1,5 @@
 
 BUILDER ?= OpenWrt-ImageBuilder-ramips_mt7620a-for-linux-x86_64
-OPKG_EXTRA_SOURCE :=
 
 OPKG_PACKAGES := 6in4 6to4 blkid curl ethtool iftop ip ip6tables-extra ip6tables-mod-nat iperf-mt ipset \
 	iptables-mod-conntrack-extra iptables-mod-extra iptables-mod-filter iptables-mod-ipopt iptables-mod-nat-extra \
@@ -18,15 +17,16 @@ OPKG_PACKAGES := 6in4 6to4 blkid curl ethtool iftop ip ip6tables-extra ip6tables
 	luci-proto-ppp luci-proto-relay luci-theme-bootstrap ntfs-3g openvpn-openssl ppp-mod-pppol2tp ppp-mod-pptp \
 	qos-scripts relayd resolveip samba36-server tc tcpdump terminfo uclibcxx uhttpd uhttpd-mod-ubus zlib \
 	pdnsd pptpd xl2tpd
+OPKG_REPOS := repo-base.conf
 
 ifeq ($(FULL),1)
 	OPKG_PACKAGES += ipset-lists minivtun shadowsocks-libev shadowsocks-tools
-	OPKG_EXTRA_SOURCE := "src/gz rssnsj http://rssn.cn/network-feeds/ramips/"
+	OPKG_REPOS += repo-rssnsj.conf
 endif
 
 basic: .check $(BUILDER)/.patched-hiwifi
 	rm -f $(BUILDER)/packages/Packages*
-	@( cat repositories.conf; echo $(OPKG_EXTRA_SOURCE) ) > $(BUILDER)/repositories.conf
+	cat $(OPKG_REPOS) > $(BUILDER)/repositories.conf
 	make -C $(BUILDER) image PROFILE=HiWiFi-HC5761 \
 		FILES="$(shell cd $(BUILDER); pwd)/target/linux/ramips/base-files" \
 		PACKAGES="$(OPKG_PACKAGES)"
