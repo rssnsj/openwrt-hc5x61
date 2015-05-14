@@ -40,8 +40,15 @@ $(BUILDER)/.patched-hiwifi:
 .check:
 	@if [ ! -d "$(BUILDER)" ]; then \
 		echo "Please specify a valid ImageBuilder directory by \"make BUILDER=...\"."; \
+		echo "Type \"make help\" for more details."; \
 		exit 1; \
 	 fi
+
+help:
+	@echo "Usage:"
+	@echo " make BUILDER=<ImageBuilder_directory> [FULL=1]"
+	@echo "Options:"
+	@echo " Use \"FULL=1\" to build fully functional firmware with Shadowsocks & minivtun."
 
 clean:
 	make clean -C $(BUILDER)
