@@ -1,23 +1,30 @@
 
-IMAGEBUILDER ?= OpenWrt-ImageBuilder-ramips_mt7620a-for-linux-x86_64
+BUILDER ?= OpenWrt-ImageBuilder-ramips_mt7620a-for-linux-x86_64
 
-all: .check_deps $(IMAGEBUILDER)/.patched-hc5761
-	make -C $(IMAGEBUILDER) image PROFILE=HiWiFi-HC5761 USER_FILES=$(shell cd $(IMAGEBUILDER); pwd)/target/linux/ramips/base-files
+all: .check_deps $(BUILDER)/.patched-hiwifi
+	rm -f $(BUILDER)/packages/Packages*
+	make -C $(BUILDER) image PROFILE=HiWiFi-HC5761 \
+		FILES=$(shell cd $(BUILDER); pwd)/target/linux/ramips/base-files \
+		PACKAGES="6in4 6to4 blkid curl ethtool iftop ip ip6tables-extra ip6tables-mod-nat iperf-mt ipset iptables-mod-conntrack-extra iptables-mod-extra iptables-mod-filter iptables-mod-ipopt iptables-mod-nat-extra iwinfo kmod-crypto-deflate kmod-crypto-des kmod-crypto-ecb kmod-crypto-hmac kmod-crypto-manager kmod-crypto-md4 kmod-crypto-md5 kmod-crypto-pcompress kmod-crypto-sha1 kmod-crypto-sha256 kmod-dnsresolver kmod-fs-cifs kmod-fs-hfs kmod-fs-nfs kmod-fs-nfs-common kmod-fs-ntfs kmod-fs-vfat kmod-fuse kmod-gre kmod-ifb kmod-ip6-tunnel kmod-ip6tables-extra kmod-ipip kmod-ipt-conntrack-extra kmod-ipt-extra kmod-ipt-filter kmod-ipt-ipopt kmod-ipt-ipset kmod-ipt-nat-extra kmod-ipt-nat6 kmod-ipt-nathelper-extra kmod-iptunnel kmod-iptunnel4 kmod-iptunnel6 kmod-l2tp kmod-ledtrig-gpio kmod-lib-textsearch kmod-lib-zlib kmod-macvlan kmod-mppe kmod-nfnetlink kmod-nls-cp437 kmod-nls-iso8859-1 kmod-nls-utf8 kmod-pppol2tp kmod-pptp kmod-sched-connmark kmod-sched-core kmod-sit kmod-tun kmod-usb-ohci kmod-usb-printer libcurl libdaemon libevent2 libiwinfo libiwinfo-lua libjson liblua liblzo libmnl libncurses libopenssl libpcap libpolarssl libpthread librt libubus-lua libuci-lua lua luci luci-app-firewall luci-app-qos luci-app-samba luci-base luci-i18n-chinese luci-i18n-english luci-lib-json luci-lib-nixio luci-mod-admin-full luci-proto-ipv6 luci-proto-ppp luci-proto-relay luci-theme-bootstrap ntfs-3g openvpn-openssl ppp-mod-pppol2tp ppp-mod-pptp qos-scripts relayd resolveip samba36-server tc tcpdump terminfo uclibcxx uhttpd uhttpd-mod-ubus zlib   pdnsd pptpd xl2tpd"
+#### ipset-lists kmod-proto-bridge kmod-yavlan minivtun shadowsocks-libev shadowsocks-tools uci2dat kmod-mt7610e
 
-$(IMAGEBUILDER)/.patched-hc5761:
-	patch -d $(IMAGEBUILDER) -p0 < hiwifi-hc5761.patch
-	touch $(IMAGEBUILDER)/.patched-hc5761
+$(BUILDER)/.patched-hiwifi:
+	patch -d $(BUILDER) -p0 < ../patches/01-hiwifi-hc5761.patch
+	mv $(BUILDER)/repositories.conf $(BUILDER)/repositories.conf.bak
+	cp -v repositories.conf $(BUILDER)/
+	touch $(BUILDER)/.patched-hiwifi
 
 .check_deps:
-	@if [ ! -d "$(IMAGEBUILDER)" ]; then \
-		echo "Please specify a valid ImageBuilder directory by \"make IMAGEBUILDER=...\"."; \
+	@if [ ! -d "$(BUILDER)" ]; then \
+		echo "Please specify a valid ImageBuilder directory by \"make BUILDER=...\"."; \
 		exit 1; \
 	 fi
 
 clean:
-	make clean -C $(IMAGEBUILDER)
-	@if [ -e $(IMAGEBUILDER)/.patched-hc5761 ]; then \
-		rm -vf $(IMAGEBUILDER)/.patched-hc5761; \
-		patch -R -d $(IMAGEBUILDER) -p0 < hiwifi-hc5761.patch; \
+	make clean -C $(BUILDER)
+	@if [ -e $(BUILDER)/.patched-hiwifi ]; then \
+		rm -vf $(BUILDER)/.patched-hiwifi; \
+		mv -vf $(BUILDER)/repositories.conf.bak $(BUILDER)/repositories.conf; \
+		patch -R -d $(BUILDER) -p0 < ../patches/01-hiwifi-hc5761.patch; \
 	fi
 
