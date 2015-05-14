@@ -9,6 +9,7 @@ all: .check_deps $(BUILDER)/.patched-hiwifi
 #### ipset-lists kmod-proto-bridge kmod-yavlan minivtun shadowsocks-libev shadowsocks-tools uci2dat kmod-mt7610e
 
 $(BUILDER)/.patched-hiwifi:
+	mkdir -p $(BUILDER)/target/linux/ramips/patches-3.10
 	patch -d $(BUILDER) -p0 < ../patches/01-hiwifi-hc5761.patch
 	mv $(BUILDER)/repositories.conf $(BUILDER)/repositories.conf.bak
 	cp -v repositories.conf $(BUILDER)/
