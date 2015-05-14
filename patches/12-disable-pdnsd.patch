@@ -1,7 +1,7 @@
-Index: package/base-files/files/etc/uci-defaults/disable-pdnsd
+Index: target/linux/ramips/base-files/etc/uci-defaults/disable-pdnsd
 ===================================================================
---- package/base-files/files/etc/uci-defaults/disable-pdnsd	(revision 0)
-+++ package/base-files/files/etc/uci-defaults/disable-pdnsd	(revision 0)
+--- target/linux/ramips/base-files/etc/uci-defaults/disable-pdnsd	(revision 0)
++++ target/linux/ramips/base-files/etc/uci-defaults/disable-pdnsd	(revision 0)
 @@ -0,0 +1,2 @@
 +#!/bin/sh
 +[ -x /etc/init.d/pdnsd ] && /etc/init.d/pdnsd disable
