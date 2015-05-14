@@ -20,7 +20,7 @@ OPKG_PACKAGES := 6in4 6to4 blkid curl ethtool iftop ip ip6tables-extra ip6tables
 OPKG_REPOS := repo-base.conf
 
 ifeq ($(FULL),1)
-	OPKG_PACKAGES += ipset-lists minivtun shadowsocks-libev shadowsocks-tools
+	OPKG_PACKAGES += ipset-lists minivtun shadowsocks-libev shadowsocks-tools dnsmasq-full
 	OPKG_REPOS += repo-rssnsj.conf
 endif
 
