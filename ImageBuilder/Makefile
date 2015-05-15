@@ -24,8 +24,9 @@ ifeq ($(FULL),1)
 	OPKG_REPOS += repo-rssnsj.conf
 endif
 
-basic: .check $(BUILDER)/.patched-hiwifi
-	rm -f $(BUILDER)/packages/Packages*
+firmware: .check $(BUILDER)/.patched-hiwifi
+#	rm -f $(BUILDER)/packages/Packages*
+	mkdir -p $(BUILDER)/dl
 	cat $(OPKG_REPOS) > $(BUILDER)/repositories.conf
 	make -C $(BUILDER) image PROFILE=HiWiFi-HC5761 \
 		FILES="$(shell cd $(BUILDER); pwd)/target/linux/ramips/base-files" \
@@ -46,8 +47,9 @@ $(BUILDER)/.patched-hiwifi:
 
 help:
 	@echo "Usage:"
-	@echo " make BUILDER=<ImageBuilder_directory> [FULL=1]"
+	@echo " make BUILDER=<ImageBuilder> [FULL=1]"
 	@echo "Options:"
+	@echo " Use \"BUILDER=<ImageBuilder>\" to specify a valid ImageBuilder directory."
 	@echo " Use \"FULL=1\" to build fully functional firmware with Shadowsocks & minivtun."
 
 clean:
