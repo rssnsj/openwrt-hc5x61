@@ -25,14 +25,14 @@ ifeq ($(FULL),1)
 	OPKG_REPOS += repo-rssnsj.conf
 endif
 
-rom: .check_ib $(BUILDER)/.patched-hiwifi
+rom: .check_ib $(BUILDER)/.patched
 	mkdir -p $(BUILDER)/dl
 	cat $(OPKG_REPOS) > $(BUILDER)/repositories.conf
 	make -C $(BUILDER) image PROFILE=HiWiFi-HC5761 \
 		FILES="$(shell cd $(BUILDER); pwd)/target/linux/ramips/base-files" \
 		PACKAGES="$(OPKG_PACKAGES)"
 
-rom5g: .check_ib .ralink_built $(BUILDER)/.patched-hiwifi
+rom5g: .check_ib .ralink_built $(BUILDER)/.patched
 	mkdir -p $(BUILDER)/dl
 	cat $(OPKG_REPOS) > $(BUILDER)/repositories.conf
 	echo "src ralink file:$(shell cd $(SDK)/bin/ramips/packages; pwd)" >> $(BUILDER)/repositories.conf
@@ -42,19 +42,17 @@ rom5g: .check_ib .ralink_built $(BUILDER)/.patched-hiwifi
 
 ralink .ralink_built: .check_sdk
 	@cd $(SDK); [ -d package/ralink ] || ln -sv $(shell pwd)/../packages/ralink package/ralink
-	@cd $(SDK); [ -f .config.orig ] || mv -vf .config .config.orig
 	@cd $(SDK); [ ! -L dl -a -d /var/dl ] && { rmdir dl && ln -s /var/dl; } || :
-	cat "$(SDK)/.config.orig" config.ralink > "$(SDK)/.config"
 	make package/mt7610e/compile V=s -C "$(SDK)"
 	make package/8021xd/compile V=s -C "$(SDK)"
 	make package/uci2dat/compile V=s -C "$(SDK)"
 	cd "$(SDK)/bin/ramips/packages" && ../../../scripts/ipkg-make-index.sh . > Packages && gzip -9c Packages > Packages.gz
 	touch .ralink_built
 
-$(BUILDER)/.patched-hiwifi patch:
+$(BUILDER)/.patched patch:
 	mkdir -p $(BUILDER)/target/linux/ramips/patches-3.10
 	cat ../patches/01-hiwifi-hc5761.patch ../patches/12-disable-pdnsd.patch | patch -d $(BUILDER) -p0
-	touch $(BUILDER)/.patched-hiwifi
+	touch $(BUILDER)/.patched
 
 .check_ib:
 	@if ! [ -n "$(BUILDER)" -a -d "$(BUILDER)" ]; then \
@@ -71,15 +69,17 @@ $(BUILDER)/.patched-hiwifi patch:
 
 help:
 	@echo "Usage:"
-	@echo " make BUILDER=<ImageBuilder> [FULL=1]"
+	@echo " make BUILDER=<ImageBuilder> [FULL=1]             build HC5761 firmware"
+	@echo " make rom5g BUILDER=<ImageBuilder> [FULL=1]       build HC5761 firmware with 5G Wi-Fi driver"
 	@echo "Options:"
 	@echo " Use \"BUILDER=<ImageBuilder>\" to specify a valid ImageBuilder directory."
+	@echo " Use \"SDK=<ImageBuilder>\" to specify a valid OpenWrt SDK directory."
 	@echo " Use \"FULL=1\" to build fully functional firmware with Shadowsocks & minivtun."
 
 clean: .check_ib
 	make clean -C $(BUILDER)
-	@if [ -e $(BUILDER)/.patched-hiwifi ]; then \
-		rm -vf $(BUILDER)/.patched-hiwifi; \
+	@if [ -e $(BUILDER)/.patched ]; then \
+		rm -vf $(BUILDER)/.patched; \
 		cat ../patches/01-hiwifi-hc5761.patch ../patches/12-disable-pdnsd.patch | patch -R -d $(BUILDER) -p0; \
 	fi
 	rm -f .ralink_built
