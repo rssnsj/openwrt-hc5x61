@@ -18,14 +18,16 @@ OPKG_PACKAGES := 6in4 6to4 blkid curl ethtool iftop ip ip6tables-extra ip6tables
 	luci-proto-ppp luci-proto-relay luci-theme-bootstrap ntfs-3g openvpn-openssl ppp-mod-pppol2tp ppp-mod-pptp \
 	qos-scripts relayd resolveip samba36-server tc tcpdump terminfo uclibcxx uhttpd uhttpd-mod-ubus zlib \
 	pdnsd pptpd xl2tpd
+OPKG_PACKAGES_HC5761 :=
+OPKG_PACKAGES_HC5861 :=
 OPKG_REPOS := repo-base.conf
-BUILD_PREREQUISITE = .check_ib .patched
+PREPARED_TARGETS = .check_ib .patched
 
 # A single option for enabling all options
 ifeq ($(FULL),1)
 	SS := 1
 	RALINK := 1
-	KMOD := 1
+	FEEDS := 1
 endif
 
 # Check each option for selection of packages and dependencies
@@ -34,42 +36,47 @@ ifeq ($(SS),1)
 	OPKG_REPOS += repo-rssnsj.conf
 endif
 ifeq ($(RALINK),1)
-	OPKG_PACKAGES += 8021xd uci2dat kmod-mt7610e
-	BUILD_PREREQUISITE += .check_sdk .ralink
+	OPKG_PACKAGES_HC5761 += 8021xd uci2dat kmod-mt7610e
+	OPKG_PACKAGES_HC5861 += 8021xd uci2dat kmod-mt76x2e
+	PREPARED_TARGETS += .check_sdk .ralink
 endif
-ifeq ($(KMOD),1)
+ifeq ($(FEEDS),1)
 	OPKG_PACKAGES += kmod-proto-bridge kmod-yavlan
-	BUILD_PREREQUISITE += .check_sdk .kmod
+	PREPARED_TARGETS += .check_sdk .feeds
 endif
 
-firmware: $(BUILD_PREREQUISITE)
+firmware: $(PREPARED_TARGETS)
 	mkdir -p $(BUILDER)/dl
 	cat $(OPKG_REPOS) > $(BUILDER)/repositories.conf
-	@[ -n "$(SDK)" -a -d "$(SDK)"/bin/ramips/packages ] && \
-	 echo "src ralink file:$(shell cd $(SDK)/bin/ramips/packages; pwd)" >> $(BUILDER)/repositories.conf || :
+	@[ -n "$(SDK)" -a -f "$(SDK)"/bin/ramips/packages/Packages ] && \
+		echo "src ralink file:$(shell cd $(SDK)/bin/ramips/packages; pwd)" >> $(BUILDER)/repositories.conf || :
 	make -C $(BUILDER) image PROFILE=HiWiFi-HC5761 \
 		FILES="$(shell cd $(BUILDER); pwd)/target/linux/ramips/base-files" \
-		PACKAGES="$(OPKG_PACKAGES)"
+		PACKAGES="$(OPKG_PACKAGES) $(OPKG_PACKAGES_HC5761)"
+	make -C $(BUILDER) image PROFILE=HiWiFi-HC5861 \
+		FILES="$(shell cd $(BUILDER); pwd)/target/linux/ramips/base-files" \
+		PACKAGES="$(OPKG_PACKAGES) $(OPKG_PACKAGES_HC5861)"
 
 .patched:
 	mkdir -p $(BUILDER)/target/linux/ramips/patches-3.10
-	cat ../patches/01-hiwifi-hc5761.patch ../patches/12-disable-pdnsd.patch | patch -d $(BUILDER) -p0
+	cat ../patches/01-hiwifi-hc5x61.patch ../patches/12-disable-pdnsd.patch | patch -d $(BUILDER) -p0
 	@touch .patched
 
 .ralink:
 	@cd $(SDK)/package; [ -d ralink ] || ln -sv $(shell cd ..; pwd)/packages/ralink
 	@cd $(SDK); [ ! -L dl -a -d /var/dl ] && { rmdir dl && ln -s /var/dl; } || :
-	make package/mt7610e/compile V=s -C "$(SDK)"
 	make package/8021xd/compile V=s -C "$(SDK)"
 	make package/uci2dat/compile V=s -C "$(SDK)"
+	make package/mt7610e/compile V=s -C "$(SDK)"
+	make package/mt76x2e/compile V=s -C "$(SDK)"
 	cd "$(SDK)/bin/ramips/packages" && ../../../scripts/ipkg-make-index.sh . > Packages && gzip -9c Packages > Packages.gz
 	touch .ralink
 
-.kmod:
+.feeds:
 	@cd $(SDK)/package; [ -d network-feeds ] || git clone https://github.com/rssnsj/network-feeds
 	make package/proto-bridge/compile V=s -C "$(SDK)"
 	cd "$(SDK)/bin/ramips/packages" && ../../../scripts/ipkg-make-index.sh . > Packages && gzip -9c Packages > Packages.gz
-	touch .kmod
+	touch .feeds
 
 .check_ib:
 	@if ! [ -n "$(BUILDER)" -a -d "$(BUILDER)" ]; then \
@@ -92,15 +99,15 @@ help:
 	@echo "  SDK=<directory>           specify a valid OpenWrt SDK directory"
 	@echo "  SS=1                      build with Shadowsocks & minivtun"
 	@echo "  RALINK=1                  build and install Ralink 5G drivers"
-	@echo "  KMOD=1                    build and install kmod-proto-bridge, kmod-yavlan"
+	@echo "  FEEDS=1                   build and install kmod-proto-bridge, kmod-yavlan"
 	@echo "  FULL=1                    enable all the options above"
 
 clean: .check_ib
 	make clean -C $(BUILDER)
 	@if [ -e .patched ]; then \
 		rm -vf .patched; \
-		cat ../patches/01-hiwifi-hc5761.patch ../patches/12-disable-pdnsd.patch | patch -R -d $(BUILDER) -p0; \
+		cat ../patches/01-hiwifi-hc5x61.patch ../patches/12-disable-pdnsd.patch | patch -R -d $(BUILDER) -p0; \
 	fi
-	rm -f .ralink .kmod
+	rm -f .ralink .feeds
 	[ -n "$(SDK)" -a -d "$(SDK)"/bin/ramips ] && rm -rf "$(SDK)"/bin/ramips/* || :
 
