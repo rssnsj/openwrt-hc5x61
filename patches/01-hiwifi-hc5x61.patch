@@ -190,7 +190,7 @@ Index: target/linux/ramips/dts/HiWiFi-HC5861.dts
 ===================================================================
 --- target/linux/ramips/dts/HiWiFi-HC5861.dts	(revision 0)
 +++ target/linux/ramips/dts/HiWiFi-HC5861.dts	(revision 0)
-@@ -0,0 +1,161 @@
+@@ -0,0 +1,170 @@
 +/dts-v1/;
 +
 +/include/ "mt7620a.dtsi"
@@ -315,17 +315,21 @@ Index: target/linux/ramips/dts/HiWiFi-HC5861.dts
 +			label = "hiwifi:blue:system";
 +			gpios = <&gpio0 9 1>;
 +		};
-+		internet {
-+			label = "hiwifi:blue:internet";
-+			gpios = <&gpio0 11 1>;
-+		};
 +		wlan2p4 {
 +			label = "hiwifi:blue:wlan-2p4";
++			gpios = <&gpio0 11 1>;
++		};
++		internet {
++			label = "hiwifi:blue:internet";
 +			gpios = <&gpio3 0 1>;
 +		};
 +		wlan5p {
 +			label = "hiwifi:blue:wlan-5p";
 +			gpios = <&gpio0 7 1>;
++		};
++		turbo {
++			label = "hiwifi:blue:turbo";
++			gpios = <&gpio0 10 1>;
 +		};
 +	};
 +
@@ -346,8 +350,13 @@ Index: target/linux/ramips/dts/HiWiFi-HC5861.dts
 +		#size-cells = <0>;
 +		usbpower {
 +			gpio-export,name = "usbpower";
-+			gpio-export,output = <1>;
++			gpio-export,output = <0>;
 +			gpios = <&gpio0 13 0>;
++		};
++		sdpower {
++			gpio-export,name = "sdpower";
++			gpio-export,output = <0>;
++			gpios = <&gpio0 8 0>;
 +		};
 +	};
 +
