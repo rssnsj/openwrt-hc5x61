@@ -19,40 +19,57 @@ OPKG_PACKAGES := 6in4 6to4 blkid curl ethtool iftop ip ip6tables-extra ip6tables
 	qos-scripts relayd resolveip samba36-server tc tcpdump terminfo uclibcxx uhttpd uhttpd-mod-ubus zlib \
 	pdnsd pptpd xl2tpd
 OPKG_REPOS := repo-base.conf
+BUILD_PREREQUISITE = .check_ib .patched
 
+# A single option for enabling all options
 ifeq ($(FULL),1)
+	SS := 1
+	RALINK := 1
+	KMOD := 1
+endif
+
+# Check each option for selection of packages and dependencies
+ifeq ($(SS),1)
 	OPKG_PACKAGES += ipset-lists minivtun shadowsocks-libev shadowsocks-tools dnsmasq-full
 	OPKG_REPOS += repo-rssnsj.conf
 endif
+ifeq ($(RALINK),1)
+	OPKG_PACKAGES += 8021xd uci2dat kmod-mt7610e
+	BUILD_PREREQUISITE += .check_sdk .ralink
+endif
+ifeq ($(KMOD),1)
+	OPKG_PACKAGES += kmod-proto-bridge kmod-yavlan
+	BUILD_PREREQUISITE += .check_sdk .kmod
+endif
 
-rom: .check_ib $(BUILDER)/.patched
+firmware: $(BUILD_PREREQUISITE)
 	mkdir -p $(BUILDER)/dl
 	cat $(OPKG_REPOS) > $(BUILDER)/repositories.conf
+	@[ -n "$(SDK)" -a -d "$(SDK)"/bin/ramips/packages ] && \
+	 echo "src ralink file:$(shell cd $(SDK)/bin/ramips/packages; pwd)" >> $(BUILDER)/repositories.conf || :
 	make -C $(BUILDER) image PROFILE=HiWiFi-HC5761 \
 		FILES="$(shell cd $(BUILDER); pwd)/target/linux/ramips/base-files" \
 		PACKAGES="$(OPKG_PACKAGES)"
 
-rom5g: .check_ib .ralink_built $(BUILDER)/.patched
-	mkdir -p $(BUILDER)/dl
-	cat $(OPKG_REPOS) > $(BUILDER)/repositories.conf
-	echo "src ralink file:$(shell cd $(SDK)/bin/ramips/packages; pwd)" >> $(BUILDER)/repositories.conf
-	make -C $(BUILDER) image PROFILE=HiWiFi-HC5761 \
-		FILES="$(shell cd $(BUILDER); pwd)/target/linux/ramips/base-files" \
-		PACKAGES="$(OPKG_PACKAGES) 8021xd uci2dat kmod-mt7610e"
+.patched:
+	mkdir -p $(BUILDER)/target/linux/ramips/patches-3.10
+	cat ../patches/01-hiwifi-hc5761.patch ../patches/12-disable-pdnsd.patch | patch -d $(BUILDER) -p0
+	@touch .patched
 
-ralink .ralink_built: .check_sdk
-	@cd $(SDK); [ -d package/ralink ] || ln -sv $(shell pwd)/../packages/ralink package/ralink
+.ralink:
+	@cd $(SDK)/package; [ -d ralink ] || ln -sv $(shell cd ..; pwd)/packages/ralink
 	@cd $(SDK); [ ! -L dl -a -d /var/dl ] && { rmdir dl && ln -s /var/dl; } || :
 	make package/mt7610e/compile V=s -C "$(SDK)"
 	make package/8021xd/compile V=s -C "$(SDK)"
 	make package/uci2dat/compile V=s -C "$(SDK)"
 	cd "$(SDK)/bin/ramips/packages" && ../../../scripts/ipkg-make-index.sh . > Packages && gzip -9c Packages > Packages.gz
-	touch .ralink_built
+	touch .ralink
 
-$(BUILDER)/.patched patch:
-	mkdir -p $(BUILDER)/target/linux/ramips/patches-3.10
-	cat ../patches/01-hiwifi-hc5761.patch ../patches/12-disable-pdnsd.patch | patch -d $(BUILDER) -p0
-	touch $(BUILDER)/.patched
+.kmod:
+	@cd $(SDK)/package; [ -d network-feeds ] || git clone https://github.com/rssnsj/network-feeds
+	make package/proto-bridge/compile V=s -C "$(SDK)"
+	cd "$(SDK)/bin/ramips/packages" && ../../../scripts/ipkg-make-index.sh . > Packages && gzip -9c Packages > Packages.gz
+	touch .kmod
 
 .check_ib:
 	@if ! [ -n "$(BUILDER)" -a -d "$(BUILDER)" ]; then \
@@ -69,18 +86,21 @@ $(BUILDER)/.patched patch:
 
 help:
 	@echo "Usage:"
-	@echo " make BUILDER=<ImageBuilder> [FULL=1]             build HC5761 firmware"
-	@echo " make rom5g BUILDER=<ImageBuilder> [FULL=1]       build HC5761 firmware with 5G Wi-Fi driver"
+	@echo "  make BUILDER=.... [SS=1] [RALINK=1]     build OpenWrt firmware for this board"
 	@echo "Options:"
-	@echo " Use \"BUILDER=<ImageBuilder>\" to specify a valid ImageBuilder directory."
-	@echo " Use \"SDK=<ImageBuilder>\" to specify a valid OpenWrt SDK directory."
-	@echo " Use \"FULL=1\" to build fully functional firmware with Shadowsocks & minivtun."
+	@echo "  BUILDER=<directory>       specify a valid ImageBuilder directory"
+	@echo "  SDK=<directory>           specify a valid OpenWrt SDK directory"
+	@echo "  SS=1                      build with Shadowsocks & minivtun"
+	@echo "  RALINK=1                  build and install Ralink 5G drivers"
+	@echo "  KMOD=1                    build and install kmod-proto-bridge, kmod-yavlan"
+	@echo "  FULL=1                    enable all the options above"
 
 clean: .check_ib
 	make clean -C $(BUILDER)
-	@if [ -e $(BUILDER)/.patched ]; then \
-		rm -vf $(BUILDER)/.patched; \
+	@if [ -e .patched ]; then \
+		rm -vf .patched; \
 		cat ../patches/01-hiwifi-hc5761.patch ../patches/12-disable-pdnsd.patch | patch -R -d $(BUILDER) -p0; \
 	fi
-	rm -f .ralink_built
+	rm -f .ralink .kmod
+	[ -n "$(SDK)" -a -d "$(SDK)"/bin/ramips ] && rm -rf "$(SDK)"/bin/ramips/* || :
 
