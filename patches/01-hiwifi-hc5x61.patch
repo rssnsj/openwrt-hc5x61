@@ -444,7 +444,7 @@ Index: target/linux/ramips/base-files/etc/uci-defaults/01_leds
 ===================================================================
 --- target/linux/ramips/base-files/etc/uci-defaults/01_leds	(revision 43770)
 +++ target/linux/ramips/base-files/etc/uci-defaults/01_leds	(working copy)
-@@ -203,6 +203,16 @@
+@@ -203,6 +203,19 @@
  		set_usb_led "wr8305rt:usb"
  		set_wifi_led "wr8305rt:wifi"
  		;;
@@ -452,11 +452,14 @@ Index: target/linux/ramips/base-files/etc/uci-defaults/01_leds
 +		ucidef_set_led_default "system" "system" "hiwifi:blue:system" "1"
 +		ucidef_set_led_netdev "internet" "internet" "hiwifi:blue:internet" "eth0.2"
 +		set_wifi_led "hiwifi:blue:wlan-2p4"
++		ucidef_set_led_netdev "wifi5g" "wifi5g" "hiwifi:blue:wlan-5p" "rai0"
 +		;;
 +	hiwifi-hc5861)
 +		ucidef_set_led_default "system" "system" "hiwifi:blue:system" "1"
 +		ucidef_set_led_netdev "internet" "internet" "hiwifi:blue:internet" "eth0.2"
 +		set_wifi_led "hiwifi:blue:wlan-2p4"
++		ucidef_set_led_netdev "wifi5g" "wifi5g" "hiwifi:blue:wlan-5p" "rai0"
++		ucidef_set_led_default "turbo" "turbo" "hiwifi:blue:turbo" "0"
 +		;;
  	y1 |\
  	y1s)
@@ -491,14 +494,11 @@ Index: target/linux/ramips/base-files/etc/diag.sh
 ===================================================================
 --- target/linux/ramips/base-files/etc/diag.sh	(revision 43770)
 +++ target/linux/ramips/base-files/etc/diag.sh	(working copy)
-@@ -188,6 +188,12 @@
+@@ -188,6 +188,9 @@
  	na930)
  		status_led="na930:blue:power"
  		;;
-+	hiwifi-hc5761)
-+		status_led="hiwifi:blue:system"
-+		;;
-+	hiwifi-hc5861)
++	hiwifi-hc5*61)
 +		status_led="hiwifi:blue:system"
 +		;;
  	y1 | \
