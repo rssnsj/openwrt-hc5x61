@@ -20,63 +20,71 @@ OPKG_PACKAGES := 6in4 6to4 blkid curl ethtool iftop ip ip6tables-extra ip6tables
 	pdnsd pptpd xl2tpd
 OPKG_PACKAGES_HC5761 :=
 OPKG_PACKAGES_HC5861 :=
-OPKG_REPOS := repo-base.conf
 PREPARED_TARGETS = .check_ib .patched
 
 # A single option for enabling all options
 ifeq ($(FULL),1)
-	SS := 1
 	RALINK := 1
 	FEEDS := 1
 endif
-
 # Check each option for selection of packages and dependencies
-ifeq ($(SS),1)
-	OPKG_PACKAGES += ipset-lists minivtun shadowsocks-libev shadowsocks-tools dnsmasq-full
-	OPKG_REPOS += repo-rssnsj.conf
-endif
 ifeq ($(RALINK),1)
 	OPKG_PACKAGES_HC5761 += 8021xd uci2dat kmod-mt7610e
 	OPKG_PACKAGES_HC5861 += 8021xd uci2dat kmod-mt76x2e
 	PREPARED_TARGETS += .check_sdk .ralink
 endif
 ifeq ($(FEEDS),1)
-	OPKG_PACKAGES += kmod-proto-bridge kmod-yavlan
+	OPKG_PACKAGES += ipset-lists minivtun shadowsocks-libev shadowsocks-tools dnsmasq-full kmod-proto-bridge kmod-yavlan
 	PREPARED_TARGETS += .check_sdk .feeds
 endif
 
-firmware: $(PREPARED_TARGETS)
+define BeforeBuildImage
 	mkdir -p $(BUILDER)/dl
-	cat $(OPKG_REPOS) > $(BUILDER)/repositories.conf
+	cp -f repo-base.conf $(BUILDER)/repositories.conf
 	@[ -n "$(SDK)" -a -f "$(SDK)"/bin/ramips/packages/Packages ] && \
 		echo "src ralink file:$(shell cd $(SDK)/bin/ramips/packages; pwd)" >> $(BUILDER)/repositories.conf || :
+	mkdir -p $(BUILDER)/target/linux/ramips/base-files/etc
+	cp -f opkg.conf $(BUILDER)/target/linux/ramips/base-files/etc/opkg.conf
+endef
+
+both: HC5761 HC5861
+
+HC5761: $(PREPARED_TARGETS)
+	$(call BeforeBuildImage)
 	make -C $(BUILDER) image PROFILE=HiWiFi-HC5761 \
 		FILES="$(shell cd $(BUILDER); pwd)/target/linux/ramips/base-files" \
 		PACKAGES="$(OPKG_PACKAGES) $(OPKG_PACKAGES_HC5761)"
+
+HC5861: $(PREPARED_TARGETS)
+	$(call BeforeBuildImage)
 	make -C $(BUILDER) image PROFILE=HiWiFi-HC5861 \
 		FILES="$(shell cd $(BUILDER); pwd)/target/linux/ramips/base-files" \
 		PACKAGES="$(OPKG_PACKAGES) $(OPKG_PACKAGES_HC5861)"
 
 .patched:
 	mkdir -p $(BUILDER)/target/linux/ramips/patches-3.10
-	cat ../patches/01-hiwifi-hc5x61.patch ../patches/12-disable-pdnsd.patch | patch -d $(BUILDER) -p0
-	@touch .patched
+	cat ../patches/01-hiwifi-hc5x61.patch ../patches/12-disable-pdnsd.patch > .patching
+	patch -d $(BUILDER) -p0 < .patching
+	mv .patching .patched
 
 .ralink:
-	@cd $(SDK)/package; [ -d ralink ] || ln -sv $(shell cd ..; pwd)/packages/ralink
 	@cd $(SDK); [ ! -L dl -a -d /var/dl ] && { rmdir dl && ln -s /var/dl; } || :
+	@cd $(SDK)/package; [ -d ralink ] || ln -sv $(shell cd ..; pwd)/packages/ralink
 	make package/8021xd/compile V=s -C "$(SDK)"
 	make package/uci2dat/compile V=s -C "$(SDK)"
 	make package/mt7610e/compile V=s -C "$(SDK)"
 	make package/mt76x2e/compile V=s -C "$(SDK)"
 	cd "$(SDK)/bin/ramips/packages" && ../../../scripts/ipkg-make-index.sh . > Packages && gzip -9c Packages > Packages.gz
-	touch .ralink
 
 .feeds:
-	@cd $(SDK)/package; [ -d network-feeds ] || git clone https://github.com/rssnsj/network-feeds
+	@cd $(SDK); [ ! -L dl -a -d /var/dl ] && { rmdir dl && ln -s /var/dl; } || :
+	@cd $(SDK)/package; [ -d network-feeds ] && { cd network-feeds; git pull; } || git clone https://github.com/rssnsj/network-feeds
+	make package/ipset-lists/compile V=s -C "$(SDK)"
+	make package/shadowsocks-libev/compile V=s -C "$(SDK)"
+	make package/shadowsocks-tools/compile V=s -C "$(SDK)"
+	make package/minivtun-tools/compile V=s -C "$(SDK)"
 	make package/proto-bridge/compile V=s -C "$(SDK)"
 	cd "$(SDK)/bin/ramips/packages" && ../../../scripts/ipkg-make-index.sh . > Packages && gzip -9c Packages > Packages.gz
-	touch .feeds
 
 .check_ib:
 	@if ! [ -n "$(BUILDER)" -a -d "$(BUILDER)" ]; then \
@@ -91,23 +99,26 @@ firmware: $(PREPARED_TARGETS)
 		exit 1; \
 	fi
 
+# Try extracting ImageBuilder & SDK to current directory
+extract:
+	tar jxvf /var/dl/OpenWrt-ImageBuilder-ramips_mt7620a-for-linux-x86_64.tar.bz2
+	tar jxvf /var/dl/OpenWrt-SDK-ramips-for-linux-x86_64-gcc-4.8-linaro_uClibc-0.9.33.2.tar.bz2
+
 help:
 	@echo "Usage:"
-	@echo "  make BUILDER=.... [SS=1] [RALINK=1]     build OpenWrt firmware for this board"
+	@echo "  make BUILDER=.... [RALINK=1] [FEEDS=1]     build OpenWrt firmware for this board"
 	@echo "Options:"
-	@echo "  BUILDER=<directory>       specify a valid ImageBuilder directory"
-	@echo "  SDK=<directory>           specify a valid OpenWrt SDK directory"
-	@echo "  SS=1                      build with Shadowsocks & minivtun"
-	@echo "  RALINK=1                  build and install Ralink 5G drivers"
-	@echo "  FEEDS=1                   build and install kmod-proto-bridge, kmod-yavlan"
-	@echo "  FULL=1                    enable all the options above"
+	@echo "  BUILDER=<directory>        specify a valid ImageBuilder directory"
+	@echo "  SDK=<directory>            specify a valid OpenWrt SDK directory"
+	@echo "  RALINK=1                   build and install Ralink 5G drivers"
+	@echo "  FEEDS=1                    build and install Shadowsocks, minivtun, kmod-proto-bridge, kmod-yavlan"
+	@echo "  FULL=1                     enable both the options above"
 
 clean: .check_ib
 	make clean -C $(BUILDER)
 	@if [ -e .patched ]; then \
+		patch -R -d $(BUILDER) -p0 < .patched; \
 		rm -vf .patched; \
-		cat ../patches/01-hiwifi-hc5x61.patch ../patches/12-disable-pdnsd.patch | patch -R -d $(BUILDER) -p0; \
 	fi
 	rm -f .ralink .feeds
 	[ -n "$(SDK)" -a -d "$(SDK)"/bin/ramips ] && rm -rf "$(SDK)"/bin/ramips/* || :
-
