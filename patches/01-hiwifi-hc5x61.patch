@@ -190,7 +190,7 @@ Index: target/linux/ramips/dts/HiWiFi-HC5861.dts
 ===================================================================
 --- target/linux/ramips/dts/HiWiFi-HC5861.dts	(revision 0)
 +++ target/linux/ramips/dts/HiWiFi-HC5861.dts	(revision 0)
-@@ -0,0 +1,170 @@
+@@ -0,0 +1,202 @@
 +/dts-v1/;
 +
 +/include/ "mt7620a.dtsi"
@@ -278,10 +278,42 @@ Index: target/linux/ramips/dts/HiWiFi-HC5861.dts
 +	};
 +
 +	ethernet@10100000 {
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&ephy_pins>;
++		status = "okay";
 +		mtd-mac-address = <&factory 0x4>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
++
 +		ralink,port-map = "wllll";
++
++		port@4 {
++			status = "okay";
++			phy-handle = <&phy4>;
++			phy-mode = "rgmii";
++		};
++
++		port@5 {
++			status = "okay";
++			phy-handle = <&phy5>;
++			phy-mode = "rgmii";
++		};
++
++		mdio-bus {
++			status = "okay";
++
++			phy4: ethernet-phy@4 {
++				reg = <4>;
++				phy-mode = "rgmii";
++			};
++
++			phy5: ethernet-phy@5 {
++				reg = <5>;
++				phy-mode = "rgmii";
++			};
++		};
++	};
++
++	gsw@10110000 {
++		ralink,port4 = "gmac";
 +	};
 +
 +	sdhci@10130000 {
