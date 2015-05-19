@@ -120,5 +120,4 @@ clean: .check_ib
 		patch -R -d $(BUILDER) -p0 < .patched; \
 		rm -vf .patched; \
 	fi
-	rm -f .ralink .feeds
 	[ -n "$(SDK)" -a -d "$(SDK)"/bin/ramips ] && rm -rf "$(SDK)"/bin/ramips/* || :
