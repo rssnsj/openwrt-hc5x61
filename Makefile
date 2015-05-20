@@ -6,7 +6,7 @@ host_packages = build-essential git flex gettext libncurses5-dev unzip gawk libl
 openwrt_feeds = libevent2 luci luci-app-samba xl2tpd pptpd pdnsd ntfs-3g ethtool
 ### mwan3 luci-app-mwan3
 
-s_build_openwrt: s_install_feeds
+HC5761: .install_feeds
 	@cd $(openwrt_dir); \
 		if [ -e .config ]; then \
 			mv -vf .config .config.bak; \
@@ -16,32 +16,32 @@ s_build_openwrt: s_install_feeds
 		[ -f ../.config.extra ] && cat ../.config.extra >> .config || :
 	make -C $(openwrt_dir) V=s -j4
 
-final: s_build_openwrt
+recovery.bin: HC5761
 	make -C recovery.bin
 
-s_install_feeds: s_update_feeds
+.install_feeds: .update_feeds
 	@cd $(openwrt_dir); ./scripts/feeds install $(openwrt_feeds);
 	@cd $(openwrt_dir)/package; \
 	 [ -e rssnsj-packages ] || ln -s ../../packages rssnsj-packages; \
 	 [ -e rssnsj-feeds ] || git clone https://github.com/rssnsj/network-feeds.git rssnsj-feeds
-	@touch s_install_feeds
+	@touch .install_feeds
 
-s_update_feeds: s_hiwifi_patch
+.update_feeds: .patched
 	@cd $(openwrt_dir); ./scripts/feeds update;
-	@touch s_update_feeds
+	@touch .update_feeds
 
-s_hiwifi_patch: s_checkout_svn
+.patched: .checkout_svn
 	@cd $(openwrt_dir); cat ../patches/*.patch | patch -p0
 	@cp -vf config-hiwifi-hc5761 $(openwrt_dir)/.config
-	@touch s_hiwifi_patch
+	@touch .patched
 
 # 2. Checkout source code:
-s_checkout_svn: s_check_hostdeps
+.checkout_svn: .check_hostdeps
 	svn co svn://svn.openwrt.org/openwrt/branches/barrier_breaker $(openwrt_dir) -r43770
 	@[ -d /var/dl ] && ln -sf /var/dl $(openwrt_dir)/dl || :
-	@touch s_checkout_svn
+	@touch .checkout_svn
 
-s_check_hostdeps:
+.check_hostdeps:
 # 1. Install required host components:
 	@which dpkg >/dev/null 2>&1 || exit 0; \
 	for p in $(host_packages); do \
@@ -53,9 +53,9 @@ s_check_hostdeps:
 		echo "  sudo apt-get install -y $$to_install"; \
 		exit 1; \
 	fi;
-	@touch s_check_hostdeps
+	@touch .check_hostdeps
 
-menuconfig: s_install_feeds
+menuconfig: .install_feeds
 	@cd $(openwrt_dir); [ -f .config ] && mv -vf .config .config.bak || :
 	@cp -vf config-hiwifi-hc5761 $(openwrt_dir)/.config
 	@touch config-hiwifi-hc5761  # change modification time
