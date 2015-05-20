@@ -484,13 +484,13 @@ Index: target/linux/ramips/base-files/etc/uci-defaults/01_leds
 +		ucidef_set_led_default "system" "system" "hiwifi:blue:system" "1"
 +		ucidef_set_led_netdev "internet" "internet" "hiwifi:blue:internet" "eth0.2"
 +		set_wifi_led "hiwifi:blue:wlan-2p4"
-+		ucidef_set_led_netdev "wifi5g" "wifi5g" "hiwifi:blue:wlan-5p" "rai0"
++		ucidef_set_led_netdev "wifi5g" "wifi5g" "hiwifi:blue:wlan-5p" "rai0-"
 +		;;
 +	hiwifi-hc5861)
 +		ucidef_set_led_default "system" "system" "hiwifi:blue:system" "1"
 +		ucidef_set_led_netdev "internet" "internet" "hiwifi:blue:internet" "eth0.2"
 +		set_wifi_led "hiwifi:blue:wlan-2p4"
-+		ucidef_set_led_netdev "wifi5g" "wifi5g" "hiwifi:blue:wlan-5p" "rai0"
++		ucidef_set_led_netdev "wifi5g" "wifi5g" "hiwifi:blue:wlan-5p" "rai0-"
 +		ucidef_set_led_default "turbo" "turbo" "hiwifi:blue:turbo" "0"
 +		;;
  	y1 |\
