@@ -34,7 +34,7 @@ ifeq ($(RALINK),1)
 	PREPARED_TARGETS += .check_sdk .ralink
 endif
 ifeq ($(FEEDS),1)
-	OPKG_PACKAGES += ipset-lists minivtun shadowsocks-libev shadowsocks-tools dnsmasq-full kmod-proto-bridge kmod-yavlan
+	OPKG_PACKAGES += ipset-lists minivtun shadowsocks-libev shadowsocks-tools dnsmasq-full file-storage kmod-proto-bridge kmod-yavlan
 	PREPARED_TARGETS += .check_sdk .feeds
 endif
 
@@ -83,6 +83,7 @@ HC5861: $(PREPARED_TARGETS)
 	make package/shadowsocks-libev/compile V=s -C "$(SDK)"
 	make package/shadowsocks-tools/compile V=s -C "$(SDK)"
 	make package/minivtun-tools/compile V=s -C "$(SDK)"
+	make package/file-storage/compile V=s -C "$(SDK)"
 	make package/proto-bridge/compile V=s -C "$(SDK)"
 	cd "$(SDK)/bin/ramips/packages" && ../../../scripts/ipkg-make-index.sh . > Packages && gzip -9c Packages > Packages.gz
 
