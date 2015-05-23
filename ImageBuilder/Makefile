@@ -2,7 +2,7 @@
 BUILDER ?= OpenWrt-ImageBuilder-ramips_mt7620a-for-linux-x86_64
 SDK ?= OpenWrt-SDK-ramips-for-linux-x86_64-gcc-4.8-linaro_uClibc-0.9.33.2
 
-OPKG_PACKAGES := 6in4 6to4 blkid curl ethtool iftop ip ip6tables-extra ip6tables-mod-nat \
+OPKG_PACKAGES := 6in4 6to4 blkid curl ethtool ip ip6tables-extra ip6tables-mod-nat \
 	iperf-mt ipset iptables-mod-conntrack-extra iptables-mod-extra iptables-mod-filter \
 	iptables-mod-ipopt iptables-mod-nat-extra iwinfo kmod-crypto-deflate kmod-crypto-des \
 	kmod-crypto-ecb kmod-crypto-hmac kmod-crypto-manager kmod-crypto-md4 kmod-crypto-md5 \
@@ -15,13 +15,12 @@ OPKG_PACKAGES := 6in4 6to4 blkid curl ethtool iftop ip ip6tables-extra ip6tables
 	kmod-macvlan kmod-mppe kmod-nfnetlink kmod-nls-cp437 kmod-nls-iso8859-1 kmod-nls-utf8 \
 	kmod-pppol2tp kmod-pptp kmod-sched-connmark kmod-sched-core kmod-sit kmod-tun \
 	kmod-usb-ohci kmod-usb-printer kmod-usb-storage libcurl libdaemon libevent2 libiwinfo \
-	libiwinfo-lua libjson liblua liblzo libmnl libncurses libopenssl libpcap libpolarssl \
+	libiwinfo-lua libjson liblua liblzo libmnl libncurses libopenssl libpolarssl \
 	libpthread librt libubus-lua libuci-lua lua luci luci-app-firewall luci-app-qos \
 	luci-app-samba luci-base luci-i18n-chinese luci-i18n-english luci-lib-json \
-	luci-lib-nixio luci-mod-admin-full luci-proto-ipv6 luci-proto-ppp luci-proto-relay \
-	luci-theme-bootstrap ntfs-3g openvpn-openssl ppp-mod-pppol2tp ppp-mod-pptp qos-scripts \
-	relayd resolveip samba36-server tc tcpdump terminfo uclibcxx uhttpd uhttpd-mod-ubus \
-	zlib pdnsd pptpd xl2tpd
+	luci-lib-nixio luci-mod-admin-full luci-proto-ipv6 luci-proto-ppp luci-theme-bootstrap \
+	ntfs-3g openvpn-openssl ppp-mod-pppol2tp ppp-mod-pptp qos-scripts relayd resolveip \
+	samba36-server tc terminfo uclibcxx uhttpd uhttpd-mod-ubus zlib pdnsd pptpd xl2tpd
 OPKG_PACKAGES_HC5761 :=
 OPKG_PACKAGES_HC5861 :=
 PREPARED_TARGETS = .check_ib .patched
