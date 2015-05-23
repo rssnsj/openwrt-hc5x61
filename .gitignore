@@ -1,13 +1,2 @@
 openwrt-ramips
 .config.extra
-
-s_check_hostdeps
-s_checkout_svn
-s_hiwifi_patch
-s_install_feeds
-s_update_feeds
-
-recovery.bin/*.bin
-recovery.bin/vmlinux-*
-recovery.bin/root.squashfs
-

@@ -63,7 +63,6 @@ menuconfig: .install_feeds
 	@[ $(openwrt_dir)/.config -nt config-hiwifi-hc5761 ] && cp -vf $(openwrt_dir)/.config config-hiwifi-hc5761 || :
 
 clean:
-	rm -f s_build_openwrt
 	make clean -C recovery.bin
 	make clean -C $(openwrt_dir) V=s
 
