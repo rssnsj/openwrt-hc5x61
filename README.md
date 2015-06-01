@@ -22,15 +22,32 @@ OpenWrt Patch for HiWiFi HC5661 / HC5761 / HC5861 (based on "barrier_breaker" br
 #### 编译好的固件下载
 * 请在本项目的Releases下载，或者 http://rssn.cn/roms/ 。
 
-#### 固件编译方法
+#### 前提工作
 
     # 安装必需的软件包（仅限Ubuntu/Debian）
     sudo apt-get install build-essential git subversion wget flex gettext libncurses5-dev unzip gawk liblzma-dev u-boot-tools
       
-    # 编译
+    # Checkout项目代码
     git clone https://github.com/rssnsj/openwrt-hc5x61.git
+
+#### 固件生成方法1 - 编译
+
     cd openwrt-hc5x61
     make
+    # 编译成功后，固件文件位于: openwrt-ramips/bin/oopenwrt-ramips-mt7620a-hiwifi-hc5761-squashfs-sysupgrade.bin
+
+#### 固件生成方法2 - 利用ImageBuilder和OpenWrt官方二进制程序打包
+
+    # 解压ImageBuilder和SDK（事先从downloads.openwrt.org下载好）
+    tar jxvf xxx/OpenWrt-ImageBuilder-ramips_mt7620a-for-linux-x86_64.tar.bz2
+    tar jxvf xxx/OpenWrt-SDK-ramips-for-linux-x86_64-gcc-4.8-linaro_uClibc-0.9.33.2.tar.bz2
+      
+    cd openwrt-hc5x61/ImageBuilder
+    # 生成极2固件：
+    make HC5761 FEEDS=1
+    # 生成极3固件：
+    make HC5861 FEEDS=1
+    # FEEDS=1 表示包含项目 rssnsj/network-feeds 的功能在内
 
 #### 刷机方法
   以极2为例，openwrt-ramips-mt7620a-hiwifi-hc5761-squashfs-sysupgrade.bin 是sysupgrade格式的固件，传到路由器的/tmp下，通过SSH或串口登录路由器Shell，执行以下命令刷入：
