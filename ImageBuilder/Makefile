@@ -88,6 +88,7 @@ HC5861: $(PREPARED_TARGETS)
 	make package/shadowsocks-tools/compile V=s -C "$(SDK)"
 	make package/minivtun-tools/compile V=s -C "$(SDK)"
 	make package/file-storage/compile V=s -C "$(SDK)"
+	make package/dnspod-utils/compile V=s -C "$(SDK)"
 	make package/proto-bridge/compile V=s -C "$(SDK)"
 	cd "$(SDK)/bin/ramips/packages" && ../../../scripts/ipkg-make-index.sh . > Packages && gzip -9c Packages > Packages.gz
 
