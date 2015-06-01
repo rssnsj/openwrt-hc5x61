@@ -38,11 +38,12 @@ OpenWrt Patch for HiWiFi HC5661 / HC5761 / HC5861 (based on "barrier_breaker" br
 
 #### 固件生成方法2 - 利用ImageBuilder和OpenWrt官方二进制程序打包
 
+    cd openwrt-hc5x61/ImageBuilder
+      
     # 解压ImageBuilder和SDK（事先从downloads.openwrt.org下载好）
     tar jxvf xxx/OpenWrt-ImageBuilder-ramips_mt7620a-for-linux-x86_64.tar.bz2
     tar jxvf xxx/OpenWrt-SDK-ramips-for-linux-x86_64-gcc-4.8-linaro_uClibc-0.9.33.2.tar.bz2
       
-    cd openwrt-hc5x61/ImageBuilder
     # 生成极2固件：
     make HC5761 FEEDS=1
     # 生成极3固件：
