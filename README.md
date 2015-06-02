@@ -51,7 +51,17 @@ OpenWrt Patch for HiWiFi HC5661 / HC5761 / HC5861 (based on "barrier_breaker" br
     # FEEDS=1 表示包含项目 rssnsj/network-feeds 的功能在内
 
 #### 刷机方法
-  以极2为例，openwrt-ramips-mt7620a-hiwifi-hc5761-squashfs-sysupgrade.bin 是sysupgrade格式的固件，传到路由器的/tmp下，通过SSH或串口登录路由器Shell，执行以下命令刷入：
+  以极2为例，openwrt-ramips-mt7620a-hiwifi-hc5761-squashfs-sysupgrade.bin 是sysupgrade格式的固件，传到路由器的/tmp下，通过SSH或串口登录路由器Shell。
+  
+  首先最好将U-Boot替换成解锁版（不校验固件是否是官方发布的）的，以防止万一刷砖无法直接tftp刷root固件：
+
+    cd /tmp
+    wget http://rssn.cn/.uboot/HC5761-uboot.bin   # 浏览: http://rssn.cn/.uboot/ 查查找其他型号的
+    mtd write HC5761-uboot.bin u-boot
+
+  如果上面的地址失效，也可以从这里获取： https://github.com/rssnsj/firmware-tools/tree/hiwifi
+
+  然后刷入固件：
 
     sysupgrade -F -n openwrt-ramips-mt7620a-hiwifi-hc5761-squashfs-sysupgrade.bin
 
