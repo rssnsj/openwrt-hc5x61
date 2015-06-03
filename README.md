@@ -13,11 +13,15 @@ OpenWrt Patch for HiWiFi HC5661 / HC5761 / HC5861 (based on "barrier_breaker" br
 ### HC5661/HC5761/HC5861 OpenWrt补丁说明
 
 #### 包含的功能
-* MT7620A SoC板级支持;
-* 2.4G Wi-Fi驱动支持;
+* 极1S、极2、极3均完美的板级支持；
+* 包含了HC5661、HC5761、HC5861 3个机型的OpenWrt补丁，checkout下来代码直接make，会自动打补丁、自动载入menuconfig配置，并自动编译；
+* 2.4G开源版Wi-Fi驱动支持;
+* 自带5G Wi-Fi驱动（仅限本项目提供下载的Release固件）；
 * SD卡驱动支持;
 * USB驱动支持;
-* 包含了HC5661、HC5761、HC5861 3个机型的OpenWrt补丁，checkout下来代码直接make，会自动打补丁、自动载入menuconfig配置，并自动编译；
+* 支持获取正确的MAC地址（HiWiFi bdinfo中的文本格式）；
+* 内置基于ipset按需代理，支持最小流量模式的Shadowsocks服务（ss-redir.sh）；
+* 支持Shadowsocks加速服务，及其LuCI界面，支持自定义gfwlist；
 
 #### 编译好的固件下载
 * 请在本项目的Releases下载，或者 http://rssn.cn/roms/ 。
@@ -52,7 +56,7 @@ OpenWrt Patch for HiWiFi HC5661 / HC5761 / HC5861 (based on "barrier_breaker" br
 
 #### 刷机方法
   以极2为例，openwrt-ramips-mt7620a-hiwifi-hc5761-squashfs-sysupgrade.bin 是sysupgrade格式的固件，传到路由器的/tmp下，通过SSH或串口登录路由器Shell。
-  
+
   首先最好将U-Boot替换成解锁版（不校验固件是否是官方发布的）的，以防止万一刷砖无法直接tftp刷root固件：
 
     cd /tmp
