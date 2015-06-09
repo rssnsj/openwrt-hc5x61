@@ -33,7 +33,7 @@ OpenWrt Patch for HiWiFi HC5661 / HC5761 / HC5861 (based on "barrier_breaker" br
 #### 前提工作
 
     # 安装必需的软件包（仅限Ubuntu/Debian）
-    sudo apt-get install build-essential git subversion wget flex gettext libncurses5-dev unzip gawk liblzma-dev u-boot-tools
+    sudo apt-get install build-essential git subversion wget flex gettext libncurses5-dev unzip gawk liblzma-dev zlib1g-dev ccache u-boot-tools
       
     # Checkout项目代码
     git clone https://github.com/rssnsj/openwrt-hc5x61.git
