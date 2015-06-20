@@ -14,12 +14,12 @@ OPKG_PACKAGES := 6in4 6to4 blkid curl ethtool ip ip6tables-extra ip6tables-mod-n
 	kmod-iptunnel6 kmod-l2tp kmod-ledtrig-gpio kmod-lib-textsearch kmod-lib-zlib \
 	kmod-macvlan kmod-mppe kmod-nfnetlink kmod-nls-cp437 kmod-nls-iso8859-1 kmod-nls-utf8 \
 	kmod-pppol2tp kmod-pptp kmod-sched-connmark kmod-sched-core kmod-sit kmod-tun \
-	kmod-usb-ohci kmod-usb-printer kmod-usb-storage libcurl libdaemon libevent2 libiwinfo \
-	libiwinfo-lua libjson liblua liblzo libmnl libncurses libopenssl libpolarssl \
-	libpthread librt libubus-lua libuci-lua lua luci luci-app-firewall luci-app-qos \
-	luci-app-samba luci-base luci-i18n-chinese luci-i18n-english luci-lib-json \
-	luci-lib-nixio luci-mod-admin-full luci-proto-ipv6 luci-proto-ppp luci-theme-bootstrap \
-	ntfs-3g openvpn-openssl ppp-mod-pppol2tp ppp-mod-pptp qos-scripts relayd resolveip \
+	kmod-usb-ohci kmod-usb-printer kmod-usb-storage iptables-mod-tproxy kmod-ipt-tproxy \
+	libcurl libdaemon libevent2 libiwinfo libiwinfo-lua libjson liblua liblzo libmnl \
+	libncurses libopenssl libpolarssl libpthread librt libubus-lua libuci-lua lua luci \
+	luci-app-firewall luci-app-samba luci-base luci-i18n-chinese luci-i18n-english \
+	luci-lib-json luci-lib-nixio luci-mod-admin-full luci-proto-ipv6 luci-proto-ppp \
+	luci-theme-bootstrap ntfs-3g openvpn-openssl ppp-mod-pppol2tp ppp-mod-pptp resolveip \
 	samba36-server tc terminfo uclibcxx uhttpd uhttpd-mod-ubus zlib pdnsd pptpd xl2tpd
 OPKG_PACKAGES_HC5761 :=
 OPKG_PACKAGES_HC5861 :=
