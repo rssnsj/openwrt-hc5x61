@@ -53,10 +53,11 @@ OpenWrt Patch for HiWiFi HC5661 / HC5761 / HC5861 (based on "barrier_breaker" br
     tar jxvf xxx/OpenWrt-SDK-ramips-for-linux-x86_64-gcc-4.8-linaro_uClibc-0.9.33.2.tar.bz2
       
     # 生成极2固件：
-    make HC5761 FEEDS=1
+    make HC5761 FEEDS=1 RALINK=1
     # 生成极3固件：
-    make HC5861 FEEDS=1
+    make HC5861 FEEDS=1 RALINK=1
     # FEEDS=1 表示包含项目 rssnsj/network-feeds 的功能在内
+    # RALINK=1 表示包含5G驱动在固件中
 
 #### 刷机方法
   以极2为例，openwrt-ramips-mt7620a-hiwifi-hc5761-squashfs-sysupgrade.bin 是sysupgrade格式的固件，传到路由器的/tmp下，通过SSH或串口登录路由器Shell。
