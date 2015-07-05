@@ -64,9 +64,20 @@ OpenWrt Patch for HiWiFi HC5661 / HC5761 / HC5861 (based on "barrier_breaker" br
 
   首先最好将U-boot替换成解锁版（不校验固件是否是官方发布的）的，以防止万一刷砖无法直接tftp刷root固件：
 
+    # 极1S
     cd /tmp
-    wget http://rssn.cn/.uboot/HC5761-uboot.bin   # 浏览: http://rssn.cn/.uboot/ 查查找其他型号的
+    wget http://rssn.cn/roms/uboot/HC5661-uboot.bin
+    mtd write HC5661-uboot.bin u-boot
+      
+    # 极2
+    cd /tmp
+    wget http://rssn.cn/roms/uboot/HC5761-uboot.bin
     mtd write HC5761-uboot.bin u-boot
+      
+    # 极3
+    cd /tmp
+    wget http://rssn.cn/roms/uboot/HC5861-uboot.bin
+    mtd write HC5861-uboot.bin u-boot
 
   如果上面的地址失效，也可以从这里获取： https://github.com/rssnsj/firmware-tools/tree/hiwifi
 
