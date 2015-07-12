@@ -67,7 +67,7 @@ HC5861: $(PREPARED_TARGETS)
 
 .patched:
 	mkdir -p $(BUILDER)/target/linux/ramips/patches-3.10
-	cat ../patches/01-hiwifi-hc5x61.patch ../patches/12-disable-pdnsd.patch > .patching
+	cat ../patches/01-hiwifi-hc5x61.patch ../patches/12-disable-pdnsd.patch ../patches/19-luci-wifi-mtk.patch > .patching
 	patch -d $(BUILDER) -p0 < .patching
 	mv .patching .patched
 
