@@ -32,8 +32,8 @@ ifeq ($(FULL),1)
 endif
 # Check each option for selection of packages and dependencies
 ifeq ($(RALINK),1)
-	OPKG_PACKAGES_HC5761 += 8021xd uci2dat kmod-mt7610e
-	OPKG_PACKAGES_HC5861 += 8021xd uci2dat kmod-mt76x2e
+	OPKG_PACKAGES_HC5761 += 8021xd uci2dat kmod-mt7610e luci-mtk-wifi
+	OPKG_PACKAGES_HC5861 += 8021xd uci2dat kmod-mt76x2e luci-mtk-wifi
 	PREPARED_TARGETS += .check_sdk .ralink
 endif
 ifeq ($(FEEDS),1)
@@ -78,6 +78,7 @@ HC5861: $(PREPARED_TARGETS)
 	make package/uci2dat/compile V=s -C "$(SDK)"
 	make package/mt7610e/compile V=s -C "$(SDK)"
 	make package/mt76x2e/compile V=s -C "$(SDK)"
+	make package/luci-mtk-wifi/compile V=s -C "$(SDK)"
 	cd "$(SDK)/bin/ramips/packages" && ../../../scripts/ipkg-make-index.sh . > Packages && gzip -9c Packages > Packages.gz
 
 .feeds:
