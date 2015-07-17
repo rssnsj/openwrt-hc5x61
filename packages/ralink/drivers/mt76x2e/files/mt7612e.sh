@@ -25,11 +25,9 @@ detect_mt7612e() {
 	[ -d $module ] || return
 	uci get wireless.mt7612e >/dev/null 2>&1 && return
 	ifconfig rai0 >/dev/null 2>&1 || return
-	# NOTICE: Set type 'broadcom' for cheating LuCI
-	# to list all configuration capabilities.
 	cat <<EOF
 config wifi-device mt7612e
-	option type broadcom
+	option type mt7612e
 	option vendor ralink
 	option band 5G
 	option channel 0
@@ -46,9 +44,4 @@ config wifi-iface
 EOF
 
 }
-
-prepare_broadcom() { prepare_mt7612e "$@"; }
-scan_broadcom()    { scan_mt7612e "$@"; }
-disable_broadcom() { disable_mt7612e "$@"; }
-enable_broadcom()  { enable_mt7612e "$@"; }
 
