@@ -29,6 +29,7 @@ PREPARED_TARGETS = .check_ib .patched
 ifeq ($(FULL),1)
 	RALINK := 1
 	FEEDS := 1
+	WIFI := 1
 endif
 # Check each option for selection of packages and dependencies
 ifeq ($(RALINK),1)
@@ -51,6 +52,10 @@ define BeforeBuildImage
 	cp -f opkg.conf $(BUILDER)/target/linux/ramips/base-files/etc/opkg.conf
 endef
 
+define EnableWireless
+	@[ -n "$(WIFI)" ] || exit 0; openwrt-repack.sh $(1) -w -o $(1).out && mv $(1).out $(1)
+endef
+
 both: HC5761 HC5861
 
 HC5761: $(PREPARED_TARGETS)
@@ -58,12 +63,14 @@ HC5761: $(PREPARED_TARGETS)
 	make -C $(BUILDER) image PROFILE=HiWiFi-HC5761 \
 		FILES="$(shell cd $(BUILDER); pwd)/target/linux/ramips/base-files" \
 		PACKAGES="$(OPKG_PACKAGES) $(OPKG_PACKAGES_HC5761)"
+	$(call EnableWireless,$(shell echo $(BUILDER)/bin/ramips/openwrt-ramips-*hc5761-*-sysupgrade.bin))
 
 HC5861: $(PREPARED_TARGETS)
 	$(call BeforeBuildImage)
 	make -C $(BUILDER) image PROFILE=HiWiFi-HC5861 \
 		FILES="$(shell cd $(BUILDER); pwd)/target/linux/ramips/base-files" \
 		PACKAGES="$(OPKG_PACKAGES) $(OPKG_PACKAGES_HC5861)"
+	$(call EnableWireless,$(shell echo $(BUILDER)/bin/ramips/openwrt-ramips-*hc5861-*-sysupgrade.bin))
 
 .patched:
 	mkdir -p $(BUILDER)/target/linux/ramips/patches-3.10
