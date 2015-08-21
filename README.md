@@ -17,15 +17,12 @@ OpenWrt Patch for HiWiFi HC5661 / HC5761 / HC5861 (based on "barrier_breaker" br
 * 也可以直接利用ImageBuilder，将机型支持代码（dts描述文件），与OpenWrt官方二进制程序合并成相应机型的固件。
 
 #### 固件包含的功能
-* 极1S、极2、极3均完美支持；
-* 2.4G开源版Wi-Fi驱动支持；
-* 自带5G Wi-Fi驱动（仅限本项目Releases中已编译好的固件）；
-* SD卡驱动支持；
-* USB驱动支持；
-* 极1S、极2、极3完善的LED定义与配置；
+* 基于 OpenWrt Barrier Breaker - r43770 版本；
 * 支持获取正确的MAC地址（HiWiFi bdinfo中的文本格式）；
-* 内置基于ipset按需代理，支持最小流量模式的Shadowsocks服务（ss-redir.sh）；
-* 支持Shadowsocks加速服务，及其LuCI界面，支持自定义gfwlist。
+* 完全适配HiWiFi的flash layout，不会丢key；
+* 自带5G Wi-Fi驱动；
+* 内置基于IP地址、域名列表的透明代理服务（SS），及其LuCi配置界面；
+* 内置基于IP地址、域名列表的非标准VPN服务（minivtun），及其LuCI配置界面。
 
 #### 编译好的固件下载
 * 请在本项目的Releases下载，或者 http://rssn.cn/roms/ 。
