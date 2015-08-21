@@ -22,7 +22,8 @@ OpenWrt Patch for HiWiFi HC5661 / HC5761 / HC5861 (based on "barrier_breaker" br
 * 完全适配HiWiFi的flash layout，不会丢key；
 * 自带5G Wi-Fi驱动；
 * 内置基于IP地址、域名列表的透明代理服务（SS），及其LuCi配置界面；
-* 内置基于IP地址、域名列表的非标准VPN服务（minivtun），及其LuCI配置界面。
+* 内置基于IP地址、域名列表的非标准VPN服务（minivtun），及其LuCI配置界面；
+* 内置“文件中转站”功能，自动挂载USB存储以及自动配置Samba服务。
 
 #### 编译好的固件下载
 * 请在本项目的Releases下载，或者 http://rssn.cn/roms/ 。
