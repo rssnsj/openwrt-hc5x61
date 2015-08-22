@@ -43,6 +43,7 @@ nw.init(m.uci)
 
 local wnet = nw:get_wifinet(arg[1])
 local wdev = wnet and wnet:get_device()
+local vendor = wdev:get("vendor")
 
 -- redirect to overview page if network does not exist anymore (e.g. after a revert)
 if not wnet or not wdev then
@@ -61,7 +62,11 @@ function m.parse(map)
 		wdev:set("disabled", nil)
 
 		nw:commit("wireless")
-		luci.sys.call("(env -i /sbin/wifi down; env -i /sbin/wifi up) >/dev/null 2>/dev/null")
+		if vendor == "ralink" then
+			luci.sys.call("(env -i /sbin/wifi down; env -i /sbin/wifi up) >/dev/null 2>/dev/null")
+		else
+			luci.sys.call("(env -i /bin/ubus call network reload) >/dev/null 2>/dev/null")
+		end
 
 		luci.http.redirect(luci.dispatcher.build_url("admin/network/wireless", arg[1]))
 		return
@@ -118,7 +123,9 @@ s.addremove = false
 s:tab("general", translate("General Setup"))
 s:tab("macfilter", translate("MAC-Filter"))
 s:tab("advanced", translate("Advanced Settings"))
-s:tab("htmode", translate("HT Physical Mode"))
+if vendor == "ralink" then
+	s:tab("htmode", translate("HT Physical Mode"))
+end
 --[[
 back = s:option(DummyValue, "_overview", translate("Overview"))
 back.value = ""
@@ -129,27 +136,30 @@ st = s:taboption("general", DummyValue, "__status", translate("Status"))
 st.template = "admin_network/wifi_status"
 st.ifname   = arg[1]
 
--- en = s:taboption("general", Button, "__toggle")
---
--- if wdev:get("disabled") == "1" or wnet:get("disabled") == "1" then
--- 	en.title      = translate("Wireless network is disabled")
--- 	en.inputtitle = translate("Enable")
--- 	en.inputstyle = "apply"
--- else
--- 	en.title      = translate("Wireless network is enabled")
--- 	en.inputtitle = translate("Disable")
--- 	en.inputstyle = "reset"
--- end
+if vendor == "ralink" then
+	radio = s:taboption("general", ListValue, "radio", translate("Radio on/off"))
+	radio:value("1",translate("on"))
+	radio:value("0",translate("off"))
+	radio.default = 1
 
-radio = s:taboption("general", ListValue, "radio", translate("Radio on/off"))
-radio:value("1",translate("on"))
-radio:value("0",translate("off"))
-radio.default = 1
+	local band = wdev:get("band")
+	local ifname = wnet:ifname()
+else
+	en = s:taboption("general", Button, "__toggle")
+
+	if wdev:get("disabled") == "1" or wnet:get("disabled") == "1" then
+		en.title      = translate("Wireless network is disabled")
+		en.inputtitle = translate("Enable")
+		en.inputstyle = "apply"
+	else
+		en.title      = translate("Wireless network is enabled")
+		en.inputtitle = translate("Disable")
+		en.inputstyle = "reset"
+	end
+end
 
 local hwtype = wdev:get("type")
-local vendor = wdev:get("vendor")
-local band = wdev:get("band")
-local ifname = wnet:ifname()
+
 -- NanoFoo
 local nsantenna = wdev:get("antenna")
 
@@ -164,19 +174,22 @@ for _, net in ipairs(wdev:get_wifinets()) do
 	end
 end
 
---if has_sta then
---	ch = s:taboption("general", DummyValue, "choice", translate("Channel"))
---	ch.value = translatef("Locked to channel %d used by %s",
---		has_sta:channel(), has_sta:shortname())
---else
---	ch = s:taboption("general", Value, "channel", translate("Channel"))
---	ch:value("0", translate("auto"))
---        for _, f in ipairs(iw and iw.freqlist or { }) do
---		if not f.restricted then
---		ch:value(f.channel, "%i (%.3f GHz)" %{ f.channel, f.mhz / 1000 })
---		end
---	end
---end
+if vendor ~= "ralink" then
+	if has_sta then
+		ch = s:taboption("general", DummyValue, "choice", translate("Channel"))
+		ch.value = translatef("Locked to channel %d used by %s",
+			has_sta:channel(), has_sta:shortname())
+	else
+		ch = s:taboption("general", Value, "channel", translate("Channel"))
+		ch:value("auto", translate("auto"))
+	        for _, f in ipairs(iw and iw.freqlist or { }) do
+			if not f.restricted then
+				ch:value(f.channel, "%i (%.3f GHz)" %{ f.channel, f.mhz / 1000 })
+			end
+		end
+	end
+end
+
 ----------------- MTK Device ------------------
 
 if vendor == "ralink" then
@@ -702,13 +715,17 @@ s:tab("macfilter", translate("MAC-Filter"))
 s:tab("advanced", translate("Advanced Settings"))
 
 xessid=s:taboption("general", Value, "ssid", translate("<abbr title=\"Extended Service Set Identifier\">ESSID</abbr>"))
-xessid.datatype="maxlength(32)"
+if vendor == "ralink" then
+	xessid.datatype="maxlength(32)"
+end
 
 mode = s:taboption("general", ListValue, "mode", translate("Mode"))
 mode.override_values = true
 mode:value("ap", translate("Access Point"))
--- mode:value("sta", translate("Client"))
--- mode:value("adhoc", translate("Ad-Hoc"))
+if vendor ~= "ralink" then
+	mode:value("sta", translate("Client"))
+	mode:value("adhoc", translate("Ad-Hoc"))
+end
 
 bssid = s:taboption("general", Value, "bssid", translate("<abbr title=\"Basic Service Set Identifier\">BSSID</abbr>"))
 
@@ -818,7 +835,6 @@ if vendor == "ralink" then
         APSD:value("0","Disable")
         APSD:value("1","Enable")
         APSD.default = 0
-
 end
 
 -------------------- MAC80211 Interface ----------------------
@@ -1044,6 +1060,7 @@ encr:depends({mode="ahdemo"})
 encr:depends({mode="ap-wds"})
 encr:depends({mode="sta-wds"})
 encr:depends({mode="mesh"})
+
 cipher = s:taboption("encryption", ListValue, "cipher", translate("Cipher"))
 cipher:depends({encryption="wpa"})
 cipher:depends({encryption="wpa2"})
@@ -1051,7 +1068,9 @@ cipher:depends({encryption="psk"})
 cipher:depends({encryption="psk2"})
 cipher:depends({encryption="wpa-mixed"})
 cipher:depends({encryption="psk-mixed"})
--- cipher:value("auto", translate("auto"))
+if vendor ~= "ralink" then
+	cipher:value("auto", translate("auto"))
+end
 cipher:value("ccmp", translate("Force CCMP (AES)"))
 cipher:value("tkip", translate("Force TKIP"))
 cipher:value("tkip+ccmp", translate("Force TKIP and CCMP (AES)"))
@@ -1107,6 +1126,7 @@ if hwtype == "atheros" or vendor == "ralink" or hwtype == "mac80211" or hwtype =
 	-- Probe EAP support
 	local has_ap_eap  = (os.execute("hostapd -veap >/dev/null 2>/dev/null") == 0)
 	local has_sta_eap = (os.execute("wpa_supplicant -veap >/dev/null 2>/dev/null") == 0)
+	if vendor == "ralink" then
 		-- for mtk
 		encr:value("psk", "WPA-PSK", {mode="ap"}, {mode="sta"}, {mode="ap-wds"}, {mode="sta-wds"})
 		encr:value("psk2", "WPA2-PSK", {mode="ap"}, {mode="sta"}, {mode="ap-wds"}, {mode="sta-wds"})
@@ -1118,16 +1138,18 @@ if hwtype == "atheros" or vendor == "ralink" or hwtype == "mac80211" or hwtype =
 			encr:value("wpa-mixed", "WPA-EAP/WPA2-EAP Mixed Mode", {mode="ap"}, {mode="sta"}, {mode="ap-wds"}, {mode="sta-wds"})
 			encr:value("8021x", "8021x", {mode="ap"}, {mode="sta"}, {mode="ap-wds"}, {mode="sta-wds"})
 		--------------------------------------------------------------------------------------------------------
+	end
 	if hostapd and supplicant then
 		encr:value("psk", "WPA-PSK", {mode="ap"}, {mode="sta"}, {mode="ap-wds"}, {mode="sta-wds"})
 		encr:value("psk2", "WPA2-PSK", {mode="ap"}, {mode="sta"}, {mode="ap-wds"}, {mode="sta-wds"})
 		encr:value("psk-mixed", "WPA-PSK/WPA2-PSK Mixed Mode", {mode="ap"}, {mode="sta"}, {mode="ap-wds"}, {mode="sta-wds"})
-		-- if has_ap_eap and has_sta_eap then
-			encr:value("wpa", "WPA-EAP", {mode="ap"}, {mode="sta"}, {mode="ap-wds"}, {mode="sta-wds"})
-			encr:value("wpa2", "WPA2-EAP", {mode="ap"}, {mode="sta"}, {mode="ap-wds"}, {mode="sta-wds"})
-		-- end
+		if vendor == "ralink" then
 			encr:value("wpa-mixed", "WPA-EAP/WPA2-EAP Mixed Mode", {mode="ap"}, {mode="sta"}, {mode="ap-wds"}, {mode="sta-wds"})
 			encr:value("8021x", "8021x", {mode="ap"}, {mode="sta"}, {mode="ap-wds"}, {mode="sta-wds"})
+		elseif has_ap_eap and has_sta_eap then
+			encr:value("wpa", "WPA-EAP", {mode="ap"}, {mode="sta"}, {mode="ap-wds"}, {mode="sta-wds"})
+			encr:value("wpa2", "WPA2-EAP", {mode="ap"}, {mode="sta"}, {mode="ap-wds"}, {mode="sta-wds"})
+		end
 	elseif hostapd and not supplicant then
 		encr:value("psk", "WPA-PSK", {mode="ap"}, {mode="ap-wds"})
 		encr:value("psk2", "WPA2-PSK", {mode="ap"}, {mode="ap-wds"})
@@ -1148,10 +1170,12 @@ if hwtype == "atheros" or vendor == "ralink" or hwtype == "mac80211" or hwtype =
 			encr:value("wpa", "WPA-EAP", {mode="sta"}, {mode="sta-wds"})
 			encr:value("wpa2", "WPA2-EAP", {mode="sta"}, {mode="sta-wds"})
 		end
-		-- encr.description = translate(
-		--	"WPA-Encryption requires wpa_supplicant (for client mode) or hostapd (for AP " ..
-		--	"and ad-hoc mode) to be installed."
-		-- )
+		if vendor ~= "ralink" then
+			encr.description = translate(
+				"WPA-Encryption requires wpa_supplicant (for client mode) or hostapd (for AP " ..
+				"and ad-hoc mode) to be installed."
+			)
+		end
 	else
 		encr.description = translate(
 			"WPA-Encryption requires wpa_supplicant (for client mode) or hostapd (for AP " ..
@@ -1163,96 +1187,123 @@ elseif hwtype == "broadcom" then
 	encr:value("psk2", "WPA2-PSK")
 	encr:value("psk+psk2", "WPA-PSK/WPA2-PSK Mixed Mode")
 end
-rekeyinteval= s:taboption("encryption", Value, "rekeyinteval", translate("Key Renewal Interval(seconds)"))
-rekeyinteval:depends({mode="ap", encryption="wpa"})
-rekeyinteval:depends({mode="ap", encryption="wpa2"})
-rekeyinteval:depends({mode="ap", encryption="wpa-mixed"})
-rekeyinteval:depends({mode="ap", encryption="psk"})
-rekeyinteval:depends({mode="ap", encryption="psk2"})
-rekeyinteval:depends({mode="ap", encryption="psk-mixed"})
-rekeyinteval:depends({mode="ap-wds", encryption="wpa"})
-rekeyinteval:depends({mode="ap-wds", encryption="wpa2"})
-rekeyinteval:depends({mode="ap-wds", encryption="wpa-mixed"})
-rekeyinteval:depends({mode="ap-wds", encryption="psk"})
-rekeyinteval:depends({mode="ap-wds", encryption="psk2"})
-rekeyinteval:depends({mode="ap-wds", encryption="psk-mixed"})
-rekeyinteval.datatype = "range(0,4194303)"
 
-pmkcacheperiod = s:taboption("encryption", Value, "pmkcacheperiod", translate("PMK Cache Period(minutes)"))
-pmkcacheperiod:depends({mode="ap", encryption="wpa2"})
-pmkcacheperiod:depends({mode="ap-wds", encryption="wpa2"})
-pmkcacheperiod.datatype = "range(0,65535)"
+if vendor == "ralink" then
+	rekeyinteval= s:taboption("encryption", Value, "rekeyinteval", translate("Key Renewal Interval(seconds)"))
+	rekeyinteval:depends({mode="ap", encryption="wpa"})
+	rekeyinteval:depends({mode="ap", encryption="wpa2"})
+	rekeyinteval:depends({mode="ap", encryption="wpa-mixed"})
+	rekeyinteval:depends({mode="ap", encryption="psk"})
+	rekeyinteval:depends({mode="ap", encryption="psk2"})
+	rekeyinteval:depends({mode="ap", encryption="psk-mixed"})
+	rekeyinteval:depends({mode="ap-wds", encryption="wpa"})
+	rekeyinteval:depends({mode="ap-wds", encryption="wpa2"})
+	rekeyinteval:depends({mode="ap-wds", encryption="wpa-mixed"})
+	rekeyinteval:depends({mode="ap-wds", encryption="psk"})
+	rekeyinteval:depends({mode="ap-wds", encryption="psk2"})
+	rekeyinteval:depends({mode="ap-wds", encryption="psk-mixed"})
+	rekeyinteval.datatype = "range(0,4194303)"
 
-preauth = s:taboption("encryption", ListValue, "preauth", translate("Pre-Authentication"))
-preauth:depends({mode="ap", encryption="wpa2"})
-preauth:depends({mode="ap-wds", encryption="wpa2"})
-preauth:value("0",translate("Disable"))
-preauth:value("1",translate("Enable"))
-preauth.default = "0"
+	pmkcacheperiod = s:taboption("encryption", Value, "pmkcacheperiod", translate("PMK Cache Period(minutes)"))
+	pmkcacheperiod:depends({mode="ap", encryption="wpa2"})
+	pmkcacheperiod:depends({mode="ap-wds", encryption="wpa2"})
+	pmkcacheperiod.datatype = "range(0,65535)"
+
+	preauth = s:taboption("encryption", ListValue, "preauth", translate("Pre-Authentication"))
+	preauth:depends({mode="ap", encryption="wpa2"})
+	preauth:depends({mode="ap-wds", encryption="wpa2"})
+	preauth:value("0",translate("Disable"))
+	preauth:value("1",translate("Enable"))
+	preauth.default = "0"
+end
 
 auth_server = s:taboption("encryption", Value, "auth_server", translate("Radius-Authentication-Server"))
 auth_server:depends({mode="ap", encryption="wpa"})
 auth_server:depends({mode="ap", encryption="wpa2"})
-auth_server:depends({mode="ap", encryption="wpa-mixed"})
-auth_server:depends({mode="ap", encryption="8021x"})
+if vendor == "ralink" then
+	auth_server:depends({mode="ap", encryption="wpa-mixed"})
+	auth_server:depends({mode="ap", encryption="8021x"})
+end
 auth_server:depends({mode="ap-wds", encryption="wpa"})
 auth_server:depends({mode="ap-wds", encryption="wpa2"})
-auth_server:depends({mode="ap-wds", encryption="wpa-mixed"})
-auth_server:depends({mode="ap-wds", encryption="8021x"})
+if vendor == "ralink" then
+	auth_server:depends({mode="ap-wds", encryption="wpa-mixed"})
+	auth_server:depends({mode="ap-wds", encryption="8021x"})
+end
 auth_server.rmempty = true
 auth_server.datatype = "host"
 
 auth_port = s:taboption("encryption", Value, "auth_port", translate("Radius-Authentication-Port"), translatef("Default %d", 1812))
 auth_port:depends({mode="ap", encryption="wpa"})
 auth_port:depends({mode="ap", encryption="wpa2"})
-auth_port:depends({mode="ap", encryption="wpa-mixed"})
-auth_port:depends({mode="ap", encryption="8021x"})
+if vendor == "ralink" then
+	auth_port:depends({mode="ap", encryption="wpa-mixed"})
+	auth_port:depends({mode="ap", encryption="8021x"})
+end
 auth_port:depends({mode="ap-wds", encryption="wpa"})
 auth_port:depends({mode="ap-wds", encryption="wpa2"})
-auth_port:depends({mode="ap-wds", encryption="wpa-mixed"})
-auth_port:depends({mode="ap-wds", encryption="8021x"})
+if vendor == "ralink" then
+	auth_port:depends({mode="ap-wds", encryption="wpa-mixed"})
+	auth_port:depends({mode="ap-wds", encryption="8021x"})
+end
 auth_port.rmempty = true
 auth_port.datatype = "port"
 
 auth_secret = s:taboption("encryption", Value, "auth_secret", translate("Radius-Authentication-Secret"))
 auth_secret:depends({mode="ap", encryption="wpa"})
 auth_secret:depends({mode="ap", encryption="wpa2"})
-auth_secret:depends({mode="ap", encryption="wpa-mixed"})
-auth_secret:depends({mode="ap", encryption="8021x"})
+if vendor == "ralink" then
+	auth_secret:depends({mode="ap", encryption="wpa-mixed"})
+	auth_secret:depends({mode="ap", encryption="8021x"})
+end
 auth_secret:depends({mode="ap-wds", encryption="wpa"})
 auth_secret:depends({mode="ap-wds", encryption="wpa2"})
-auth_secret:depends({mode="ap-wds", encryption="wpa-mixed"})
-auth_secret:depends({mode="ap-wds", encryption="8021x"})
+if vendor == "ralink" then
+	auth_secret:depends({mode="ap-wds", encryption="wpa-mixed"})
+	auth_secret:depends({mode="ap-wds", encryption="8021x"})
+end
 auth_secret.rmempty = true
 auth_secret.password = true
 
 acct_server = s:taboption("encryption", Value, "acct_server", translate("Radius-Accounting-Server"))
 acct_server:depends({mode="ap", encryption="wpa"})
 acct_server:depends({mode="ap", encryption="wpa2"})
-acct_server:depends({mode="ap", encryption="wpa-mixed"})
+if vendor == "ralink" then
+	acct_server:depends({mode="ap", encryption="wpa-mixed"})
+end
 acct_server:depends({mode="ap-wds", encryption="wpa"})
 acct_server:depends({mode="ap-wds", encryption="wpa2"})
-acct_server:depends({mode="ap-wds", encryption="wpa-mixed"})
+if vendor == "ralink" then
+	acct_server:depends({mode="ap-wds", encryption="wpa-mixed"})
+end
 acct_server.rmempty = true
 acct_server.datatype = "host"
 
 acct_port = s:taboption("encryption", Value, "acct_port", translate("Radius-Accounting-Port"), translatef("Default %d", 1813))
 acct_port:depends({mode="ap", encryption="wpa"})
 acct_port:depends({mode="ap", encryption="wpa2"})
-acct_port:depends({mode="ap", encryption="wpa-mixed"})
+if vendor == "ralink" then
+	acct_port:depends({mode="ap", encryption="wpa-mixed"})
+end
 acct_port:depends({mode="ap-wds", encryption="wpa"})
 acct_port:depends({mode="ap-wds", encryption="wpa2"})
-acct_port:depends({mode="ap-wds", encryption="wpa-mixed"})
+if vendor == "ralink" then
+	acct_port:depends({mode="ap-wds", encryption="wpa-mixed"})
+end
 acct_port.rmempty = true
 acct_port.datatype = "port"
 
 acct_secret = s:taboption("encryption", Value, "acct_secret", translate("Radius-Accounting-Secret"))
 acct_secret:depends({mode="ap", encryption="wpa"})
 acct_secret:depends({mode="ap", encryption="wpa2"})
-acct_secret:depends({mode="ap", encryption="wpa-mixed"})
+if vendor == "ralink" then
+	acct_secret:depends({mode="ap", encryption="wpa-mixed"})
+end
 acct_secret:depends({mode="ap-wds", encryption="wpa"})
 acct_secret:depends({mode="ap-wds", encryption="wpa2"})
-acct_secret:depends({mode="ap-wds", encryption="wpa-mixed"})
+if vendor == "ralink" then
+	acct_secret:depends({mode="ap-wds", encryption="wpa-mixed"})
+end
 acct_secret.rmempty = true
 acct_secret.password = true
 
@@ -1321,10 +1372,14 @@ if hwtype == "atheros" or vendor == "ralink" or hwtype == "mac80211" or hwtype =
 	nasid = s:taboption("encryption", Value, "nasid", translate("NAS ID"))
 	nasid:depends({mode="ap", encryption="wpa"})
 	nasid:depends({mode="ap", encryption="wpa2"})
-	nasid:depends({mode="ap", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		nasid:depends({mode="ap", encryption="wpa-mixed"})
+	end
 	nasid:depends({mode="ap-wds", encryption="wpa"})
 	nasid:depends({mode="ap-wds", encryption="wpa2"})
-	nasid:depends({mode="ap-wds", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		nasid:depends({mode="ap-wds", encryption="wpa-mixed"})
+	end
 	nasid.rmempty = true
 
 	eaptype = s:taboption("encryption", ListValue, "eap_type", translate("EAP-Method"))
@@ -1333,42 +1388,62 @@ if hwtype == "atheros" or vendor == "ralink" or hwtype == "mac80211" or hwtype =
 	eaptype:value("peap", "PEAP")
 	eaptype:depends({mode="sta", encryption="wpa"})
 	eaptype:depends({mode="sta", encryption="wpa2"})
-	eaptype:depends({mode="sta", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		eaptype:depends({mode="sta", encryption="wpa-mixed"})
+	end
 	eaptype:depends({mode="sta-wds", encryption="wpa"})
 	eaptype:depends({mode="sta-wds", encryption="wpa2"})
-	eaptype:depends({mode="sta-wds", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		eaptype:depends({mode="sta-wds", encryption="wpa-mixed"})
+	end
 
 	cacert = s:taboption("encryption", FileUpload, "ca_cert", translate("Path to CA-Certificate"))
 	cacert:depends({mode="sta", encryption="wpa"})
 	cacert:depends({mode="sta", encryption="wpa2"})
-	cacert:depends({mode="sta", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		cacert:depends({mode="sta", encryption="wpa-mixed"})
+	end
 	cacert:depends({mode="sta-wds", encryption="wpa"})
 	cacert:depends({mode="sta-wds", encryption="wpa2"})
-	cacert:depends({mode="sta-wds", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		cacert:depends({mode="sta-wds", encryption="wpa-mixed"})
+	end
 
 	clientcert = s:taboption("encryption", FileUpload, "client_cert", translate("Path to Client-Certificate"))
 	clientcert:depends({mode="sta", encryption="wpa"})
 	clientcert:depends({mode="sta", encryption="wpa2"})
-	clientcert:depends({mode="sta", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		clientcert:depends({mode="sta", encryption="wpa-mixed"})
+	end
 	clientcert:depends({mode="sta-wds", encryption="wpa"})
 	clientcert:depends({mode="sta-wds", encryption="wpa2"})
-	clientcert:depends({mode="sta-wds", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		clientcert:depends({mode="sta-wds", encryption="wpa-mixed"})
+	end
 
 	privkey = s:taboption("encryption", FileUpload, "priv_key", translate("Path to Private Key"))
 	privkey:depends({mode="sta", eap_type="tls", encryption="wpa2"})
 	privkey:depends({mode="sta", eap_type="tls", encryption="wpa"})
-	privkey:depends({mode="sta", eap_type="tls", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		privkey:depends({mode="sta", eap_type="tls", encryption="wpa-mixed"})
+	end
 	privkey:depends({mode="sta-wds", eap_type="tls", encryption="wpa2"})
 	privkey:depends({mode="sta-wds", eap_type="tls", encryption="wpa"})
-	privkey:depends({mode="sta-wds", eap_type="tls", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		privkey:depends({mode="sta-wds", eap_type="tls", encryption="wpa-mixed"})
+	end
 
 	privkeypwd = s:taboption("encryption", Value, "priv_key_pwd", translate("Password of Private Key"))
 	privkeypwd:depends({mode="sta", eap_type="tls", encryption="wpa2"})
 	privkeypwd:depends({mode="sta", eap_type="tls", encryption="wpa"})
-	privkeypwd:depends({mode="sta", eap_type="tls", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		privkeypwd:depends({mode="sta", eap_type="tls", encryption="wpa-mixed"})
+	end
 	privkeypwd:depends({mode="sta-wds", eap_type="tls", encryption="wpa2"})
 	privkeypwd:depends({mode="sta-wds", eap_type="tls", encryption="wpa"})
-	privkeypwd:depends({mode="sta-wds", eap_type="tls", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		privkeypwd:depends({mode="sta-wds", eap_type="tls", encryption="wpa-mixed"})
+	end
 
 
 	auth = s:taboption("encryption", Value, "auth", translate("Authentication"))
@@ -1378,45 +1453,69 @@ if hwtype == "atheros" or vendor == "ralink" or hwtype == "mac80211" or hwtype =
 	auth:value("MSCHAPV2")
 	auth:depends({mode="sta", eap_type="peap", encryption="wpa2"})
 	auth:depends({mode="sta", eap_type="peap", encryption="wpa"})
-	auth:depends({mode="sta", eap_type="peap", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		auth:depends({mode="sta", eap_type="peap", encryption="wpa-mixed"})
+	end
 	auth:depends({mode="sta", eap_type="ttls", encryption="wpa2"})
 	auth:depends({mode="sta", eap_type="ttls", encryption="wpa"})
-	auth:depends({mode="sta", eap_type="ttls", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		auth:depends({mode="sta", eap_type="ttls", encryption="wpa-mixed"})
+	end
 	auth:depends({mode="sta-wds", eap_type="peap", encryption="wpa2"})
 	auth:depends({mode="sta-wds", eap_type="peap", encryption="wpa"})
-	auth:depends({mode="sta-wds", eap_type="peap", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		auth:depends({mode="sta-wds", eap_type="peap", encryption="wpa-mixed"})
+	end
 	auth:depends({mode="sta-wds", eap_type="ttls", encryption="wpa2"})
 	auth:depends({mode="sta-wds", eap_type="ttls", encryption="wpa"})
-	auth:depends({mode="sta-wds", eap_type="ttls", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		auth:depends({mode="sta-wds", eap_type="ttls", encryption="wpa-mixed"})
+	end
 
 
 	identity = s:taboption("encryption", Value, "identity", translate("Identity"))
 	identity:depends({mode="sta", eap_type="peap", encryption="wpa2"})
 	identity:depends({mode="sta", eap_type="peap", encryption="wpa"})
-	identity:depends({mode="sta", eap_type="peap", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		identity:depends({mode="sta", eap_type="peap", encryption="wpa-mixed"})
+	end
 	identity:depends({mode="sta", eap_type="ttls", encryption="wpa2"})
 	identity:depends({mode="sta", eap_type="ttls", encryption="wpa"})
-	identity:depends({mode="sta", eap_type="ttls", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		identity:depends({mode="sta", eap_type="ttls", encryption="wpa-mixed"})
+	end
 	identity:depends({mode="sta-wds", eap_type="peap", encryption="wpa2"})
 	identity:depends({mode="sta-wds", eap_type="peap", encryption="wpa"})
-	identity:depends({mode="sta-wds", eap_type="peap", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		identity:depends({mode="sta-wds", eap_type="peap", encryption="wpa-mixed"})
+	end
 	identity:depends({mode="sta-wds", eap_type="ttls", encryption="wpa2"})
 	identity:depends({mode="sta-wds", eap_type="ttls", encryption="wpa"})
-	identity:depends({mode="sta-wds", eap_type="ttls", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		identity:depends({mode="sta-wds", eap_type="ttls", encryption="wpa-mixed"})
+	end
 
 	password = s:taboption("encryption", Value, "password", translate("Password"))
 	password:depends({mode="sta", eap_type="peap", encryption="wpa2"})
 	password:depends({mode="sta", eap_type="peap", encryption="wpa"})
-	password:depends({mode="sta", eap_type="peap", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		password:depends({mode="sta", eap_type="peap", encryption="wpa-mixed"})
+	end
 	password:depends({mode="sta", eap_type="ttls", encryption="wpa2"})
 	password:depends({mode="sta", eap_type="ttls", encryption="wpa"})
-	password:depends({mode="sta", eap_type="ttls", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		password:depends({mode="sta", eap_type="ttls", encryption="wpa-mixed"})
+	end
 	password:depends({mode="sta-wds", eap_type="peap", encryption="wpa2"})
 	password:depends({mode="sta-wds", eap_type="peap", encryption="wpa"})
-	password:depends({mode="sta-wds", eap_type="peap", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		password:depends({mode="sta-wds", eap_type="peap", encryption="wpa-mixed"})
+	end
 	password:depends({mode="sta-wds", eap_type="ttls", encryption="wpa2"})
 	password:depends({mode="sta-wds", eap_type="ttls", encryption="wpa"})
-	password:depends({mode="sta-wds", eap_type="ttls", encryption="wpa-mixed"})
+	if vendor == "ralink" then
+		password:depends({mode="sta-wds", eap_type="ttls", encryption="wpa-mixed"})
+	end
 end
 
 return m
