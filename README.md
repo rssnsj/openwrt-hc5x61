@@ -84,6 +84,7 @@ OpenWrt Patch for HiWiFi HC5661 / HC5761 / HC5861 (based on "barrier_breaker" br
     sysupgrade -F -n openwrt-ramips-mt7620a-hiwifi-hc5761-squashfs-sysupgrade.bin
 
 #### 说明
+* Releases中提供的xxx-hiwifi-hc5761-xxx是极1S、极2通用的，xxx-hiwifi-hc5861-xxx是极3；
 * 编译时若碰到代码包下载失败，或下载过于缓慢，请先 Ctrl + C 暂停，手动下载同名的文件放到 openwrt-ramips/dl 下面，再执行“make”继续编译；
 * HC5761（极2）的5G（MT7610E）、HC5861（极3）的5G（MT7612E）驱动暂未有开源支持，Releases中可下载到编译好的已带5G驱动的固件，但由于MTK版权限制本项目不提供其源代码。
 
