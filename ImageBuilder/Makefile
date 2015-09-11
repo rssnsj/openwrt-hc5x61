@@ -39,7 +39,7 @@ ifeq ($(RALINK),1)
 endif
 ifeq ($(FEEDS),1)
 	OPKG_PACKAGES += ipset-lists minivtun shadowsocks-libev shadowsocks-tools dnsmasq-full \
-		file-storage kmod-proto-bridge kmod-yavlan
+		file-storage dnspod-utils kmod-proto-bridge kmod-yavlan
 	PREPARED_TARGETS += .check_sdk .feeds
 endif
 
