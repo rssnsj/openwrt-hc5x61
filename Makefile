@@ -6,17 +6,27 @@ host_packages = build-essential git flex gettext libncurses5-dev unzip gawk libl
 openwrt_feeds = libevent2 luci luci-app-samba xl2tpd pptpd pdnsd ntfs-3g ethtool
 ### mwan3 luci-app-mwan3
 
-HC5761: .install_feeds
+CONFIG_FILENAME = config-hiwifi
+
+define CheckConfigSymlink
+	@if ! [ -e $(CONFIG_FILENAME) ]; then \
+		echo "*** Please make a symbolic of either config file to '$(CONFIG_FILENAME)'."; \
+		exit 1; \
+	 fi
+endef
+
+HC5X61: .install_feeds
 	@cd $(openwrt_dir); \
 		if [ -e .config ]; then \
 			mv -vf .config .config.bak; \
 			echo "WARNING: .config is updated, backed up as '.config.bak'"; \
-		fi; \
-		cp -vf ../config-hiwifi-hc5761 .config; \
-		[ -f ../.config.extra ] && cat ../.config.extra >> .config || :
+		fi
+	$(call CheckConfigSymlink)
+	cp -vf $(CONFIG_FILENAME) $(openwrt_dir)/.config
+	@[ -f .config.extra ] && cat .config.extra >> $(openwrt_dir)/.config || :
 	make -C $(openwrt_dir) V=s -j4
 
-recovery.bin: HC5761
+recovery.bin: HC5X61
 	make -C recovery.bin
 
 .install_feeds: .update_feeds
@@ -32,7 +42,8 @@ recovery.bin: HC5761
 
 .patched: .checkout_svn
 	@cd $(openwrt_dir); cat ../patches/*.patch | patch -p0
-	@cp -vf config-hiwifi-hc5761 $(openwrt_dir)/.config
+	$(call CheckConfigSymlink)
+	@cp -vf $(CONFIG_FILENAME) $(openwrt_dir)/.config
 	@touch .patched
 
 # 2. Checkout source code:
@@ -57,10 +68,11 @@ recovery.bin: HC5761
 
 menuconfig: .install_feeds
 	@cd $(openwrt_dir); [ -f .config ] && mv -vf .config .config.bak || :
-	@cp -vf config-hiwifi-hc5761 $(openwrt_dir)/.config
-	@touch config-hiwifi-hc5761  # change modification time
+	$(call CheckConfigSymlink)
+	@cp -vf $(CONFIG_FILENAME) $(openwrt_dir)/.config
+	@touch $(CONFIG_FILENAME)  # change modification time
 	@make -C $(openwrt_dir) menuconfig
-	@[ $(openwrt_dir)/.config -nt config-hiwifi-hc5761 ] && cp -vf $(openwrt_dir)/.config config-hiwifi-hc5761 || :
+	@[ $(openwrt_dir)/.config -nt $(CONFIG_FILENAME) ] && cp -vf $(openwrt_dir)/.config $(CONFIG_FILENAME) || :
 
 clean:
 	make clean -C recovery.bin
