@@ -10,6 +10,10 @@ OpenWrt Patch for HiWiFi HC5661 / HC5761 / HC5861 (based on "barrier_breaker" br
 
 -------
 
+Chaos Calmer - 15.05 版本请参考本项目的 chaos_calmer 分支: https://github.com/rssnsj/openwrt-hc5x61/tree/chaos_calmer
+
+-------
+
 #### OpenWrt补丁及ImageBuilder说明
 
 * 包含了HC5661、HC5761、HC5861 3个机型的OpenWrt补丁；
