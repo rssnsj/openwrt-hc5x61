@@ -20,7 +20,9 @@ OPKG_PACKAGES := 6in4 6to4 blkid curl ethtool ip ip6tables-extra ip6tables-mod-n
 	luci-app-firewall luci-app-samba luci-base luci-i18n-chinese luci-i18n-english \
 	luci-lib-json luci-lib-nixio luci-mod-admin-full luci-proto-ipv6 luci-proto-ppp \
 	luci-theme-bootstrap ntfs-3g openvpn-openssl ppp-mod-pppol2tp ppp-mod-pptp resolveip \
-	samba36-server tc terminfo uclibcxx uhttpd uhttpd-mod-ubus zlib pdnsd pptpd xl2tpd
+	samba36-server tc terminfo uclibcxx uhttpd uhttpd-mod-ubus zlib pdnsd pptpd xl2tpd \
+	block-mount mountd ppp-mod-pppoe e2fsprogs
+
 OPKG_PACKAGES_HC5761 :=
 OPKG_PACKAGES_HC5861 :=
 PREPARED_TARGETS = .check_ib .patched
@@ -57,18 +59,25 @@ define EnableWireless
 		F=$(shell echo $(1)); openwrt-repack.sh $$F -w -o $$F.out && mv $$F.out $$F
 endef
 
-both: HC5761 HC5861
+all: HC5661 HC5761 HC5861
+
+HC5661: $(PREPARED_TARGETS)
+	$(call BeforeBuildImage)
+	make -C $(BUILDER) image PROFILE=HC5661 \
+		FILES="$(shell cd $(BUILDER); pwd)/target/linux/ramips/base-files" \
+		PACKAGES="$(OPKG_PACKAGES) $(OPKG_PACKAGES_HC5761)"
+	$(call EnableWireless,$(shell echo $(BUILDER)/bin/ramips/openwrt-*-hc5661-*-sysupgrade.bin))
 
 HC5761: $(PREPARED_TARGETS)
 	$(call BeforeBuildImage)
-	make -C $(BUILDER) image PROFILE=HiWiFi-HC5761 \
+	make -C $(BUILDER) image PROFILE=HC5761 \
 		FILES="$(shell cd $(BUILDER); pwd)/target/linux/ramips/base-files" \
 		PACKAGES="$(OPKG_PACKAGES) $(OPKG_PACKAGES_HC5761)"
 	$(call EnableWireless,$(shell echo $(BUILDER)/bin/ramips/openwrt-*-hc5761-*-sysupgrade.bin))
 
 HC5861: $(PREPARED_TARGETS)
 	$(call BeforeBuildImage)
-	make -C $(BUILDER) image PROFILE=HiWiFi-HC5861 \
+	make -C $(BUILDER) image PROFILE=HC5861 \
 		FILES="$(shell cd $(BUILDER); pwd)/target/linux/ramips/base-files" \
 		PACKAGES="$(OPKG_PACKAGES) $(OPKG_PACKAGES_HC5861)"
 	$(call EnableWireless,$(shell echo $(BUILDER)/bin/ramips/openwrt-*-hc5861-*-sysupgrade.bin))

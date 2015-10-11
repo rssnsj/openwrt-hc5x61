@@ -1,38 +1,288 @@
-Index: target/linux/ramips/image/Makefile
+Index: target/linux/ramips/base-files/etc/diag.sh
 ===================================================================
---- target/linux/ramips/image/Makefile	(revision 43770)
-+++ target/linux/ramips/image/Makefile	(working copy)
-@@ -724,6 +724,8 @@
- na930_mtd_size=20971520
- Image/Build/Profile/NA930=$(call BuildFirmware/CustomFlash/$(1),$(1),na930,NA930,$(na930_mtd_size))
- Image/Build/Profile/MZK-750DHP=$(call BuildFirmware/Default8M/$(1),$(1),mzk-750dhp,MZK-750DHP)
-+Image/Build/Profile/HiWiFi-HC5761=$(call BuildFirmware/Default16M/$(1),$(1),hiwifi-hc5761,HiWiFi-HC5761)
-+Image/Build/Profile/HiWiFi-HC5861=$(call BuildFirmware/Default16M/$(1),$(1),hiwifi-hc5861,HiWiFi-HC5861)
- Image/Build/Profile/Y1=$(call BuildFirmware/Default16M/$(1),$(1),Lenovo-y1,Y1)
- Image/Build/Profile/Y1S=$(call BuildFirmware/Default16M/$(1),$(1),Lenovo-y1s,Y1S)
+--- target/linux/ramips/base-files/etc/diag.sh	(revision 43770)
++++ target/linux/ramips/base-files/etc/diag.sh	(working copy)
+@@ -54,6 +54,15 @@
+ 	fonera20n)
+ 		status_led="fonera20n:green:power"
+ 		;;
++	hc5661)
++		status_led="hc5661:blue:system"
++		;;
++	hc5761)
++		status_led="hc5761:blue:system"
++		;;
++	hc5861)
++		status_led="hc5861:blue:system"
++		;;
+ 	ip2202)
+ 		status_led="ip2202:green:run"
+ 		;;
+Index: target/linux/ramips/base-files/etc/uci-defaults/01_leds
+===================================================================
+--- target/linux/ramips/base-files/etc/uci-defaults/01_leds	(revision 43770)
++++ target/linux/ramips/base-files/etc/uci-defaults/01_leds	(working copy)
+@@ -106,6 +106,24 @@
+ 		set_usb_led "fonera20n:orange:usb"
+ 		set_wifi_led "fonera20n:orange:wifi"
+ 		;;
++	hc5661)
++		ucidef_set_led_default "system" "system" "hc5661:blue:system" "1"
++		ucidef_set_led_netdev "internet" "internet" "hc5661:blue:internet" "eth0.2"
++		set_wifi_led "hc5661:blue:wlan2g"
++		;;	
++	hc5761)
++		ucidef_set_led_default "system" "system" "hc5761:blue:system" "1"
++		ucidef_set_led_netdev "internet" "internet" "hc5761:blue:internet" "eth0.2"
++		set_wifi_led "hc5761:blue:wlan2g"
++		ucidef_set_led_netdev "wifi5g" "wifi5g" "hc5761:blue:wlan5g" "rai0"
++		;;
++	hc5861)
++		ucidef_set_led_default "system" "system" "hc5861:blue:system" "1"
++		ucidef_set_led_netdev "internet" "internet" "hc5861:blue:internet" "eth0.2"
++		set_wifi_led "hc5861:blue:wlan2g"
++		ucidef_set_led_netdev "wifi5g" "wifi5g" "hc5861:blue:wlan5g" "rai0"
++		ucidef_set_led_default "turbo" "turbo" "hc5861:blue:turbo" "0"
++		;;
+ 	hlk-rm04)
+ 		set_wifi_led "rt2800pci-phy0::radio"
+ 		;;
+Index: target/linux/ramips/base-files/etc/uci-defaults/02_network
+===================================================================
+--- target/linux/ramips/base-files/etc/uci-defaults/02_network	(revision 43770)
++++ target/linux/ramips/base-files/etc/uci-defaults/02_network	(working copy)
+@@ -183,6 +183,7 @@
+ 		ucidef_add_switch_vlan "switch0" "2" "4 6t"
+ 		;;
  
-@@ -740,6 +742,8 @@
- 	$(call Image/Build/Profile/WHR1166D,$(1))
- 	$(call Image/Build/Profile/MZK-750DHP,$(1))
- 	$(call Image/Build/Profile/NA930,$(1))
-+	$(call Image/Build/Profile/HiWiFi-HC5761,$(1))
-+	$(call Image/Build/Profile/HiWiFi-HC5861,$(1))
- 	$(call Image/Build/Profile/Y1,$(1))
- 	$(call Image/Build/Profile/Y1S,$(1))
- endef
-Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
++	hc5*61 |\
+ 	y1 |\
+ 	y1s)
+ 		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
+@@ -273,6 +274,12 @@
+                 wan_mac=$(mtd_get_mac_binary factory 40)
+ 		;;
+ 
++	hc5*61)
++		lan_mac=`mtd_get_mac_ascii bdinfo "Vfac_mac "`
++		[ -n "$lan_mac" ] || lan_mac=$(cat /sys/class/net/eth0/address)
++		wan_mac=$(macaddr_add "$lan_mac" 1)
++		;;
++
+ 	rt-n56u)
+ 		lan_mac=$(cat /sys/class/net/eth0/address)
+ 		lan_mac=$(macaddr_setbit_la "$lan_mac")
+Index: target/linux/ramips/base-files/lib/ramips.sh
 ===================================================================
---- target/linux/ramips/dts/HiWiFi-HC5761.dts	(revision 0)
-+++ target/linux/ramips/dts/HiWiFi-HC5761.dts	(revision 0)
-@@ -0,0 +1,161 @@
+--- target/linux/ramips/base-files/lib/ramips.sh	(revision 43770)
++++ target/linux/ramips/base-files/lib/ramips.sh	(working copy)
+@@ -160,6 +160,15 @@
+ 	*"HAME MPR-A2")
+  		name="mpr-a2"
+  		;;
++	*"HC5661")
++		name="hc5661"
++		;;
++	*"HC5761")
++		name="hc5761"
++		;;
++	*"HC5861")
++		name="hc5861"
++		;;
+ 	*"Kingston MLW221")
+ 		name="mlw221"
+ 		;;
+Index: target/linux/ramips/base-files/lib/upgrade/platform.sh
+===================================================================
+--- target/linux/ramips/base-files/lib/upgrade/platform.sh	(revision 43770)
++++ target/linux/ramips/base-files/lib/upgrade/platform.sh	(working copy)
+@@ -51,6 +51,7 @@
+ 	freestation5 | \
+ 	hw550-3g | \
+ 	hg255d | \
++	hc5*61 | \
+ 	hlk-rm04 | \
+ 	ip2202 | \
+ 	m3 | \
+Index: target/linux/ramips/dts/HC5661.dts
+===================================================================
+--- target/linux/ramips/dts/HC5661.dts	(revision 0)
++++ target/linux/ramips/dts/HC5661.dts	(revision 0)
+@@ -0,0 +1,32 @@
 +/dts-v1/;
 +
++/include/ "HC5XXX.dtsi"
++
++/ {
++	compatible = "HC5661", "ralink,mt7620a-soc";
++	model = "HiWiFi HC5661";
++
++	gpio-leds {
++		compatible = "gpio-leds";
++
++		system {
++			label = "hc5661:blue:system";
++			gpios = <&gpio0 9 1>;
++		};
++
++		internet {
++			label = "hc5661:blue:internet";
++			gpios = <&gpio0 11 1>;
++		};
++
++		wlan2g {
++			label = "hc5661:blue:wlan2g";
++			gpios = <&gpio3 0 1>;
++		};
++
++		wlan5g {
++			label = "hc5661:blue:wlan5g";
++			gpios = <&gpio0 7 1>;
++		};
++	};
++};
+Index: target/linux/ramips/dts/HC5761.dts
+===================================================================
+--- target/linux/ramips/dts/HC5761.dts	(revision 0)
++++ target/linux/ramips/dts/HC5761.dts	(revision 0)
+@@ -0,0 +1,32 @@
++/dts-v1/;
++
++/include/ "HC5XXX.dtsi"
++
++/ {
++	compatible = "HC5761", "ralink,mt7620a-soc";
++	model = "HiWiFi HC5761";
++
++	gpio-leds {
++		compatible = "gpio-leds";
++
++		system {
++			label = "hc5761:blue:system";
++			gpios = <&gpio0 9 1>;
++		};
++
++		internet {
++			label = "hc5761:blue:internet";
++			gpios = <&gpio0 11 1>;
++		};
++
++		wlan2g {
++			label = "hc5761:blue:wlan2g";
++			gpios = <&gpio3 0 1>;
++		};
++
++		wlan5g {
++			label = "hc5761:blue:wlan5g";
++			gpios = <&gpio0 7 1>;
++		};
++	};
++};
+Index: target/linux/ramips/dts/HC5861.dts
+===================================================================
+--- target/linux/ramips/dts/HC5861.dts	(revision 0)
++++ target/linux/ramips/dts/HC5861.dts	(revision 0)
+@@ -0,0 +1,92 @@
++/dts-v1/;
++
++/include/ "HC5XXX.dtsi"
++
++/ {
++	compatible = "HC5861", "ralink,mt7620a-soc";
++	model = "HiWiFi HC5861";
++
++	ethernet@10100000 {
++		status = "okay";
++		mtd-mac-address = <&factory 0x4>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
++		ralink,port-map = "wllll";
++
++		port@4 {
++			status = "okay";
++			phy-handle = <&phy4>;
++			phy-mode = "rgmii";
++		};
++
++		port@5 {
++			status = "okay";
++			phy-handle = <&phy5>;
++			phy-mode = "rgmii";
++		};
++
++		mdio-bus {
++			status = "okay";
++
++			phy4: ethernet-phy@4 {
++				reg = <4>;
++				phy-mode = "rgmii";
++			};
++
++			phy5: ethernet-phy@5 {
++				reg = <5>;
++				phy-mode = "rgmii";
++			};
++		};
++	};
++
++	gsw@10110000 {
++		ralink,port4 = "gmac";
++	};
++
++	gpio-leds {
++		compatible = "gpio-leds";
++
++		system {
++			label = "hc5861:blue:system";
++			gpios = <&gpio0 9 1>;
++		};
++
++		wlan2g {
++			label = "hc5861:blue:wlan2g";
++			gpios = <&gpio0 11 1>;
++		};
++
++		internet {
++			label = "hc5861:blue:internet";
++			gpios = <&gpio3 0 1>;
++		};
++
++		wlan5g {
++			label = "hc5861:blue:wlan5g";
++			gpios = <&gpio0 7 1>;
++		};
++
++		turbo {
++			label = "hc5861:blue:turbo";
++			gpios = <&gpio0 10 1>;
++		};
++	};
++
++	gpio_export {
++		compatible = "gpio-export";
++		#size-cells = <0>;
++
++		usbpower {
++			gpio-export,name = "usbpower";
++			gpio-export,output = <0>;
++			gpios = <&gpio0 13 0>;
++		};
++
++		sdpower {
++			gpio-export,name = "sdpower";
++			gpio-export,output = <0>;
++			gpios = <&gpio0 8 0>;
++		};
++	};
++};
+Index: target/linux/ramips/dts/HC5XXX.dtsi
+===================================================================
+--- target/linux/ramips/dts/HC5XXX.dtsi	(revision 0)
++++ target/linux/ramips/dts/HC5XXX.dtsi	(revision 0)
+@@ -0,0 +1,141 @@
 +/include/ "mt7620a.dtsi"
 +
 +/ {
-+	compatible = "HiWiFi-HC5761", "ralink,mt7620a-soc";
-+	model = "HiWiFi HC5761";
-+
 +	chosen {
 +		bootargs = "console=ttyS0,115200";
 +	};
@@ -43,12 +293,15 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 +			ralink,uartmux = "gpio";
 +			ralink,wdtmux = <1>;
 +		};
++
 +		gpio0: gpio@600 {
 +			status = "okay";
 +		};
++
 +		gpio2: gpio@660 {
 +			status = "okay";
 +		};
++
 +		gpio3: gpio@688 {
 +			status = "okay";
 +		};
@@ -136,30 +389,11 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 +				ralink,group = "uartf", "wled", "nd_sd";
 +				ralink,function = "gpio";
 +			};
++
 +			pa {
 +				ralink,group = "pa";
 +				ralink,function = "pa";
 +			};
-+		};
-+	};
-+
-+	gpio-leds {
-+		compatible = "gpio-leds";
-+		system {
-+			label = "hiwifi:blue:system";
-+			gpios = <&gpio0 9 1>;
-+		};
-+		internet {
-+			label = "hiwifi:blue:internet";
-+			gpios = <&gpio0 11 1>;
-+		};
-+		wlan2p4 {
-+			label = "hiwifi:blue:wlan-2p4";
-+			gpios = <&gpio3 0 1>;
-+		};
-+		wlan5p {
-+			label = "hiwifi:blue:wlan-5p";
-+			gpios = <&gpio0 7 1>;
 +		};
 +	};
 +
@@ -168,6 +402,7 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 +		#address-cells = <1>;
 +		#size-cells = <0>;
 +		poll-interval = <20>;
++
 +		reset {
 +			label = "reset";
 +			gpios = <&gpio0 12 1>;
@@ -178,376 +413,87 @@ Index: target/linux/ramips/dts/HiWiFi-HC5761.dts
 +	gpio_export {
 +		compatible = "gpio-export";
 +		#size-cells = <0>;
++
 +		usbpower {
 +			gpio-export,name = "usbpower";
 +			gpio-export,output = <1>;
 +			gpios = <&gpio0 13 0>;
 +		};
 +	};
-+
 +};
-Index: target/linux/ramips/dts/HiWiFi-HC5861.dts
+Index: target/linux/ramips/image/Makefile
 ===================================================================
---- target/linux/ramips/dts/HiWiFi-HC5861.dts	(revision 0)
-+++ target/linux/ramips/dts/HiWiFi-HC5861.dts	(revision 0)
-@@ -0,0 +1,202 @@
-+/dts-v1/;
-+
-+/include/ "mt7620a.dtsi"
-+
-+/ {
-+	compatible = "HiWiFi-HC5861", "ralink,mt7620a-soc";
-+	model = "HiWiFi HC5861";
-+
-+	chosen {
-+		bootargs = "console=ttyS0,115200";
-+	};
-+
-+	palmbus@10000000 {
-+		sysc@0 {
-+			ralink,gpiomux = "i2c", "jtag";
-+			ralink,uartmux = "gpio";
-+			ralink,wdtmux = <1>;
-+		};
-+		gpio0: gpio@600 {
-+			status = "okay";
-+		};
-+		gpio2: gpio@660 {
-+			status = "okay";
-+		};
-+		gpio3: gpio@688 {
-+			status = "okay";
-+		};
-+
-+		spi@b00 {
-+			status = "okay";
-+
-+			m25p80@0 {
-+				#address-cells = <1>;
-+				#size-cells = <1>;
-+				compatible = "w25q128";
-+				reg = <0 0>;
-+				linux,modalias = "m25p80", "w25q128";
-+				spi-max-frequency = <10000000>;
-+
-+				partition@0 {
-+					label = "u-boot";
-+					reg = <0x0 0x30000>;
-+				};
-+
-+				partition@30000 {
-+					label = "u-boot-env";
-+					reg = <0x30000 0x10000>;
-+					read-only;
-+				};
-+
-+				factory: partition@40000 {
-+					label = "factory";
-+					reg = <0x40000 0x10000>;
-+				};
-+
-+				partition@50000 {
-+					label = "firmware";
-+					reg = <0x50000 0xf80000>;
-+				};
-+
-+				partition@fd0000 {
-+					label = "hwf_config";
-+					reg = <0xfd0000 0x10000>;
-+				};
-+
-+				bdinfo: partition@fe0000 {
-+					label = "bdinfo";
-+					reg = <0xfe0000 0x10000>;
-+				};
-+
-+				partition@ff0000 {
-+					label = "backup";
-+					reg = <0xff0000 0x10000>;
-+				};
-+			};
-+		};
-+	};
-+
-+	ehci@101c0000 {
-+		status = "okay";
-+	};
-+
-+	ohci@101c1000 {
-+		status = "okay";
-+	};
-+
-+	ethernet@10100000 {
-+		status = "okay";
-+		mtd-mac-address = <&factory 0x4>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
-+
-+		ralink,port-map = "wllll";
-+
-+		port@4 {
-+			status = "okay";
-+			phy-handle = <&phy4>;
-+			phy-mode = "rgmii";
-+		};
-+
-+		port@5 {
-+			status = "okay";
-+			phy-handle = <&phy5>;
-+			phy-mode = "rgmii";
-+		};
-+
-+		mdio-bus {
-+			status = "okay";
-+
-+			phy4: ethernet-phy@4 {
-+				reg = <4>;
-+				phy-mode = "rgmii";
-+			};
-+
-+			phy5: ethernet-phy@5 {
-+				reg = <5>;
-+				phy-mode = "rgmii";
-+			};
-+		};
-+	};
-+
-+	gsw@10110000 {
-+		ralink,port4 = "gmac";
-+	};
-+
-+	sdhci@10130000 {
-+		status = "okay";
-+	};
-+
-+	wmac@10180000 {
-+		ralink,mtd-eeprom = <&factory 0>;
-+	};
-+
-+	pcie@10140000 {
-+		status = "okay";
-+	};
-+
-+	pinctrl {
-+		state_default: pinctrl0 {
-+			gpio {
-+				ralink,group = "uartf", "wled", "nd_sd";
-+				ralink,function = "gpio";
-+			};
-+			pa {
-+				ralink,group = "pa";
-+				ralink,function = "pa";
-+			};
-+		};
-+	};
-+
-+	gpio-leds {
-+		compatible = "gpio-leds";
-+		system {
-+			label = "hiwifi:blue:system";
-+			gpios = <&gpio0 9 1>;
-+		};
-+		wlan2p4 {
-+			label = "hiwifi:blue:wlan-2p4";
-+			gpios = <&gpio0 11 1>;
-+		};
-+		internet {
-+			label = "hiwifi:blue:internet";
-+			gpios = <&gpio3 0 1>;
-+		};
-+		wlan5p {
-+			label = "hiwifi:blue:wlan-5p";
-+			gpios = <&gpio0 7 1>;
-+		};
-+		turbo {
-+			label = "hiwifi:blue:turbo";
-+			gpios = <&gpio0 10 1>;
-+		};
-+	};
-+
-+	gpio-keys-polled {
-+		compatible = "gpio-keys-polled";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		poll-interval = <20>;
-+		reset {
-+			label = "reset";
-+			gpios = <&gpio0 12 1>;
-+			linux,code = <0x198>;
-+		};
-+	};
-+
-+	gpio_export {
-+		compatible = "gpio-export";
-+		#size-cells = <0>;
-+		usbpower {
-+			gpio-export,name = "usbpower";
-+			gpio-export,output = <0>;
-+			gpios = <&gpio0 13 0>;
-+		};
-+		sdpower {
-+			gpio-export,name = "sdpower";
-+			gpio-export,output = <0>;
-+			gpios = <&gpio0 8 0>;
-+		};
-+	};
-+
-+};
-Index: target/linux/ramips/mt7620a/profiles/HiWiFi-HC5761.mk
+--- target/linux/ramips/image/Makefile	(revision 43770)
++++ target/linux/ramips/image/Makefile	(working copy)
+@@ -724,6 +724,9 @@
+ na930_mtd_size=20971520
+ Image/Build/Profile/NA930=$(call BuildFirmware/CustomFlash/$(1),$(1),na930,NA930,$(na930_mtd_size))
+ Image/Build/Profile/MZK-750DHP=$(call BuildFirmware/Default8M/$(1),$(1),mzk-750dhp,MZK-750DHP)
++Image/Build/Profile/HC5661=$(call BuildFirmware/Default16M/$(1),$(1),hc5661,HC5661)
++Image/Build/Profile/HC5761=$(call BuildFirmware/Default16M/$(1),$(1),hc5761,HC5761)
++Image/Build/Profile/HC5861=$(call BuildFirmware/Default16M/$(1),$(1),hc5861,HC5861)
+ Image/Build/Profile/Y1=$(call BuildFirmware/Default16M/$(1),$(1),Lenovo-y1,Y1)
+ Image/Build/Profile/Y1S=$(call BuildFirmware/Default16M/$(1),$(1),Lenovo-y1s,Y1S)
+ 
+@@ -740,6 +743,9 @@
+ 	$(call Image/Build/Profile/WHR1166D,$(1))
+ 	$(call Image/Build/Profile/MZK-750DHP,$(1))
+ 	$(call Image/Build/Profile/NA930,$(1))
++	$(call Image/Build/Profile/HC5661,$(1))
++	$(call Image/Build/Profile/HC5761,$(1))
++	$(call Image/Build/Profile/HC5861,$(1))
+ 	$(call Image/Build/Profile/Y1,$(1))
+ 	$(call Image/Build/Profile/Y1S,$(1))
+ endef
+Index: target/linux/ramips/mt7620a/profiles/hiwifi.mk
 ===================================================================
---- target/linux/ramips/mt7620a/profiles/HiWiFi-HC5761.mk	(revision 0)
-+++ target/linux/ramips/mt7620a/profiles/HiWiFi-HC5761.mk	(revision 0)
-@@ -0,0 +1,20 @@
+--- target/linux/ramips/mt7620a/profiles/hiwifi.mk	(revision 0)
++++ target/linux/ramips/mt7620a/profiles/hiwifi.mk	(revision 0)
+@@ -0,0 +1,47 @@
 +#
-+# Copyright (C) 2011 OpenWrt.org
++# Copyright (C) 2015 OpenWrt.org
 +#
 +# This is free software, licensed under the GNU General Public License v2.
 +# See /LICENSE for more information.
 +#
 +
-+define Profile/HiWiFi-HC5761
-+ NAME:=HiWiFi HC5761
-+ PACKAGES:=\
-+   kmod-usb-core kmod-usb-dwc2 kmod-usb2 kmod-usb-storage  \
-+   kmod-mmc-spi kmod-sdhci kmod-sdhci-mt7620 \
-+   block-mount mountd kmod-fs-ext4 ppp-mod-pppoe e2fsprogs \
-+   kmod-ledtrig-usbdev fdisk
++define Profile/HC5661
++	NAME:=HiWiFi HC5661
++	PACKAGES:=\
++		kmod-usb-core kmod-usb-dwc2 kmod-usb2 \
++		kmod-mmc-spi kmod-sdhci kmod-sdhci-mt7620 \
++   		kmod-ledtrig-usbdev
 +endef
 +
-+define Profile/HiWiFi-HC5761/Description
-+ Default on SD cards and USB storage support.
++define Profile/HC5661/Description
++	Support HiWiFi HC5661 model(J1S)
 +endef
-+$(eval $(call Profile,HiWiFi-HC5761))
-Index: target/linux/ramips/mt7620a/profiles/HiWiFi-HC5861.mk
-===================================================================
---- target/linux/ramips/mt7620a/profiles/HiWiFi-HC5861.mk	(revision 0)
-+++ target/linux/ramips/mt7620a/profiles/HiWiFi-HC5861.mk	(revision 0)
-@@ -0,0 +1,20 @@
-+#
-+# Copyright (C) 2011 OpenWrt.org
-+#
-+# This is free software, licensed under the GNU General Public License v2.
-+# See /LICENSE for more information.
-+#
++$(eval $(call Profile,HC5661))
 +
-+define Profile/HiWiFi-HC5861
-+ NAME:=HiWiFi HC5861
-+ PACKAGES:=\
-+   kmod-usb-core kmod-usb-dwc2 kmod-usb2 kmod-usb-storage  \
-+   kmod-mmc-spi kmod-sdhci kmod-sdhci-mt7620 \
-+   block-mount mountd kmod-fs-ext4 ppp-mod-pppoe e2fsprogs \
-+   kmod-ledtrig-usbdev fdisk
++
++define Profile/HC5761
++	NAME:=HiWiFi HC5761
++	PACKAGES:=\
++		kmod-usb-core kmod-usb-dwc2 kmod-usb2 \
++		kmod-mmc-spi kmod-sdhci kmod-sdhci-mt7620 \
++		kmod-ledtrig-usbdev
 +endef
 +
-+define Profile/HiWiFi-HC5861/Description
-+ Default on SD cards and USB storage support.
++define Profile/HC5761/Description
++ Support HiWiFi HC5761 model(J2)
 +endef
-+$(eval $(call Profile,HiWiFi-HC5861))
-Index: target/linux/ramips/base-files/lib/ramips.sh
-===================================================================
---- target/linux/ramips/base-files/lib/ramips.sh	(revision 43770)
-+++ target/linux/ramips/base-files/lib/ramips.sh	(working copy)
-@@ -325,6 +325,12 @@
- 	*"ZBT WR8305RT")
- 		name="wr8305rt"
- 		;;
-+	*"HiWiFi HC5761")
-+		name="hiwifi-hc5761"
-+		;;
-+	*"HiWiFi HC5861")
-+		name="hiwifi-hc5861"
-+		;;
- 	*"Lenovo Y1")
- 		name="y1"
- 		;;
-Index: target/linux/ramips/base-files/lib/upgrade/platform.sh
-===================================================================
---- target/linux/ramips/base-files/lib/upgrade/platform.sh	(revision 43770)
-+++ target/linux/ramips/base-files/lib/upgrade/platform.sh	(working copy)
-@@ -98,6 +98,7 @@
- 	x5 |\
- 	x8 |\
- 	zbt-wa05 |\
-+	hiwifi-hc5*61 |\
- 	y1 |\
- 	y1s)
- 		[ "$magic" != "27051956" ] && {
-Index: target/linux/ramips/base-files/etc/uci-defaults/01_leds
-===================================================================
---- target/linux/ramips/base-files/etc/uci-defaults/01_leds	(revision 43770)
-+++ target/linux/ramips/base-files/etc/uci-defaults/01_leds	(working copy)
-@@ -203,6 +203,19 @@
- 		set_usb_led "wr8305rt:usb"
- 		set_wifi_led "wr8305rt:wifi"
- 		;;
-+	hiwifi-hc5761)
-+		ucidef_set_led_default "system" "system" "hiwifi:blue:system" "1"
-+		ucidef_set_led_netdev "internet" "internet" "hiwifi:blue:internet" "eth0.2"
-+		set_wifi_led "hiwifi:blue:wlan-2p4"
-+		ucidef_set_led_netdev "wifi5g" "wifi5g" "hiwifi:blue:wlan-5p" "rai0"
-+		;;
-+	hiwifi-hc5861)
-+		ucidef_set_led_default "system" "system" "hiwifi:blue:system" "1"
-+		ucidef_set_led_netdev "internet" "internet" "hiwifi:blue:internet" "eth0.2"
-+		set_wifi_led "hiwifi:blue:wlan-2p4"
-+		ucidef_set_led_netdev "wifi5g" "wifi5g" "hiwifi:blue:wlan-5p" "rai0"
-+		ucidef_set_led_default "turbo" "turbo" "hiwifi:blue:turbo" "0"
-+		;;
- 	y1 |\
- 	y1s)
- 		ucidef_set_led_default "power" "power" "lenovo:blue:power" "1"
-Index: target/linux/ramips/base-files/etc/uci-defaults/02_network
-===================================================================
---- target/linux/ramips/base-files/etc/uci-defaults/02_network	(revision 43770)
-+++ target/linux/ramips/base-files/etc/uci-defaults/02_network	(working copy)
-@@ -183,6 +183,7 @@
- 		ucidef_add_switch_vlan "switch0" "2" "4 6t"
- 		;;
- 
-+	hiwifi-hc5*61 |\
- 	y1 |\
- 	y1s)
- 		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
-@@ -263,6 +264,13 @@
- 		wan_mac=$(macaddr_add "$lan_mac" 1)
- 		;;
- 
-+	hiwifi-hc5*61)
-+		__fac_mac=`strings /dev/mtd7 | grep 'fac_mac = ..:..:..:..:..:..'`
-+		lan_mac=`expr "$__fac_mac" : '.*\(..:..:..:..:..:..\)' | tr '[A-Z]' '[a-z]'`
-+		[ -n "$lan_mac" ] || lan_mac=$(cat /sys/class/net/eth0/address)
-+		wan_mac=$(macaddr_add "$lan_mac" 1)
-+		;;
++$(eval $(call Profile,HC5761))
 +
- 	cy-swr1100 | \
- 	dir-645)
- 		lan_mac=$(mtd_get_mac_ascii nvram lanmac)
-Index: target/linux/ramips/base-files/etc/diag.sh
-===================================================================
---- target/linux/ramips/base-files/etc/diag.sh	(revision 43770)
-+++ target/linux/ramips/base-files/etc/diag.sh	(working copy)
-@@ -188,6 +188,9 @@
- 	na930)
- 		status_led="na930:blue:power"
- 		;;
-+	hiwifi-hc5*61)
-+		status_led="hiwifi:blue:system"
-+		;;
- 	y1 | \
- 	y1s)
- 		status_led="lenovo:blue:power"
-Index: target/linux/ramips/patches-3.10/0402-mtd-gd25q.patch
-===================================================================
---- target/linux/ramips/patches-3.10/0402-mtd-gd25q.patch	(revision 0)
-+++ target/linux/ramips/patches-3.10/0402-mtd-gd25q.patch	(revision 0)
-@@ -0,0 +1,10 @@
-+--- a/drivers/mtd/devices/m25p80.c
-++++ b/drivers/mtd/devices/m25p80.c
-+@@ -984,6 +984,7 @@ static const struct spi_device_id m25p_ids[] = {
-+ 	{ "w25q80bl", INFO(0xef4014, 0, 64 * 1024,  16, SECT_4K) },
-+ 	{ "w25q128", INFO(0xef4018, 0, 64 * 1024, 256, SECT_4K) },
-+ 	{ "w25q256", INFO(0xef4019, 0, 64 * 1024, 512, SECT_4K) },
-++	{ "gd25q128b", INFO(0xc84018, 0, 64 * 1024, 256, SECT_4K)},
-+ 
-+ 	/* Catalyst / On Semiconductor -- non-JEDEC */
-+ 	{ "cat25c11", CAT25_INFO(  16, 8, 16, 1) },
++	
++define Profile/HC5861
++	NAME:=HiWiFi HC5861
++	PACKAGES:=\
++		kmod-usb-core kmod-usb-dwc2 kmod-usb2 \
++		kmod-mmc-spi kmod-sdhci kmod-sdhci-mt7620 \
++		kmod-ledtrig-usbdev
++endef
++
++define Profile/HC5861/Description
++	Support HiWiFi HC5861 model(J3)
++endef
++$(eval $(call Profile,HC5861))
