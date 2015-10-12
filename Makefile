@@ -41,9 +41,9 @@ recovery.bin: HC5X61
 	@touch .update_feeds
 
 .patched: .checkout_svn
-	@cd $(openwrt_dir); cat ../patches/*.patch | patch -p0
 	$(call CheckConfigSymlink)
 	@cp -vf $(CONFIG_FILENAME) $(openwrt_dir)/.config
+	@cd $(openwrt_dir); cat ../patches/*.patch | patch -p0
 	@touch .patched
 
 # 2. Checkout source code:
