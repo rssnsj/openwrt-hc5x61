@@ -5,8 +5,9 @@ openwrt_dir = openwrt-ramips
 host_packages = build-essential git flex gettext libncurses5-dev unzip gawk liblzma-dev u-boot-tools
 openwrt_feeds = libevent2 luci luci-app-samba xl2tpd pptpd pdnsd ntfs-3g ethtool
 ### mwan3 luci-app-mwan3
-
 CONFIG_FILENAME = config-hiwifi
+
+RUNNING_THREADS := $(shell cat /proc/cpuinfo | grep -i '^processor\s\+:' | wc -l)
 
 define CheckConfigSymlink
 	@if ! [ -e $(CONFIG_FILENAME) ]; then \
@@ -24,7 +25,7 @@ HC5X61: .install_feeds
 	$(call CheckConfigSymlink)
 	cp -vf $(CONFIG_FILENAME) $(openwrt_dir)/.config
 	@[ -f .config.extra ] && cat .config.extra >> $(openwrt_dir)/.config || :
-	make -C $(openwrt_dir) V=s -j4
+	make -C $(openwrt_dir) V=s -j$(RUNNING_THREADS)
 
 recovery.bin: HC5X61
 	make -C recovery.bin
