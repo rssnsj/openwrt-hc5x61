@@ -23,6 +23,7 @@ OPKG_PACKAGES := 6in4 6to4 blkid curl ethtool ip ip6tables-extra ip6tables-mod-n
 	samba36-server tc terminfo uclibcxx uhttpd uhttpd-mod-ubus zlib pdnsd pptpd xl2tpd \
 	block-mount mountd ppp-mod-pppoe e2fsprogs
 
+OPKG_PACKAGES_HC5661 :=
 OPKG_PACKAGES_HC5761 :=
 OPKG_PACKAGES_HC5861 :=
 PREPARED_TARGETS = $(BUILDER) $(SDK) .check_ib .patched
@@ -65,7 +66,7 @@ HC5661: $(PREPARED_TARGETS)
 	$(call BeforeBuildImage)
 	make -C $(BUILDER) image PROFILE=HC5661 \
 		FILES="$(shell cd $(BUILDER); pwd)/target/linux/ramips/base-files" \
-		PACKAGES="$(OPKG_PACKAGES) $(OPKG_PACKAGES_HC5761)"
+		PACKAGES="$(OPKG_PACKAGES) $(OPKG_PACKAGES_HC5661)"
 	$(call EnableWireless,$(shell echo $(BUILDER)/bin/ramips/openwrt-*-hc5661-*-sysupgrade.bin))
 
 HC5761: $(PREPARED_TARGETS)
