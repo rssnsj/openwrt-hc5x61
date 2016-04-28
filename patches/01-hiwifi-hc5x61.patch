@@ -30,7 +30,7 @@ Index: target/linux/ramips/base-files/etc/uci-defaults/01_leds
 +		ucidef_set_led_default "system" "system" "hc5661:blue:system" "1"
 +		ucidef_set_led_netdev "internet" "internet" "hc5661:blue:internet" "eth0.2"
 +		set_wifi_led "hc5661:blue:wlan2g"
-+		;;	
++		;;
 +	hc5761)
 +		ucidef_set_led_default "system" "system" "hc5761:blue:system" "1"
 +		ucidef_set_led_netdev "internet" "internet" "hc5761:blue:internet" "eth0.2"
@@ -48,10 +48,9 @@ Index: target/linux/ramips/base-files/etc/uci-defaults/01_leds
  		set_wifi_led "rt2800pci-phy0::radio"
  		;;
 Index: target/linux/ramips/base-files/etc/uci-defaults/02_network
-===================================================================
---- target/linux/ramips/base-files/etc/uci-defaults/02_network	(revision 43770)
-+++ target/linux/ramips/base-files/etc/uci-defaults/02_network	(working copy)
-@@ -183,6 +183,7 @@
+--- target/linux/ramips/base-files/etc/uci-defaults/02_network
++++ target/linux/ramips/base-files/etc/uci-defaults/02_network
+@@ -184,6 +184,7 @@ ramips_setup_interfaces()
  		ucidef_add_switch_vlan "switch0" "2" "4 6t"
  		;;
  
@@ -59,7 +58,7 @@ Index: target/linux/ramips/base-files/etc/uci-defaults/02_network
  	y1 |\
  	y1s)
  		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
-@@ -273,6 +274,12 @@
+@@ -274,6 +275,12 @@ ramips_setup_macs()
                  wan_mac=$(mtd_get_mac_binary factory 40)
  		;;
  
