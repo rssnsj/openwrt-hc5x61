@@ -6,7 +6,7 @@ Index: build/Makefile
  DRV_NAME = rlt_wifi
  RT_WIFI_DIR = ../rlt_wifi
  endif
-+EXTRA_CFLAGS += -DPRE_ASSIGN_MAC_ADDR -DCONFIG_SUPPORT_OPENWRT
++EXTRA_CFLAGS += -DPRE_ASSIGN_MAC_ADDR -DCONFIG_SUPPORT_OPENWRT -DCONFIG_RA_NAT_NONE
  
  ########################################################
  # Common files

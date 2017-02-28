@@ -1,6 +1,6 @@
 
-BUILDER ?= OpenWrt-ImageBuilder-15.05-ramips-mt7620.Linux-x86_64
-SDK ?= OpenWrt-SDK-15.05-ramips-mt7620_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64
+BUILDER ?= OpenWrt-ImageBuilder-15.05-ramips-mt7628.Linux-x86_64
+SDK ?= OpenWrt-SDK-15.05-ramips-mt7628_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64
 
 OPKG_PACKAGES :=  6in4 6to4 blkid curl ethtool fdisk ip ip6tables-extra ip6tables-mod-nat \
 	ipset iptables-mod-conntrack-extra iptables-mod-extra iptables-mod-ipopt iwinfo \
@@ -17,13 +17,9 @@ OPKG_PACKAGES :=  6in4 6to4 blkid curl ethtool fdisk ip ip6tables-extra ip6table
 	samba36-server terminfo zlib luci-i18n-base-zh-cn luci-i18n-commands-zh-cn \
 	luci-i18n-diag-core-zh-cn luci-i18n-firewall-zh-cn luci-i18n-qos-zh-cn luci-i18n-samba-zh-cn \
 	ppp-mod-pptp ppp-mod-pppol2tp kmod-nls-cp437 kmod-nls-iso8859-1 kmod-nls-utf8 \
-	kmod-crypto-deflate kmod-usb-ohci kmod-usb-printer kmod-nf-nathelper kmod-nf-nathelper-extra \
-	block-mount mountd e2fsprogs
-
-OPKG_PACKAGES_HC5661 :=
-OPKG_PACKAGES_HC5761 :=
-OPKG_PACKAGES_HC5861 :=
-PREPARED_TARGETS = $(BUILDER) $(SDK) .check_ib .patched
+	kmod-crypto-deflate kmod-usb-ohci kmod-usb-printer kmod-nf-nathelper kmod-nf-nathelper-extra
+OPKG_PACKAGES_HC5661A :=
+PREPARED_TARGETS = .check_ib .patched
 
 # A single option for enabling all options
 ifeq ($(FULL),1)
@@ -33,8 +29,7 @@ ifeq ($(FULL),1)
 endif
 # Check each option for selection of packages and dependencies
 ifeq ($(RALINK),1)
-	OPKG_PACKAGES_HC5761 += 8021xd uci2dat kmod-mt7610e luci-mtk-wifi
-	OPKG_PACKAGES_HC5861 += 8021xd uci2dat kmod-mt76x2e luci-mtk-wifi
+	OPKG_PACKAGES_HC5661A += 8021xd uci2dat kmod-mt7610e luci-mtk-wifi
 	PREPARED_TARGETS += .check_sdk .ralink
 endif
 ifeq ($(FEEDS),1)
@@ -54,31 +49,15 @@ endef
 
 define EnableWireless
 	@[ -n "$(WIFI)" ] || exit 0; \
-		F=$(shell echo $(1)); openwrt-repack.sh $$F -w -o $$F.out && mv $$F.out $$F
+		F="$(1)"; openwrt-repack.sh $$F -w -o $$F.out && mv $$F.out $$F
 endef
 
-all: HC5661 HC5761 HC5861
-
-HC5661: $(PREPARED_TARGETS)
+HC5661A: $(PREPARED_TARGETS)
 	$(call BeforeBuildImage)
-	make -C $(BUILDER) image PROFILE=HC5661 \
+	make -C $(BUILDER) image PROFILE=HiWiFi-HC5661A \
 		FILES="$(shell cd $(BUILDER); pwd)/target/linux/ramips/base-files" \
-		PACKAGES="$(OPKG_PACKAGES) $(OPKG_PACKAGES_HC5661)"
-	$(call EnableWireless,$(shell echo $(BUILDER)/bin/ramips/openwrt-*-hc5661-*-sysupgrade.bin))
-
-HC5761: $(PREPARED_TARGETS)
-	$(call BeforeBuildImage)
-	make -C $(BUILDER) image PROFILE=HC5761 \
-		FILES="$(shell cd $(BUILDER); pwd)/target/linux/ramips/base-files" \
-		PACKAGES="$(OPKG_PACKAGES) $(OPKG_PACKAGES_HC5761)"
-	$(call EnableWireless,$(shell echo $(BUILDER)/bin/ramips/openwrt-*-hc5761-*-sysupgrade.bin))
-
-HC5861: $(PREPARED_TARGETS)
-	$(call BeforeBuildImage)
-	make -C $(BUILDER) image PROFILE=HC5861 \
-		FILES="$(shell cd $(BUILDER); pwd)/target/linux/ramips/base-files" \
-		PACKAGES="$(OPKG_PACKAGES) $(OPKG_PACKAGES_HC5861)"
-	$(call EnableWireless,$(shell echo $(BUILDER)/bin/ramips/openwrt-*-hc5861-*-sysupgrade.bin))
+		PACKAGES="$(OPKG_PACKAGES) $(OPKG_PACKAGES_HC5661A)"
+	$(call EnableWireless,$(shell echo $(BUILDER)/bin/ramips/openwrt*-ramips-*-hc5661a-*-sysupgrade.bin))
 
 .patched:
 	cat ../patches/01-hiwifi-hc5x61.patch ../patches/12-disable-pdnsd.patch > .patching
@@ -121,10 +100,9 @@ HC5861: $(PREPARED_TARGETS)
 	fi
 
 # Try extracting ImageBuilder & SDK to current directory
-$(BUILDER):
-	tar jxvf /var/dl/$(BUILDER).tar.bz2
-$(SDK):
-	tar jxvf /var/dl/$(SDK).tar.bz2
+extract:
+	[ -d "$(BUILDER)" ] || tar jxvf /var/dl/$(BUILDER).tar.bz2
+	[ -d "$(SDK)" ] || tar jxvf /var/dl/$(SDK).tar.bz2
 
 help:
 	@echo "Usage:"
