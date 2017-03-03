@@ -158,12 +158,12 @@ Index: target/linux/ramips/dts/HC5761.dts
 +
 +		system {
 +			label = "hc5761:blue:system";
-+			gpios = <&gpio0 9 1>;
++			gpios = <&gpio0 14 1>;
 +		};
 +
 +		internet {
 +			label = "hc5761:blue:internet";
-+			gpios = <&gpio0 11 1>;
++			gpios = <&gpio0 12 1>;
 +		};
 +
 +		wlan2g {
@@ -173,7 +173,7 @@ Index: target/linux/ramips/dts/HC5761.dts
 +
 +		wlan5g {
 +			label = "hc5761:blue:wlan5g";
-+			gpios = <&gpio0 14 1>;
++			gpios = <&gpio0 10 1>;
 +		};
 +	};
 +};
@@ -415,8 +415,8 @@ Index: target/linux/ramips/dts/HC5XXX.dtsi
 +
 +		usbpower {
 +			gpio-export,name = "usbpower";
-+			gpio-export,output = <1>;
-+			gpios = <&gpio0 12 0>;
++			gpio-export,output = <0>;
++			gpios = <&gpio0 11 0>;
 +		};
 +	};
 +};
