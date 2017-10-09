@@ -1,6 +1,6 @@
 
-BUILDER ?= OpenWrt-ImageBuilder-15.05-ramips-mt7628.Linux-x86_64
-SDK ?= OpenWrt-SDK-15.05-ramips-mt7628_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64
+BUILDER ?= OpenWrt-ImageBuilder-15.05.1-ramips-mt7628.Linux-x86_64
+SDK ?= OpenWrt-SDK-15.05.1-ramips-mt7628_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64
 
 OPKG_PACKAGES :=  6in4 6to4 blkid curl ethtool fdisk ip ip6tables-extra ip6tables-mod-nat \
 	ipset iptables-mod-conntrack-extra iptables-mod-extra iptables-mod-ipopt iwinfo \
