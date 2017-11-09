@@ -36,7 +36,7 @@ Index: target/linux/ramips/base-files/etc/board.d/02_network
 ===================================================================
 --- target/linux/ramips/base-files/etc/board.d/02_network	(revision 46893)
 +++ target/linux/ramips/base-files/etc/board.d/02_network	(working copy)
-@@ -233,6 +233,8 @@
+@@ -241,6 +241,8 @@
  		ucidef_add_switch_vlan "switch0" "2" "4 6t"
  		;;
  
@@ -45,7 +45,7 @@ Index: target/linux/ramips/base-files/etc/board.d/02_network
  	y1s)
  		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
  		ucidef_add_switch "switch0" "1" "1"
-@@ -283,6 +285,13 @@
+@@ -291,6 +291,13 @@
  		wan_mac=$(mtd_get_mac_binary devdata 7)
  		;;
  
@@ -522,7 +522,7 @@ Index: target/linux/ramips/image/Makefile
 ===================================================================
 --- target/linux/ramips/image/Makefile	(revision 46893)
 +++ target/linux/ramips/image/Makefile	(working copy)
-@@ -866,6 +866,10 @@
+@@ -873,6 +873,10 @@
  na930_mtd_size=20971520
  Image/Build/Profile/NA930=$(call BuildFirmware/CustomFlash/$(1),$(1),na930,NA930,$(na930_mtd_size))
  Image/Build/Profile/MZK-750DHP=$(call BuildFirmware/Default8M/$(1),$(1),mzk-750dhp,MZK-750DHP)
@@ -533,7 +533,7 @@ Index: target/linux/ramips/image/Makefile
  Image/Build/Profile/Y1=$(call BuildFirmware/Default16M/$(1),$(1),Lenovo-y1,Y1)
  Image/Build/Profile/Y1S=$(call BuildFirmware/Default16M/$(1),$(1),Lenovo-y1s,Y1S)
  Image/Build/Profile/MLW221=$(call BuildFirmware/Default16M/$(1),$(1),mlw221,MLW221)
-@@ -899,6 +903,10 @@
+@@ -906,6 +910,10 @@
  	$(call Image/Build/Profile/WHR1166D,$(1))
  	$(call Image/Build/Profile/MZK-750DHP,$(1))
  	$(call Image/Build/Profile/NA930,$(1))
