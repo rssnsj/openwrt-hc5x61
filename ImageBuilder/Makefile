@@ -1,6 +1,7 @@
 
 BUILDER ?= OpenWrt-ImageBuilder-ramips_mt7620a-for-linux-x86_64
 SDK ?= OpenWrt-SDK-ramips-for-linux-x86_64-gcc-4.8-linaro_uClibc-0.9.33.2
+FULL ?= 1
 
 OPKG_PACKAGES := 6in4 6to4 blkid curl ethtool ip ip6tables-extra ip6tables-mod-nat \
 	iperf-mt ipset iptables-mod-conntrack-extra iptables-mod-extra iptables-mod-filter \
