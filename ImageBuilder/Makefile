@@ -58,7 +58,7 @@ endef
 
 define EnableWireless
 	@[ -n "$(WIFI)" ] || exit 0; \
-		F=$(shell echo $(1)); openwrt-repack.sh $$F -w -o $$F.out && mv $$F.out $$F
+		F=$(shell echo $(1)); openwrt-repack.sh $$F -w -o $$F.out && mv -vf $$F.out $$F
 endef
 
 all: HC5661 HC5761 HC5861
