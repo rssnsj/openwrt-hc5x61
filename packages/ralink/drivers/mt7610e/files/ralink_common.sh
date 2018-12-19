@@ -241,6 +241,7 @@ enable_ralink_wifi() {
         }
 	chk8021x $device
         set_wifi_up "$vif" "$ifname"
+	brctl addif "$bridge" "$ifname" 2>/dev/null
     done
 }
 
