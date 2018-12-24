@@ -5,7 +5,4 @@
 /.patched
 /.checkout_svn
 /.check_hostdeps
-/config-hiwifi
-/ImageBuilder/.patched
-/ImageBuilder/OpenWrt-ImageBuilder-*
-/ImageBuilder/OpenWrt-SDK-*
+/config

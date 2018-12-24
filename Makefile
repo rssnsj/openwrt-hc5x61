@@ -3,11 +3,7 @@
 hiwifi_root = $(shell pwd)
 openwrt_dir = openwrt-ramips
 host_packages = build-essential git flex gettext libncurses5-dev unzip gawk liblzma-dev u-boot-tools
-openwrt_feeds = libevent2 luci luci-app-samba xl2tpd pptpd pdnsd ntfs-3g ethtool
-### mwan3 luci-app-mwan3
-CONFIG_FILENAME = config-hiwifi
-
-RUNNING_THREADS := $(shell cat /proc/cpuinfo | grep -i '^processor\s\+:' | wc -l)
+CONFIG_FILENAME = config
 
 define CheckConfigSymlink
 	@if ! [ -e $(CONFIG_FILENAME) ]; then \
@@ -25,16 +21,14 @@ HC5X61: .install_feeds
 	$(call CheckConfigSymlink)
 	cp -vf $(CONFIG_FILENAME) $(openwrt_dir)/.config
 	@[ -f .config.extra ] && cat .config.extra >> $(openwrt_dir)/.config || :
-	make -C $(openwrt_dir) V=s -j$(RUNNING_THREADS)
+	$(MAKE) -C $(openwrt_dir) V=s
 
 recovery.bin: HC5X61
-	make -C recovery.bin
+	$(MAKE) -C recovery.bin
 
 .install_feeds: .update_feeds
-	@cd $(openwrt_dir); ./scripts/feeds install $(openwrt_feeds);
 	@cd $(openwrt_dir)/package; \
-	 [ -e rssnsj-packages ] || ln -s ../../packages rssnsj-packages; \
-	 [ -e rssnsj-feeds ] || git clone https://github.com/rssnsj/network-feeds.git rssnsj-feeds
+	 [ -e extra-packages ] || ln -s ../../packages extra-packages
 	@touch .install_feeds
 
 .update_feeds: .patched
@@ -74,10 +68,10 @@ menuconfig: .install_feeds
 	$(call CheckConfigSymlink)
 	@cp -vf $(CONFIG_FILENAME) $(openwrt_dir)/.config
 	@touch $(CONFIG_FILENAME)  # change modification time
-	@make -C $(openwrt_dir) menuconfig
+	@$(MAKE) -C $(openwrt_dir) menuconfig
 	@[ $(openwrt_dir)/.config -nt $(CONFIG_FILENAME) ] && cp -vf $(openwrt_dir)/.config $(CONFIG_FILENAME) || :
 
 clean:
-	make clean -C recovery.bin
-	make clean -C $(openwrt_dir) V=s
+	$(MAKE) clean -C recovery.bin
+	$(MAKE) clean -C $(openwrt_dir) V=s
 
