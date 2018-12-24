@@ -6,6 +6,3 @@
 /.checkout_svn
 /.check_hostdeps
 /config
-/ImageBuilder/.patched
-/ImageBuilder/OpenWrt-ImageBuilder-*
-/ImageBuilder/OpenWrt-SDK-*
