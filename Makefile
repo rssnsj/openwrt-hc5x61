@@ -44,7 +44,7 @@ recovery.bin: HC5X61
 # 2. Checkout source code:
 .checkout_svn: .check_hostdeps
 #	svn co svn://svn.openwrt.org/openwrt/branches/barrier_breaker $(openwrt_dir) -r43166 || :
-	@git clone https://github.com/rssnsj/lagacy-openwrt.git $(openwrt_dir) && \
+	@git clone https://github.com/i80s/barrier_breaker.git $(openwrt_dir) && \
 	 cd $(openwrt_dir) && git reset --hard b763ba211deeab857ef7c2e5275e92c15dd5e249
 	@[ -d /var/dl ] && ln -sf /var/dl $(openwrt_dir)/dl || :
 	@touch .checkout_svn
