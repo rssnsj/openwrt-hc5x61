@@ -1,2 +1,8 @@
-openwrt-ramips
-.config.extra
+/openwrt-ramips
+/.config.extra
+/.install_feeds
+/.update_feeds
+/.patched
+/.checkout_svn
+/.check_hostdeps
+/config
