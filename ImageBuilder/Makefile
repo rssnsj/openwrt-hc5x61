@@ -5,8 +5,7 @@ SDK := OpenWrt-SDK-15.05-ramips-mt7620_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_
 EXTRA_PACKAGES := kmod-tun \
 	iptables-mod-conntrack-extra iptables-mod-extra iptables-mod-filter \
 	iptables-mod-nat-extra ip6tables-extra ip6tables-mod-nat \
-	ip ipset ppp-mod-pppol2tp ppp-mod-pptp xl2tpd pptpd curl ethtool \
-	luci-i18n-chinese luci-i18n-english
+	ppp-mod-pppol2tp ppp-mod-pptp
 
 all: HC5661 HC5761 HC5861
 
